@@ -39,6 +39,18 @@ public class AStarTraversal<V, E> extends BreadthFirstTraversal<V, E> {
 	private final BiFunction<Integer, Integer, Integer> fnEstimatedDist;
 	private final int[] score;
 
+	/**
+	 * Creates an A* path finder instance.
+	 * 
+	 * @param graph
+	 *                          a graph
+	 * @param fnEdgeCost
+	 *                          function giving the cost for each edge
+	 * @param fnEstimatedDist
+	 *                          heuristics estimating the distance (as an integer) between nodes, for
+	 *                          example Euclidean distance squared or the Mahattan distance for grid
+	 *                          graphs
+	 */
 	public AStarTraversal(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
 			BiFunction<Integer, Integer, Integer> fnEstimatedDist) {
 		this.graph = graph;
