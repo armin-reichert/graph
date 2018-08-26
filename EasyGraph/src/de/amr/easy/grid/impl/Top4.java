@@ -18,6 +18,10 @@ public class Top4 implements Topology {
 
 	private static final int[][] VEC = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
 
+	public static String name(int dir) {
+		return String.valueOf("NESW".charAt(dir));
+	}
+
 	@Override
 	public IntStream dirs() {
 		return IntStream.of(N, E, S, W);
