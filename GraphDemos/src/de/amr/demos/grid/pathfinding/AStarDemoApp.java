@@ -52,7 +52,7 @@ public class AStarDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(() -> new AStarDemoApp(20, 20, 800));
+		EventQueue.invokeLater(() -> new AStarDemoApp(20, 20, 600));
 	}
 
 	// model
