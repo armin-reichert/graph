@@ -25,10 +25,12 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 	}
 
 	@Override
-	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
+	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other,
+			boolean visible) {
 		final int dir = grid.direction(either, other).getAsInt();
 		final int inv = grid.getTopology().inv(dir);
-		drawHalfPassage(g, grid, either, dir, visible ? getPassageColor(either, dir) : getGridBgColor());
+		drawHalfPassage(g, grid, either, dir,
+				visible ? getPassageColor(either, dir) : getGridBgColor());
 		drawHalfPassage(g, grid, other, inv, visible ? getPassageColor(other, inv) : getGridBgColor());
 	}
 
@@ -39,7 +41,8 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		drawCellContent(g, grid, cell);
 	}
 
-	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, int dir, Color passageColor) {
+	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, int dir,
+			Color passageColor) {
 		final int cellX = grid.col(cell) * getCellSize();
 		final int cellY = grid.row(cell) * getCellSize();
 		final int centerX = cellX + getCellSize() / 2;
@@ -143,9 +146,12 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		}
 		g.setColor(getTextColor(cell));
 		g.setFont(getTextFont().deriveFont(fontSize));
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		Rectangle textBox = g.getFontMetrics().getStringBounds(text, g).getBounds();
-		g.drawString(text, (getCellSize() - textBox.width) / 2, (getCellSize() + textBox.height / 2) / 2);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		g.drawString(text, (getCellSize() - textBox.width) / 2,
+				(getCellSize() + textBox.height / 2) / 2);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
 }

@@ -38,8 +38,8 @@ public class HillClimbing<C extends Comparable<C>> extends DepthFirstTraversal {
 
 	@Override
 	protected void expand(int current) {
-		IntStream sortedByCost = graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).boxed()
-				.sorted(byCost).mapToInt(Integer::intValue);
+		IntStream sortedByCost = graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED)
+				.boxed().sorted(byCost).mapToInt(Integer::intValue);
 		// push children in reversed order such that cheapest element will get popped first
 		reversed(sortedByCost).forEach(neighbor -> {
 			stack.push(neighbor);

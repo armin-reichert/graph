@@ -30,8 +30,8 @@ public class FullGridApp extends SwingGridSampleApp {
 				getGrid().setDefaultVertexLabel(v -> COMPLETED);
 				getGrid().fill();
 				watch.measure(getCanvas()::drawGrid);
-				System.out.println(String.format("Grid (%d cells @%d) rendered in %.2f seconds", getGrid().numVertices(),
-						cellSize, watch.getSeconds()));
+				System.out.println(String.format("Grid (%d cells @%d) rendered in %.2f seconds",
+						getGrid().numVertices(), cellSize, watch.getSeconds()));
 				sleep(1000);
 			});
 		});

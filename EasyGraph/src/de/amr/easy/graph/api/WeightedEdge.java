@@ -8,7 +8,8 @@ package de.amr.easy.graph.api;
  * @param <W>
  *          edge weight type
  */
-public class WeightedEdge<W extends Comparable<W>> extends UndirectedEdge implements Comparable<WeightedEdge<W>> {
+public class WeightedEdge<W extends Comparable<W>> extends UndirectedEdge
+		implements Comparable<WeightedEdge<W>> {
 
 	private final W weight;
 

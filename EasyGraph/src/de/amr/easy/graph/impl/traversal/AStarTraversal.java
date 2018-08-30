@@ -85,7 +85,8 @@ public class AStarTraversal<V, E> extends BreadthFirstTraversal<V, E> {
 			int current = q.poll();
 			setState(current, CLOSED);
 			graph.adj(current).filter(neighbor -> getState(neighbor) != CLOSED).forEach(neighbor -> {
-				int newDist = distFromSource[current] + fnEdgeCost.apply(graph.getEdgeLabel(current, neighbor));
+				int newDist = distFromSource[current]
+						+ fnEdgeCost.apply(graph.getEdgeLabel(current, neighbor));
 				if (getState(neighbor) != OPEN || newDist < distFromSource[neighbor]) {
 					distFromSource[neighbor] = newDist;
 					score[neighbor] = newDist + fnEstimatedDist.apply(neighbor, target);

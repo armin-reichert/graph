@@ -134,8 +134,10 @@ public class GifRecorder implements AutoCloseable {
 
 	private void configureMetadata() throws IIOInvalidTreeException {
 		param = gifWriter.getDefaultWriteParam();
-		metadata = gifWriter.getDefaultImageMetadata(ImageTypeSpecifier.createFromBufferedImageType(imageType), param);
-		IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(metadata.getNativeMetadataFormatName());
+		metadata = gifWriter
+				.getDefaultImageMetadata(ImageTypeSpecifier.createFromBufferedImageType(imageType), param);
+		IIOMetadataNode root = (IIOMetadataNode) metadata
+				.getAsTree(metadata.getNativeMetadataFormatName());
 		{ // root -> GraphicControlExtension
 			IIOMetadataNode node = child(root, "GraphicControlExtension");
 			node.setAttribute("disposalMethod", "restoreToBackgroundColor");
@@ -153,7 +155,8 @@ public class GifRecorder implements AutoCloseable {
 			node.setAttribute("applicationID", "NETSCAPE");
 			node.setAttribute("authenticationCode", "2.0");
 			int loopBits = loop ? 0 : 1;
-			node.setUserObject(new byte[] { 0x1, (byte) (loopBits & 0xFF), (byte) ((loopBits >> 8) & 0xFF) });
+			node.setUserObject(
+					new byte[] { 0x1, (byte) (loopBits & 0xFF), (byte) ((loopBits >> 8) & 0xFF) });
 		}
 		metadata.setFromTree(metadata.getNativeMetadataFormatName(), root);
 	}

@@ -23,11 +23,12 @@ public class LayeredCanvas extends JComponent {
 	}
 
 	public void resizeCanvas(int width, int height) {
-		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration()
-				.createCompatibleImage(width, height);
+		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration().createCompatibleImage(width, height);
 		gfx = buffer.createGraphics();
 		gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		setPreferredSize(new Dimension(width, height));
 		setSize(new Dimension(width, height));
 	}
@@ -58,7 +59,8 @@ public class LayeredCanvas extends JComponent {
 	}
 
 	public void removeLayer(String name) {
-		layers.stream().filter(layer -> layer.getName().equals(name)).findFirst().ifPresent(layer -> layers.remove(layer));
+		layers.stream().filter(layer -> layer.getName().equals(name)).findFirst()
+				.ifPresent(layer -> layers.remove(layer));
 	}
 
 	public void pushLayer(String name, Consumer<Graphics2D> renderer) {

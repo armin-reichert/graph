@@ -62,7 +62,8 @@ public class ExpandingRectangle implements CellSequence {
 					int width = currentRect.getWidth() + (expandHoriz ? expansionRate : 0);
 					int height = currentRect.getHeight() + (expandVert ? expansionRate : 0);
 					expansion += expansionRate;
-					currentRect = new Rectangle(currentRect.grid, currentRect.getLeftUpperCorner(), width, height);
+					currentRect = new Rectangle(currentRect.grid, currentRect.getLeftUpperCorner(), width,
+							height);
 					iterator = currentRect.iterator();
 				}
 				return iterator.next();

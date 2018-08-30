@@ -71,7 +71,8 @@ public class CurveUtils {
 	 * @return textual representation of the grid cells traversed by the given curve
 	 */
 	public static String cellsAsString(CellSequence curve, GridGraph2D<?, ?> grid, int start) {
-		return cells(curve, grid, start).stream().map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell)))
+		return cells(curve, grid, start).stream()
+				.map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell)))
 				.collect(Collectors.joining());
 	}
 }

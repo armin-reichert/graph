@@ -86,8 +86,8 @@ public class GridCanvas extends JComponent {
 		int width = grid.numCols() * cellSize, height = grid.numRows() * cellSize;
 		setSize(new Dimension(width, height));
 		setPreferredSize(new Dimension(width, height));
-		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration()
-				.createCompatibleImage(width, height);
+		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration().createCompatibleImage(width, height);
 		g2 = buffer.createGraphics();
 	}
 

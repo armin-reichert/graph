@@ -25,7 +25,8 @@ public class Spiral implements CellSequence {
 	public Spiral(GridGraph2D<?, ?> grid, Integer start) {
 		int size = Math.max(grid.numCols(), grid.numRows());
 		int offsetY = (size - grid.numRows()) / 2;
-		GridGraph2D<?, ?> squareGrid = new GridGraph<>(size, size, new Top4(), null, (u, v) -> null, UndirectedEdge::new);
+		GridGraph2D<?, ?> squareGrid = new GridGraph<>(size, size, new Top4(), null, (u, v) -> null,
+				UndirectedEdge::new);
 		int leftUpperCorner = squareGrid.cell(GridPosition.CENTER);
 		for (int i = 0, n = size / 2 + 1; i < n; ++i) {
 			Square square = new Square(squareGrid, leftUpperCorner, 2 * i + 1);
@@ -37,7 +38,8 @@ public class Spiral implements CellSequence {
 				}
 			}
 			if (i < n - 1) {
-				leftUpperCorner = squareGrid.cell(squareGrid.col(leftUpperCorner) - 1, squareGrid.row(leftUpperCorner) - 1);
+				leftUpperCorner = squareGrid.cell(squareGrid.col(leftUpperCorner) - 1,
+						squareGrid.row(leftUpperCorner) - 1);
 			}
 		}
 	}

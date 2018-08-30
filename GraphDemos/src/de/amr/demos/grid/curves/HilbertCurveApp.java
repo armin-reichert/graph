@@ -30,7 +30,8 @@ import de.amr.easy.grid.impl.curves.HilbertCurve;
  */
 public class HilbertCurveApp extends SwingGridSampleApp {
 
-	private static final EnumMap<GridPosition, List<Integer>> ORIENTATION = new EnumMap<>(GridPosition.class);
+	private static final EnumMap<GridPosition, List<Integer>> ORIENTATION = new EnumMap<>(
+			GridPosition.class);
 
 	static {
 		ORIENTATION.put(TOP_RIGHT, asList(N, E, S, W));
@@ -54,8 +55,8 @@ public class HilbertCurveApp extends SwingGridSampleApp {
 			IntStream.of(256, 128, 64, 32, 16, 8, 4, 2).forEach(cellSize -> {
 				setCellSize(cellSize);
 				List<Integer> dir = ORIENTATION.get(start);
-				HilbertCurve hilbert = new HilbertCurve(log(2, getGrid().numCols()), dir.get(0), dir.get(1), dir.get(2),
-						dir.get(3));
+				HilbertCurve hilbert = new HilbertCurve(log(2, getGrid().numCols()), dir.get(0), dir.get(1),
+						dir.get(2), dir.get(3));
 				traverse(hilbert, getGrid(), getGrid().cell(start), this::addEdge);
 				floodFill(getCanvas(), getGrid(), getGrid().cell(start), false);
 				sleep(1000);
