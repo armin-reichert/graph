@@ -2,8 +2,8 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.arminreichert</groupId>
-    <artifactId>easygraph-project</artifactId>
+    <groupId>de.amr.easy.graph</groupId>
+    <artifactId>de.amr.easy.graph</artifactId>
     <packaging>pom</packaging>
 
     <name>EasyGraph Project</name>
