@@ -3,7 +3,7 @@
   <groupId>de.amr.easy.graph</groupId>
   <artifactId>EasyGraph</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>graph</name>
+  <name>EasyGraph</name>
   <description>Graph API, grid graph and graph traversal algorithms</description>
   <build>
     <plugins>
