@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.amr.easy.graph</groupId>
-    <artifactId>de.amr.easy.graph</artifactId>
+    <artifactId>EasyGraph</artifactId>
     <packaging>pom</packaging>
 
-    <name>EasyGraph Project</name>
-    <version>1.0-SNAPSHOT</version>
+    <name>EasyGraph</name>
+    <version>0.0.1-SNAPSHOT</version>
 
     <modules>
         <module>EasyGraph</module>
