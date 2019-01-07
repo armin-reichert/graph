@@ -8,6 +8,8 @@ It contains an efficient implementation for 2D grid graphs and several pathfinde
 
 ![A* path finding](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/astar.png)
 
+(Drag or click mouse to create walls, SHIFT-click to remove wall, path is updated automatically) 
+
 Additional examples are graph based implementations of space filling curves (Hilbert, Peano, Moore).
 
 ![Hilbert curve](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/hilbert.png)
