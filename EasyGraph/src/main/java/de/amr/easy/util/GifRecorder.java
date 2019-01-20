@@ -40,21 +40,31 @@ public class GifRecorder implements AutoCloseable {
 		loop = false;
 	}
 
+	public int getFramesWritten() {
+		return framesWritten;
+	}
+
 	/**
 	 * Starts the recording.
 	 * 
 	 * @param gifFilePath
 	 *                      path to the GIF file where the recording will be stored
 	 */
-	public void start(String gifFilePath) {
+	public void start(File path, String fileName) {
 		try {
 			gifWriter = ImageIO.getImageWritersByFormatName("gif").next(); // assuming this always exists
 			configureMetadata();
-			gifWriter.setOutput(ImageIO.createImageOutputStream(new File(gifFilePath)));
+			path.mkdirs();
+			File gifFile = new File(path, fileName);
+			if (gifFile.exists()) {
+				gifFile.delete();
+				System.out.println("Deleted existing file " + gifFile);
+			}
+			gifWriter.setOutput(ImageIO.createImageOutputStream(gifFile));
 			gifWriter.prepareWriteSequence(null);
 			requests = 0;
 			framesWritten = 0;
-			System.out.println("File: " + gifFilePath);
+			System.out.println("Creating file: " + gifFile);
 			System.out.print("Frames: ");
 		} catch (IOException e) {
 			System.out.println("Could not start recording");
@@ -92,7 +102,7 @@ public class GifRecorder implements AutoCloseable {
 	 */
 	@Override
 	public void close() {
-		System.out.println(" (total: " + framesWritten + ")");
+		System.out.println("\nTotal: " + framesWritten);
 		try {
 			gifWriter.endWriteSequence();
 			((ImageOutputStream) gifWriter.getOutput()).close();
@@ -134,10 +144,9 @@ public class GifRecorder implements AutoCloseable {
 
 	private void configureMetadata() throws IIOInvalidTreeException {
 		param = gifWriter.getDefaultWriteParam();
-		metadata = gifWriter
-				.getDefaultImageMetadata(ImageTypeSpecifier.createFromBufferedImageType(imageType), param);
-		IIOMetadataNode root = (IIOMetadataNode) metadata
-				.getAsTree(metadata.getNativeMetadataFormatName());
+		metadata = gifWriter.getDefaultImageMetadata(ImageTypeSpecifier.createFromBufferedImageType(imageType),
+				param);
+		IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(metadata.getNativeMetadataFormatName());
 		{ // root -> GraphicControlExtension
 			IIOMetadataNode node = child(root, "GraphicControlExtension");
 			node.setAttribute("disposalMethod", "restoreToBackgroundColor");
@@ -155,8 +164,7 @@ public class GifRecorder implements AutoCloseable {
 			node.setAttribute("applicationID", "NETSCAPE");
 			node.setAttribute("authenticationCode", "2.0");
 			int loopBits = loop ? 0 : 1;
-			node.setUserObject(
-					new byte[] { 0x1, (byte) (loopBits & 0xFF), (byte) ((loopBits >> 8) & 0xFF) });
+			node.setUserObject(new byte[] { 0x1, (byte) (loopBits & 0xFF), (byte) ((loopBits >> 8) & 0xFF) });
 		}
 		metadata.setFromTree(metadata.getNativeMetadataFormatName(), root);
 	}
