@@ -2,10 +2,9 @@ package de.amr.easy.graph.impl.traversal;
 
 import static de.amr.easy.graph.api.traversal.TraversalState.UNVISITED;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,11 +52,10 @@ public abstract class ObservableGraphTraversal implements GraphTraversal {
 	 */
 	@Override
 	public List<Integer> path(int target) {
-		List<Integer> path = new ArrayList<>();
+		List<Integer> path = new LinkedList<>();
 		for (int v = target; v != -1; v = getParent(v)) {
-			path.add(v);
+			path.add(0, v);
 		}
-		Collections.reverse(path);
 		return path;
 	}
 
@@ -68,7 +66,7 @@ public abstract class ObservableGraphTraversal implements GraphTraversal {
 	}
 
 	public TraversalState getState(int v) {
-		return stateMap.containsKey(v) ? stateMap.get(v) : UNVISITED;
+		return stateMap.getOrDefault(v, UNVISITED);
 	}
 
 	protected void setParent(int child, int parent) {
@@ -79,7 +77,7 @@ public abstract class ObservableGraphTraversal implements GraphTraversal {
 	}
 
 	public int getParent(int v) {
-		return parentMap.containsKey(v) ? parentMap.get(v) : -1;
+		return parentMap.getOrDefault(v, -1);
 	}
 
 	// Observer related stuff
