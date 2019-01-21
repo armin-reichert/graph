@@ -5,16 +5,18 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Interface for a graph with vertex and edge labels. Vertices are integers which may be labeled by
- * some arbitrary label objects of a given type. Edges can also be labeled by objects an arbitrary
- * type.
+ * Interface for a graph with vertex and edge labels.
  * 
- * @author Armin Reichert
+ * <p>
+ * Vertices are represented by integers and can be labeled by arbitrary objects of the given vertex
+ * label type. Edges can be labeled by objects of the specified edge label type.
  *
  * @param <V>
  *          vertex label type
  * @param <E>
  *          edge label type
+ * 
+ * @author Armin Reichert
  */
 public interface Graph<V, E> extends VertexLabels<V>, EdgeLabels<E> {
 
@@ -81,7 +83,9 @@ public interface Graph<V, E> extends VertexLabels<V>, EdgeLabels<E> {
 	 *            a vertex
 	 * @return the number of vertices adjacent to <code>v</code>
 	 */
-	int degree(int v);
+	default int degree(int v) {
+		return (int) adj(v).count();
+	}
 
 	/**
 	 * Adds an edge between the given vertices.
@@ -94,16 +98,16 @@ public interface Graph<V, E> extends VertexLabels<V>, EdgeLabels<E> {
 	void addEdge(int v, int w);
 
 	/**
-	 * Adds an edge wit a label between the given vertices.
+	 * Adds an edge with a label between the given vertices.
 	 * 
 	 * @param v
-	 *            a vertex
+	 *                    a vertex
 	 * @param w
-	 *            a vertex
-	 * @param e
-	 *            edge label
+	 *                    a vertex
+	 * @param edgeLabel
+	 *                    edge label
 	 */
-	void addEdge(int v, int w, E e);
+	void addEdge(int v, int w, E edgeLabel);
 
 	/**
 	 * @param v
