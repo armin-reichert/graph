@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import de.amr.easy.graph.api.VertexLabels;
+import de.amr.easy.graph.api.VertexLabeling;
 
 /**
  * Vertex labels implementation for sparse graphs.
@@ -14,7 +14,7 @@ import de.amr.easy.graph.api.VertexLabels;
  * @param <V>
  *          vertex label type
  */
-public class VertexLabelsMap<V> implements VertexLabels<V> {
+public class VertexLabelsMap<V> implements VertexLabeling<V> {
 
 	private final Map<Integer, V> labels = new HashMap<>();
 	private Function<Integer, V> fnDefaultLabel;

@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
  * @param <E>
  *          edge label type
  */
-public interface EdgeLabels<E> {
+public interface EdgeLabeling<E> {
 
 	/**
 	 * Returns the edge label for the edge with the given end points.

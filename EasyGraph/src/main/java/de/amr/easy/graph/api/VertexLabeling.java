@@ -8,7 +8,7 @@ import java.util.function.Function;
  * @param <V>
  *          vertex label type
  */
-public interface VertexLabels<V> {
+public interface VertexLabeling<V> {
 
 	/**
 	 * Returns the vertex label for the given vertex.

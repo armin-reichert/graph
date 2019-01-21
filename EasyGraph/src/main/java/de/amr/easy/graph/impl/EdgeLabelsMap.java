@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import de.amr.easy.data.TwoSet;
-import de.amr.easy.graph.api.EdgeLabels;
+import de.amr.easy.graph.api.EdgeLabeling;
 
-public class EdgeLabelsMap<E> implements EdgeLabels<E> {
+public class EdgeLabelsMap<E> implements EdgeLabeling<E> {
 
 	private BiFunction<Integer, Integer, E> fnDefaultLabel;
 

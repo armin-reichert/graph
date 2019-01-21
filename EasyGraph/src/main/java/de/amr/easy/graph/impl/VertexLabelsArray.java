@@ -2,7 +2,7 @@ package de.amr.easy.graph.impl;
 
 import java.util.function.Function;
 
-import de.amr.easy.graph.api.VertexLabels;
+import de.amr.easy.graph.api.VertexLabeling;
 
 /**
  * Vertex labels implementation for dense graphs.
@@ -12,7 +12,7 @@ import de.amr.easy.graph.api.VertexLabels;
  * @param <V>
  *          vertex label type
  */
-public class VertexLabelsArray<V> implements VertexLabels<V> {
+public class VertexLabelsArray<V> implements VertexLabeling<V> {
 
 	private Object[] labels;
 	private Function<Integer, V> fnDefaultLabel;

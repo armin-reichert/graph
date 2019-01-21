@@ -14,10 +14,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.amr.easy.graph.api.Edge;
-import de.amr.easy.graph.api.EdgeLabels;
+import de.amr.easy.graph.api.EdgeLabeling;
 import de.amr.easy.graph.api.Graph;
 import de.amr.easy.graph.api.UndirectedEdge;
-import de.amr.easy.graph.api.VertexLabels;
+import de.amr.easy.graph.api.VertexLabeling;
 
 /**
  * Adjacency set based implementation of an undirected graph.
@@ -33,8 +33,8 @@ import de.amr.easy.graph.api.VertexLabels;
  */
 public class UGraph<V, E> implements Graph<V, E> {
 
-	protected final VertexLabels<V> vertexLabels = new VertexLabelsMap<>(null);
-	protected final EdgeLabels<E> edgeLabels = new EdgeLabelsMap<>((u, v) -> null);
+	protected final VertexLabeling<V> vertexLabels = new VertexLabelsMap<>(null);
+	protected final EdgeLabeling<E> edgeLabels = new EdgeLabelsMap<>((u, v) -> null);
 	protected final Set<Integer> vertexSet = new HashSet<>();
 	protected final Map<Integer, Set<Edge>> adjEdges = new HashMap<>();
 	protected int numEdges; // number of undirected edges

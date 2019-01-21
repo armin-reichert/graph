@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * 
  * @author Armin Reichert
  */
-public interface Graph<V, E> extends VertexLabels<V>, EdgeLabels<E> {
+public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 
 	/**
 	 * @return stream of the vertices of this graph

@@ -13,8 +13,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.amr.easy.graph.api.Edge;
-import de.amr.easy.graph.api.EdgeLabels;
-import de.amr.easy.graph.api.VertexLabels;
+import de.amr.easy.graph.api.EdgeLabeling;
+import de.amr.easy.graph.api.VertexLabeling;
 import de.amr.easy.graph.impl.EdgeLabelsMap;
 import de.amr.easy.graph.impl.VertexLabelsMap;
 import de.amr.easy.grid.api.GridGraph2D;
@@ -42,7 +42,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	// {@link VertexLabels}
 
-	private final VertexLabels<V> vertexLabels;
+	private final VertexLabeling<V> vertexLabels;
 
 	@Override
 	public void clearVertexLabels() {
@@ -71,7 +71,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	// {@link EdgeLabels}
 
-	private final EdgeLabels<E> edgeLabels;
+	private final EdgeLabeling<E> edgeLabels;
 
 	@Override
 	public void clearEdgeLabels() {
