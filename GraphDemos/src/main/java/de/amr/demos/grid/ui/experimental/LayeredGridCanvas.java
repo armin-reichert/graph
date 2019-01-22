@@ -1,24 +1,24 @@
 package de.amr.demos.grid.ui.experimental;
 
-import static de.amr.easy.graph.api.traversal.TraversalState.UNVISITED;
+import static de.amr.easy.graph.pathfinder.api.TraversalState.UNVISITED;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.function.BiFunction;
 
-import de.amr.easy.graph.api.Edge;
-import de.amr.easy.graph.api.event.EdgeEvent;
-import de.amr.easy.graph.api.event.GraphObserver;
-import de.amr.easy.graph.api.event.ObservableGraph;
-import de.amr.easy.graph.api.event.VertexEvent;
-import de.amr.easy.graph.api.traversal.TraversalState;
-import de.amr.easy.graph.impl.traversal.BreadthFirstTraversal;
-import de.amr.easy.grid.impl.GridGraph;
-import de.amr.easy.grid.impl.ObservableGridGraph;
-import de.amr.easy.grid.impl.Top4;
-import de.amr.easy.grid.ui.swing.rendering.ConfigurableGridRenderer;
-import de.amr.easy.grid.ui.swing.rendering.WallPassageGridRenderer;
+import de.amr.easy.graph.core.api.Edge;
+import de.amr.easy.graph.event.api.EdgeEvent;
+import de.amr.easy.graph.event.api.GraphObserver;
+import de.amr.easy.graph.event.api.ObservableGraph;
+import de.amr.easy.graph.event.api.VertexEvent;
+import de.amr.easy.graph.grid.impl.GridGraph;
+import de.amr.easy.graph.grid.impl.ObservableGridGraph;
+import de.amr.easy.graph.grid.impl.Top4;
+import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
+import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.easy.graph.pathfinder.api.TraversalState;
+import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearchPathFinder;
 
 /**
  * Canvas that can display a grid, a colored distance map and a path between two cells.
@@ -38,7 +38,7 @@ public class LayeredGridCanvas<E> extends LayeredCanvas
 	protected boolean pathDisplayed;
 	protected boolean distancesDisplayed;
 	protected ObservableGridGraph<TraversalState, E> grid;
-	protected BreadthFirstTraversal<TraversalState, E> bfs;
+	protected BreadthFirstSearchPathFinder<TraversalState, E> bfs;
 	protected int maxDistance;
 	protected Iterable<Integer> path;
 
@@ -106,10 +106,10 @@ public class LayeredGridCanvas<E> extends LayeredCanvas
 	}
 
 	public void runPathFinder(int pathStartCell, int pathTargetCell) {
-		bfs = new BreadthFirstTraversal<>(grid);
+		bfs = new BreadthFirstSearchPathFinder<>(grid);
 		bfs.traverseGraph(pathStartCell);
 		maxDistance = bfs.getMaxDistFromSource();
-		bfs = new BreadthFirstTraversal<>(grid);
+		bfs = new BreadthFirstSearchPathFinder<>(grid);
 		bfs.traverseGraph(pathStartCell, pathTargetCell);
 		path = bfs.path(pathTargetCell)::iterator;
 	}

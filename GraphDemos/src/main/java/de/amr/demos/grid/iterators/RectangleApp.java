@@ -1,10 +1,10 @@
 package de.amr.demos.grid.iterators;
 
-import static de.amr.easy.graph.api.traversal.TraversalState.COMPLETED;
+import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.grid.impl.iterators.shapes.Rectangle;
-import de.amr.easy.grid.impl.iterators.traversals.ExpandingRectangle;
+import de.amr.easy.graph.grid.shapes.Rectangle;
+import de.amr.easy.graph.grid.traversals.ExpandingRectangle;
 
 public class RectangleApp extends SwingGridSampleApp {
 

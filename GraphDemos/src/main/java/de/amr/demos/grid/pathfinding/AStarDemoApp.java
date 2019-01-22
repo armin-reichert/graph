@@ -26,17 +26,17 @@ import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import de.amr.easy.graph.api.UndirectedEdge;
-import de.amr.easy.graph.api.traversal.TraversalState;
-import de.amr.easy.graph.impl.traversal.AStarTraversal;
-import de.amr.easy.grid.api.GridGraph2D;
-import de.amr.easy.grid.api.GridPosition;
-import de.amr.easy.grid.impl.GridGraph;
-import de.amr.easy.grid.impl.Top8;
-import de.amr.easy.grid.ui.swing.rendering.ConfigurableGridRenderer;
-import de.amr.easy.grid.ui.swing.rendering.GridCanvas;
-import de.amr.easy.grid.ui.swing.rendering.WallPassageGridRenderer;
-import de.amr.easy.util.GraphUtils;
+import de.amr.easy.graph.core.api.UndirectedEdge;
+import de.amr.easy.graph.grid.api.GridGraph2D;
+import de.amr.easy.graph.grid.api.GridPosition;
+import de.amr.easy.graph.grid.impl.GridGraph;
+import de.amr.easy.graph.grid.impl.Top8;
+import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
+import de.amr.easy.graph.grid.ui.rendering.GridCanvas;
+import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.easy.graph.pathfinder.api.TraversalState;
+import de.amr.easy.graph.pathfinder.impl.AStarPathFinder;
+import de.amr.easy.graph.util.GraphUtils;
 import de.amr.easy.util.StopWatch;
 
 /**
@@ -63,7 +63,7 @@ public class AStarDemoApp {
 	private GridGraph2D<Tile, Integer> map;
 	private int source;
 	private int target;
-	private AStarTraversal<Tile, Integer> astar;
+	private AStarPathFinder<Tile, Integer> astar;
 	private BitSet solution;
 
 	// UI
@@ -193,10 +193,10 @@ public class AStarDemoApp {
 				return Color.RED.brighter();
 			}
 			if (astar != null) {
-				if (astar.getState(cell) == AStarTraversal.CLOSED) {
+				if (astar.getState(cell) == AStarPathFinder.CLOSED) {
 					return new Color(180, 180, 180);
 				}
-				if (astar.getState(cell) == AStarTraversal.OPEN) {
+				if (astar.getState(cell) == AStarPathFinder.OPEN) {
 					return new Color(220, 220, 220);
 				}
 			}
@@ -245,7 +245,7 @@ public class AStarDemoApp {
 	}
 
 	private void computePath() {
-		astar = new AStarTraversal<>(map, i -> i, this::getDistance);
+		astar = new AStarPathFinder<>(map, i -> i, this::getDistance);
 		StopWatch watch = new StopWatch();
 		watch.measure(() -> astar.traverseGraph(source, target));
 		List<Integer> path = astar.path(target);

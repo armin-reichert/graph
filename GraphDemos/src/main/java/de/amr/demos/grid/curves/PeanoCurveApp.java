@@ -1,14 +1,14 @@
 package de.amr.demos.grid.curves;
 
-import static de.amr.easy.grid.api.GridPosition.BOTTOM_LEFT;
-import static de.amr.easy.grid.impl.curves.CurveUtils.traverse;
-import static de.amr.easy.grid.ui.swing.animation.BreadthFirstTraversalAnimation.floodFill;
-import static de.amr.easy.util.GraphUtils.log;
+import static de.amr.easy.graph.grid.api.GridPosition.BOTTOM_LEFT;
+import static de.amr.easy.graph.grid.curves.CurveUtils.traverse;
+import static de.amr.easy.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
+import static de.amr.easy.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.grid.impl.curves.PeanoCurve;
+import de.amr.easy.graph.grid.curves.PeanoCurve;
 
 public class PeanoCurveApp extends SwingGridSampleApp {
 
