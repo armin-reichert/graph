@@ -25,7 +25,6 @@ import de.amr.easy.graph.core.api.Graph;
  * 
  * The "open list" is realized by the inherited priority queue q
  * 
- * vertex is in open list <=> getState(vertex) == VISITED
  * vertex is in closed list <=> getState(vertex) == COMPLETED
  * </pre>
  * 
@@ -80,40 +79,39 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 
 	private void addToOpenList(int vertex) {
 		setState(vertex, VISITED);
+		q.add(vertex);
 	}
 
-	@Override
-	protected void init() {
-		super.init();
-		Arrays.fill(score, Integer.MAX_VALUE);
-		Arrays.fill(distFromSource, Integer.MAX_VALUE);
+	private void decreaseKey(int vertex) {
+		// PriorityQueue class has no "decrease-key" operation, therefore remove and add again
+		q.remove(vertex);
+		q.add(vertex);
 	}
 
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
-
+		Arrays.fill(score, Integer.MAX_VALUE);
+		Arrays.fill(distFromSource, Integer.MAX_VALUE);
+		
 		distFromSource[source] = 0;
 		score[source] = fnEstimatedDist.apply(source, target);
 		addToOpenList(source);
-		q.add(source);
-
+		
 		while (!(q.isEmpty() || q.peek() == target)) {
-			int current = q.poll();
-			addToClosedList(current);
-			graph.adj(current).filter(neighbor -> !inClosedList(neighbor)).forEach(neighbor -> {
-				int newDist = distFromSource[current] + fnEdgeCost.apply(graph.getEdgeLabel(current, neighbor));
-				if (!inOpenList(neighbor) || newDist < distFromSource[neighbor]) {
-					distFromSource[neighbor] = newDist;
-					score[neighbor] = newDist + fnEstimatedDist.apply(neighbor, target);
-					setParent(neighbor, current);
-					if (inOpenList(neighbor)) {
-						// PriorityQueue class has no "decrease-key" operation, therefore remove and add again
-						q.remove(neighbor);
-						q.add(neighbor);
+			int vertex = q.poll();
+			addToClosedList(vertex);
+			graph.adj(vertex).filter(child -> !inClosedList(child)).forEach(child -> {
+				E edgeData = graph.getEdgeLabel(vertex, child);
+				int newDist = distFromSource[vertex] + fnEdgeCost.apply(edgeData);
+				if (!inOpenList(child) || newDist < distFromSource[child]) {
+					distFromSource[child] = newDist;
+					score[child] = newDist + fnEstimatedDist.apply(child, target);
+					setParent(child, vertex);
+					if (inOpenList(child)) {
+						decreaseKey(child);
 					} else {
-						addToOpenList(neighbor);
-						q.add(neighbor);
+						addToOpenList(child);
 					}
 				}
 			});
