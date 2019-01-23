@@ -193,10 +193,10 @@ public class AStarDemoApp {
 				return Color.RED.brighter();
 			}
 			if (astar != null) {
-				if (astar.getState(cell) == AStarPathFinder.CLOSED) {
+				if (astar.inClosedList(cell)) {
 					return new Color(180, 180, 180);
 				}
-				if (astar.getState(cell) == AStarPathFinder.OPEN) {
+				if (astar.inOpenList(cell)) {
 					return new Color(220, 220, 220);
 				}
 			}

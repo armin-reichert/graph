@@ -1,5 +1,7 @@
 package de.amr.easy.graph.pathfinder.impl;
 
+import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.easy.graph.pathfinder.api.TraversalState.VISITED;
 import static java.util.Comparator.comparingInt;
 
 import java.util.Arrays;
@@ -8,21 +10,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import de.amr.easy.graph.core.api.Graph;
-import de.amr.easy.graph.pathfinder.api.TraversalState;
 
 /**
  * The A* path finder.
  * 
  * <p>
- * Functions f, g, h are realized as follows:
+ * Functions f ("score"), g ("distance from source vertex") and h ("heuristic distance to target
+ * vertex") are realized as follows:
  * 
  * <pre>
  * f(v) = score[v]
  * g(v) = distFromSource[v]
  * h(v) = fnEstimatedDist(v, target)
- * open list = q
- * v is open <=> getState(v) == OPEN
- * v is closed <=> getState(v) == CLOSED
+ * 
+ * The "open list" is realized by the inherited priority queue q
+ * 
+ * vertex is in open list <=> getState(vertex) == VISITED
+ * vertex is in closed list <=> getState(vertex) == COMPLETED
  * </pre>
  * 
  * @author Armin Reichert
@@ -31,9 +35,6 @@ import de.amr.easy.graph.pathfinder.api.TraversalState;
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
 public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
-
-	public static final TraversalState OPEN = TraversalState.VISITED;
-	public static final TraversalState CLOSED = TraversalState.COMPLETED;
 
 	private final Function<E, Integer> fnEdgeCost;
 	private final BiFunction<Integer, Integer, Integer> fnEstimatedDist;
@@ -65,6 +66,22 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 		return score[v];
 	}
 
+	public boolean inClosedList(int vertex) {
+		return getState(vertex) == COMPLETED;
+	}
+
+	private void addToClosedList(int vertex) {
+		setState(vertex, COMPLETED);
+	}
+
+	public boolean inOpenList(int vertex) {
+		return getState(vertex) == VISITED;
+	}
+
+	private void addToOpenList(int vertex) {
+		setState(vertex, VISITED);
+	}
+
 	@Override
 	protected void init() {
 		super.init();
@@ -78,24 +95,24 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 
 		distFromSource[source] = 0;
 		score[source] = fnEstimatedDist.apply(source, target);
-		setState(source, OPEN);
+		addToOpenList(source);
 		q.add(source);
 
 		while (!(q.isEmpty() || q.peek() == target)) {
 			int current = q.poll();
-			setState(current, CLOSED);
-			graph.adj(current).filter(neighbor -> getState(neighbor) != CLOSED).forEach(neighbor -> {
-				int newDist = distFromSource[current]
-						+ fnEdgeCost.apply(graph.getEdgeLabel(current, neighbor));
-				if (getState(neighbor) != OPEN || newDist < distFromSource[neighbor]) {
+			addToClosedList(current);
+			graph.adj(current).filter(neighbor -> !inClosedList(neighbor)).forEach(neighbor -> {
+				int newDist = distFromSource[current] + fnEdgeCost.apply(graph.getEdgeLabel(current, neighbor));
+				if (!inOpenList(neighbor) || newDist < distFromSource[neighbor]) {
 					distFromSource[neighbor] = newDist;
 					score[neighbor] = newDist + fnEstimatedDist.apply(neighbor, target);
 					setParent(neighbor, current);
-					if (getState(neighbor) == OPEN) {
-						q.remove(neighbor); // PriorityQueue has no "decrease-key" operation
+					if (inOpenList(neighbor)) {
+						// PriorityQueue class has no "decrease-key" operation, therefore remove and add again
+						q.remove(neighbor);
 						q.add(neighbor);
 					} else {
-						setState(neighbor, OPEN);
+						addToOpenList(neighbor);
 						q.add(neighbor);
 					}
 				}
