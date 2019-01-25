@@ -21,7 +21,7 @@ import de.amr.easy.graph.core.api.Graph;
  * @param <C>
  *          vertex cost type
  */
-public class HillClimbingPathFinder<C extends Comparable<C>> extends DepthFirstSearchPathFinder {
+public class HillClimbingSearch<C extends Comparable<C>> extends DepthFirstSearch {
 
 	private final Comparator<Integer> byCost;
 
@@ -31,15 +31,15 @@ public class HillClimbingPathFinder<C extends Comparable<C>> extends DepthFirstS
 	 * @param cost
 	 *                cost function for vertices
 	 */
-	public HillClimbingPathFinder(Graph<?, ?> graph, Function<Integer, C> fnCost) {
+	public HillClimbingSearch(Graph<?, ?> graph, Function<Integer, C> fnCost) {
 		super(graph);
 		byCost = (v1, v2) -> fnCost.apply(v1).compareTo(fnCost.apply(v2));
 	}
 
 	@Override
 	protected void expand(int current) {
-		IntStream sortedByCost = graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED)
-				.boxed().sorted(byCost).mapToInt(Integer::intValue);
+		IntStream sortedByCost = graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).boxed()
+				.sorted(byCost).mapToInt(Integer::intValue);
 		// push children in reversed order such that cheapest element will get popped first
 		reversed(sortedByCost).forEach(neighbor -> {
 			stack.push(neighbor);

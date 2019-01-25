@@ -11,7 +11,7 @@ import de.amr.easy.graph.core.api.Graph;
 import de.amr.easy.graph.core.api.Multigraph;
 import de.amr.easy.graph.core.api.UndirectedEdge;
 import de.amr.easy.graph.core.impl.DefaultMultigraph;
-import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearchPathFinder;
+import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
  * Some useful graph methods.
@@ -75,7 +75,7 @@ public class GraphUtils {
 	 * @return {@code true} if there exists a path connecting the given cells
 	 */
 	public static <V, E> boolean areConnected(Graph<V, E> graph, int u, int v) {
-		BreadthFirstSearchPathFinder<V, E> bfs = new BreadthFirstSearchPathFinder<>(graph);
+		BreadthFirstSearch<V, E> bfs = new BreadthFirstSearch<>(graph);
 		bfs.traverseGraph(u, v);
 		return bfs.getDistFromSource(v) != -1;
 	}

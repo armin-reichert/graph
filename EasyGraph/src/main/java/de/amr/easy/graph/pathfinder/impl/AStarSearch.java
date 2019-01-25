@@ -6,8 +6,8 @@ import static java.util.Comparator.comparingInt;
 
 import java.util.Arrays;
 import java.util.PriorityQueue;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.ToIntBiFunction;
 
 import de.amr.easy.graph.core.api.Graph;
 
@@ -28,15 +28,20 @@ import de.amr.easy.graph.core.api.Graph;
  * vertex is in closed list <=> getState(vertex) == COMPLETED
  * </pre>
  * 
+ * @param <V>
+ *          vertex label type
+ * @param <E>
+ *          edge label type
+ * 
  * @author Armin Reichert
  * 
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
-public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
+public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private final Function<E, Integer> fnEdgeCost;
-	private final BiFunction<Integer, Integer, Integer> fnEstimatedDist;
+	private final ToIntBiFunction<Integer, Integer> fnEstimatedDist;
 	private final int[] score;
 
 	/**
@@ -51,8 +56,8 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 	 *                          example Euclidean distance squared or the Mahattan distance for grid
 	 *                          graphs
 	 */
-	public AStarPathFinder(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
-			BiFunction<Integer, Integer, Integer> fnEstimatedDist) {
+	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
+			ToIntBiFunction<Integer, Integer> fnEstimatedDist) {
 		this.graph = graph;
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedDist = fnEstimatedDist;
@@ -93,11 +98,11 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 		init();
 		Arrays.fill(score, Integer.MAX_VALUE);
 		Arrays.fill(distFromSource, Integer.MAX_VALUE);
-		
+
 		distFromSource[source] = 0;
-		score[source] = fnEstimatedDist.apply(source, target);
+		score[source] = fnEstimatedDist.applyAsInt(source, target);
 		addToOpenList(source);
-		
+
 		while (!(q.isEmpty() || q.peek() == target)) {
 			int vertex = q.poll();
 			addToClosedList(vertex);
@@ -106,7 +111,7 @@ public class AStarPathFinder<V, E> extends BreadthFirstSearchPathFinder<V, E> {
 				int newDist = distFromSource[vertex] + fnEdgeCost.apply(edgeData);
 				if (!inOpenList(child) || newDist < distFromSource[child]) {
 					distFromSource[child] = newDist;
-					score[child] = newDist + fnEstimatedDist.apply(child, target);
+					score[child] = newDist + fnEstimatedDist.applyAsInt(child, target);
 					setParent(child, vertex);
 					if (inOpenList(child)) {
 						decreaseKey(child);

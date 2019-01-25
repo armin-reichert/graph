@@ -16,9 +16,9 @@ import de.amr.easy.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearchPathFinder2 extends DepthFirstSearchPathFinder {
+public class DepthFirstSearch2 extends DepthFirstSearch {
 
-	public DepthFirstSearchPathFinder2(Graph<?, ?> graph) {
+	public DepthFirstSearch2(Graph<?, ?> graph) {
 		super(graph);
 	}
 

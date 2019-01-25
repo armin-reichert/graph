@@ -13,10 +13,15 @@ import de.amr.easy.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  * 
+ * @param <V>
+ *          vertex label type
+ * @param <E>
+ *          edge label type
  * @param <C>
  *          vertex cost type
  */
-public class BestFirstSearchPathFinder<V, E, C extends Comparable<C>> extends BreadthFirstSearchPathFinder<V, E> {
+public class BestFirstSearch<V, E, C extends Comparable<C>>
+		extends BreadthFirstSearch<V, E> {
 
 	/**
 	 * Creates a best-first traversal instance for the given graph and vertex cost function.
@@ -26,7 +31,7 @@ public class BestFirstSearchPathFinder<V, E, C extends Comparable<C>> extends Br
 	 * @param fnCost
 	 *                 vertex cost function. Queue is always sorted by increasing cost.
 	 */
-	public BestFirstSearchPathFinder(Graph<V, E> graph, Function<Integer, C> fnCost) {
+	public BestFirstSearch(Graph<V, E> graph, Function<Integer, C> fnCost) {
 		this.graph = graph;
 		this.q = new PriorityQueue<>((u, v) -> fnCost.apply(u).compareTo(fnCost.apply(v)));
 		this.distFromSource = new int[graph.numVertices()];

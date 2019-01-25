@@ -19,7 +19,7 @@ import de.amr.easy.graph.pathfinder.api.TraversalState;
  * 
  * @author Armin Reichert
  */
-public abstract class AbstractPathFinder implements PathFinder {
+public abstract class AbstractSearch implements PathFinder {
 
 	private final Map<Integer, Integer> parentMap = new HashMap<>();
 

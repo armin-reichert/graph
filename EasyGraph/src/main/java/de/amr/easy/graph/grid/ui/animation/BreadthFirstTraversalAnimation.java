@@ -16,7 +16,7 @@ import de.amr.easy.graph.grid.ui.rendering.GridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearchPathFinder;
+import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
  * Animation of breadth-first traversal on a grid.
@@ -56,7 +56,7 @@ public class BreadthFirstTraversalAnimation {
 	 */
 	public static void floodFill(GridCanvas canvas, GridGraph<?, ?> grid, int source,
 			boolean distanceVisible) {
-		BreadthFirstSearchPathFinder<?, ?> bfs = new BreadthFirstSearchPathFinder<>(grid);
+		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(grid);
 		BreadthFirstTraversalAnimation anim = new BreadthFirstTraversalAnimation(grid);
 		anim.setDistanceVisible(distanceVisible);
 		anim.run(canvas, bfs, source, -1);
@@ -94,10 +94,10 @@ public class BreadthFirstTraversalAnimation {
 	 * @param target
 	 *                 the target cell
 	 */
-	public void run(GridCanvas canvas, BreadthFirstSearchPathFinder<?, ?> bfs, int source, int target) {
+	public void run(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. traverse complete graph for computing maximum distance from source
-			BreadthFirstSearchPathFinder<?, ?> distanceMap = new BreadthFirstSearchPathFinder<>(grid);
+			BreadthFirstSearch<?, ?> distanceMap = new BreadthFirstSearch<>(grid);
 			distanceMap.traverseGraph(source);
 
 			// Create renderer using distance map for coloring
@@ -136,7 +136,7 @@ public class BreadthFirstTraversalAnimation {
 		});
 	}
 
-	public void showPath(GridCanvas canvas, BreadthFirstSearchPathFinder<?, ?> bfs, int target) {
+	public void showPath(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			Iterable<Integer> path = bfs.path(target);
 			if (floodFillRenderer != null) {
@@ -155,7 +155,7 @@ public class BreadthFirstTraversalAnimation {
 	}
 
 	private ConfigurableGridRenderer createFloodFillRenderer(GridRenderer base,
-			BreadthFirstSearchPathFinder<?, ?> distanceMap) {
+			BreadthFirstSearch<?, ?> distanceMap) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellBgColor = cell -> colorByDist(cell, distanceMap);
@@ -170,7 +170,7 @@ public class BreadthFirstTraversalAnimation {
 	}
 
 	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base,
-			BreadthFirstSearchPathFinder<?, ?> distanceMap, Iterable<Integer> path) {
+			BreadthFirstSearch<?, ?> distanceMap, Iterable<Integer> path) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
@@ -190,7 +190,7 @@ public class BreadthFirstTraversalAnimation {
 		return r;
 	}
 
-	private static Color colorByDist(int cell, BreadthFirstSearchPathFinder<?, ?> distanceMap) {
+	private static Color colorByDist(int cell, BreadthFirstSearch<?, ?> distanceMap) {
 		float hue = 0.16f;
 		if (distanceMap.getMaxDistFromSource() > 0) {
 			hue += 0.7f * distanceMap.getDistFromSource(cell) / distanceMap.getMaxDistFromSource();

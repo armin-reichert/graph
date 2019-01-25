@@ -18,7 +18,7 @@ import de.amr.easy.graph.grid.impl.Top4;
 import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearchPathFinder;
+import de.amr.easy.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
  * Canvas that can display a grid, a colored distance map and a path between two cells.
@@ -38,7 +38,7 @@ public class LayeredGridCanvas<E> extends LayeredCanvas
 	protected boolean pathDisplayed;
 	protected boolean distancesDisplayed;
 	protected ObservableGridGraph<TraversalState, E> grid;
-	protected BreadthFirstSearchPathFinder<TraversalState, E> bfs;
+	protected BreadthFirstSearch<TraversalState, E> bfs;
 	protected int maxDistance;
 	protected Iterable<Integer> path;
 
@@ -106,10 +106,10 @@ public class LayeredGridCanvas<E> extends LayeredCanvas
 	}
 
 	public void runPathFinder(int pathStartCell, int pathTargetCell) {
-		bfs = new BreadthFirstSearchPathFinder<>(grid);
+		bfs = new BreadthFirstSearch<>(grid);
 		bfs.traverseGraph(pathStartCell);
 		maxDistance = bfs.getMaxDistFromSource();
-		bfs = new BreadthFirstSearchPathFinder<>(grid);
+		bfs = new BreadthFirstSearch<>(grid);
 		bfs.traverseGraph(pathStartCell, pathTargetCell);
 		path = bfs.path(pathTargetCell)::iterator;
 	}

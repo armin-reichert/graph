@@ -11,12 +11,12 @@ import de.amr.easy.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearchPathFinder extends AbstractPathFinder {
+public class DepthFirstSearch extends AbstractSearch {
 
 	protected Graph<?, ?> graph;
 	protected Stack<Integer> stack;
 
-	public DepthFirstSearchPathFinder(Graph<?, ?> graph) {
+	public DepthFirstSearch(Graph<?, ?> graph) {
 		this.graph = graph;
 		stack = new Stack<>();
 	}

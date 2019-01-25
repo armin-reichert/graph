@@ -17,19 +17,24 @@ import de.amr.easy.graph.core.api.Graph;
  * the distance of each vertex from the source can be queried, as well as the maximal distance of a
  * reachable vertex from the source.
  * 
+ * @param <V>
+ *          vertex label type
+ * @param <E>
+ *          edge label type
+ * 
  * @author Armin Reichert
  */
-public class BreadthFirstSearchPathFinder<V, E> extends AbstractPathFinder {
+public class BreadthFirstSearch<V, E> extends AbstractSearch {
 
 	protected Graph<V, E> graph;
 	protected Queue<Integer> q;
 	protected int[] distFromSource;
 	protected int maxDistance;
 
-	protected BreadthFirstSearchPathFinder() {
+	protected BreadthFirstSearch() {
 	}
 
-	public BreadthFirstSearchPathFinder(Graph<V, E> graph) {
+	public BreadthFirstSearch(Graph<V, E> graph) {
 		this.graph = graph;
 		this.q = new ArrayDeque<>();
 		this.distFromSource = new int[graph.numVertices()];

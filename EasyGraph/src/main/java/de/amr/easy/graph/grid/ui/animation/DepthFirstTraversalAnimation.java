@@ -14,7 +14,7 @@ import de.amr.easy.graph.grid.ui.rendering.GridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.graph.pathfinder.impl.DepthFirstSearchPathFinder;
+import de.amr.easy.graph.pathfinder.impl.DepthFirstSearch;
 
 /**
  * Animation of depth-first traversal.
@@ -33,7 +33,7 @@ public class DepthFirstTraversalAnimation {
 		this.grid = grid;
 	}
 
-	private ConfigurableGridRenderer createRenderer(DepthFirstSearchPathFinder dfs, BitSet inPath,
+	private ConfigurableGridRenderer createRenderer(DepthFirstSearch dfs, BitSet inPath,
 			GridRenderer base) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
@@ -67,7 +67,7 @@ public class DepthFirstTraversalAnimation {
 		return r;
 	}
 
-	public void run(GridCanvas canvas, DepthFirstSearchPathFinder dfs, int source, int target) {
+	public void run(GridCanvas canvas, DepthFirstSearch dfs, int source, int target) {
 		dfs.addObserver(new GraphTraversalObserver() {
 
 			private void delayed(Runnable code) {

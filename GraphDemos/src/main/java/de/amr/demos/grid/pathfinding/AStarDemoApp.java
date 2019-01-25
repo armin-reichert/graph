@@ -35,7 +35,7 @@ import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.easy.graph.grid.ui.rendering.GridCanvas;
 import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.graph.pathfinder.impl.AStarPathFinder;
+import de.amr.easy.graph.pathfinder.impl.AStarSearch;
 import de.amr.easy.graph.util.GraphUtils;
 import de.amr.easy.util.StopWatch;
 
@@ -63,7 +63,7 @@ public class AStarDemoApp {
 	private GridGraph2D<Tile, Integer> map;
 	private int source;
 	private int target;
-	private AStarPathFinder<Tile, Integer> astar;
+	private AStarSearch<Tile, Integer> astar;
 	private BitSet solution;
 
 	// UI
@@ -245,7 +245,7 @@ public class AStarDemoApp {
 	}
 
 	private void computePath() {
-		astar = new AStarPathFinder<>(map, i -> i, this::getDistance);
+		astar = new AStarSearch<>(map, i -> i, this::getDistance);
 		StopWatch watch = new StopWatch();
 		watch.measure(() -> astar.traverseGraph(source, target));
 		List<Integer> path = astar.path(target);

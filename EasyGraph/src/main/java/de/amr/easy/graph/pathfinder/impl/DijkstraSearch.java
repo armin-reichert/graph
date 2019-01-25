@@ -15,9 +15,9 @@ import de.amr.easy.graph.core.api.Graph;
  * @param <E>
  *          edge label type
  */
-public class DijkstraPathFinder<V, E> extends AStarPathFinder<V, E> {
+public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 
-	public DijkstraPathFinder(Graph<V, E> graph, Function<E, Integer> fnEdgeCost) {
+	public DijkstraSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
