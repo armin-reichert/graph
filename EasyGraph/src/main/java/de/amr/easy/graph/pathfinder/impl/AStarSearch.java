@@ -52,19 +52,21 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 * @param fnEdgeCost
 	 *                          function giving the cost for each edge
 	 * @param fnEstimatedDist
-	 *                          heuristics estimating the distance (as an integer) between nodes, for
-	 *                          example Euclidean distance squared or the Mahattan distance for grid
-	 *                          graphs
+	 *                          heuristics estimating the distance between nodes, for example Euclidean
+	 *                          Manhattan distance
+	 * @param                 <V>
+	 *                          vertex label type
+	 * @param                 <E>
+	 *                          edge label type
 	 */
 	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
 			ToIntBiFunction<Integer, Integer> fnEstimatedDist) {
 		this.graph = graph;
+		this.q = new PriorityQueue<>(comparingInt(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedDist = fnEstimatedDist;
-		score = new int[graph.numVertices()];
-		distFromSource = new int[graph.numVertices()];
-		q = new PriorityQueue<>(comparingInt(this::getScore));
-	}
+		this.score = new int[graph.numVertices()];
+		this.distFromSource = new int[graph.numVertices()];	}
 
 	public int getScore(int v) {
 		return score[v];

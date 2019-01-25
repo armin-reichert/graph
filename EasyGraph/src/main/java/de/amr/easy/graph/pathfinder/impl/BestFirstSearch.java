@@ -6,12 +6,10 @@ import java.util.function.Function;
 import de.amr.easy.graph.core.api.Graph;
 
 /**
- * A heuristic variant of breadth-first traversal which sorts the entire queue when the current
- * element is expanded. The sorting order is defined by the vertex cost function.
+ * A heuristic variant of breadth-first-search, sorting the entire queue when a vertex is expanded.
+ * The sorting order is defined by the specified vertex cost function.
  * <p>
  * From: Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984
- * 
- * @author Armin Reichert
  * 
  * @param <V>
  *          vertex label type
@@ -19,6 +17,8 @@ import de.amr.easy.graph.core.api.Graph;
  *          edge label type
  * @param <C>
  *          vertex cost type
+ * 
+ * @author Armin Reichert
  */
 public class BestFirstSearch<V, E, C extends Comparable<C>> extends BreadthFirstSearch<V, E> {
 
@@ -26,13 +26,11 @@ public class BestFirstSearch<V, E, C extends Comparable<C>> extends BreadthFirst
 	 * Creates a best-first traversal instance for the given graph and vertex cost function.
 	 * 
 	 * @param graph
-	 *                 a graph
-	 * @param fnCost
-	 *                 vertex cost function. Queue is always sorted by increasing cost.
+	 *                       a graph
+	 * @param fnVertexCost
+	 *                       vertex cost function. Queue is sorted by increasing cost.
 	 */
-	public BestFirstSearch(Graph<V, E> graph, Function<Integer, C> fnCost) {
-		this.graph = graph;
-		this.q = new PriorityQueue<>((u, v) -> fnCost.apply(u).compareTo(fnCost.apply(v)));
-		this.distFromSource = new int[graph.numVertices()];
+	public BestFirstSearch(Graph<V, E> graph, Function<Integer, C> fnVertexCost) {
+		super(graph, new PriorityQueue<>((u, v) -> fnVertexCost.apply(u).compareTo(fnVertexCost.apply(v))));
 	}
 }

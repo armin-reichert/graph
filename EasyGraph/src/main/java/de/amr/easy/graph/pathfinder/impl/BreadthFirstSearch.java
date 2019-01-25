@@ -34,10 +34,14 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	protected BreadthFirstSearch() {
 	}
 
-	public BreadthFirstSearch(Graph<V, E> graph) {
+	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
 		this.graph = graph;
-		this.q = new ArrayDeque<>();
+		this.q = q;
 		this.distFromSource = new int[graph.numVertices()];
+	}
+
+	public BreadthFirstSearch(Graph<V, E> graph) {
+		this(graph, new ArrayDeque<>());
 	}
 
 	@Override
