@@ -1,8 +1,8 @@
 package de.amr.easy.graph.pathfinder.impl;
 
+import static de.amr.easy.datastruct.StreamUtils.reversed;
 import static de.amr.easy.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.easy.graph.pathfinder.api.TraversalState.VISITED;
-import static de.amr.easy.util.StreamUtils.reversed;
 
 import java.util.Comparator;
 import java.util.function.Function;
