@@ -23,8 +23,7 @@ import de.amr.easy.graph.grid.api.Topology;
  * @param <E>
  *          edge label type
  */
-public class ObservableGridGraph<V, E> extends GridGraph<V, E>
-		implements ObservableGridGraph2D<V, E> {
+public class ObservableGridGraph<V, E> extends GridGraph<V, E> implements ObservableGridGraph2D<V, E> {
 
 	private final Set<GraphObserver<V, E>> observers;
 	private boolean eventsEnabled;

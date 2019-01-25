@@ -141,9 +141,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * @param fnEdgeFactory
 	 *                               function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, Topology top,
-			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
-			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
+	public GridGraph(int numCols, int numRows, Topology top, Function<Integer, V> fnDefaultVertexLabel,
+			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
 			throw new IllegalArgumentException("Illegal number of columns: " + numCols);
 		}
@@ -224,8 +223,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 					String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
 		}
 		if (adjacent(u, v)) {
-			throw new IllegalStateException(
-					String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
+			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
 		}
 		direction(u, v).ifPresent(dir -> wire(u, v, dir, true));
 	}
@@ -329,8 +327,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public void fill() {
 		wires.clear();
-		vertices().forEach(
-				v -> top.dirs().forEach(dir -> neighbor(v, dir).ifPresent(w -> wire(v, w, dir, true))));
+		vertices()
+				.forEach(v -> top.dirs().forEach(dir -> neighbor(v, dir).ifPresent(w -> wire(v, w, dir, true))));
 	}
 
 	@Override
@@ -365,8 +363,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		checkDir(dir);
 		int col = col(v) + top.dx(dir);
 		int row = row(v) + top.dy(dir);
-		return isValidCol(col) && isValidRow(row) ? OptionalInt.of(index(col, row))
-				: OptionalInt.empty();
+		return isValidCol(col) && isValidRow(row) ? OptionalInt.of(index(col, row)) : OptionalInt.empty();
 	}
 
 	@Override

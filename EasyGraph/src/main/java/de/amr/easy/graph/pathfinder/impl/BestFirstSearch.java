@@ -20,8 +20,7 @@ import de.amr.easy.graph.core.api.Graph;
  * @param <C>
  *          vertex cost type
  */
-public class BestFirstSearch<V, E, C extends Comparable<C>>
-		extends BreadthFirstSearch<V, E> {
+public class BestFirstSearch<V, E, C extends Comparable<C>> extends BreadthFirstSearch<V, E> {
 
 	/**
 	 * Creates a best-first traversal instance for the given graph and vertex cost function.

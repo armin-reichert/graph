@@ -19,8 +19,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	}
 
 	@Override
-	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other,
-			boolean visible) {
+	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
 		int cs = getCellSize();
 		int ps = getPearlSize();
 		int x1 = grid.col(either) * cs + ps / 2;
@@ -75,12 +74,9 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 		}
 		g.setColor(getTextColor(cell));
 		g.setFont(getTextFont().deriveFont(Font.PLAIN, fontSize));
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		Rectangle textBox = g.getFontMetrics().getStringBounds(text, g).getBounds();
-		g.drawString(text, (getCellSize() - textBox.width) / 2,
-				(getCellSize() + textBox.height / 2) / 2);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		g.drawString(text, (getCellSize() - textBox.width) / 2, (getCellSize() + textBox.height / 2) / 2);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
 }

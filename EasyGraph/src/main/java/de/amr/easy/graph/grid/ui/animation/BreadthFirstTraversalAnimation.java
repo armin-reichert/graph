@@ -54,8 +54,7 @@ public class BreadthFirstTraversalAnimation {
 	 * @param distanceVisible
 	 *                          if distances should be displayed as text
 	 */
-	public static void floodFill(GridCanvas canvas, GridGraph<?, ?> grid, int source,
-			boolean distanceVisible) {
+	public static void floodFill(GridCanvas canvas, GridGraph<?, ?> grid, int source, boolean distanceVisible) {
 		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(grid);
 		BreadthFirstTraversalAnimation anim = new BreadthFirstTraversalAnimation(grid);
 		anim.setDistanceVisible(distanceVisible);
@@ -182,8 +181,7 @@ public class BreadthFirstTraversalAnimation {
 			int neighbor = grid.neighbor(cell, dir).getAsInt();
 			return inPath.get(cell) && inPath.get(neighbor) ? getPathColor() : base.getCellBgColor(cell);
 		};
-		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2
-				: base.getPassageWidth();
+		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
 		r.fnText = cell -> distanceVisible ? format("%d", distanceMap.getDistFromSource(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.WHITE;

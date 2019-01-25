@@ -72,7 +72,6 @@ public class CurveUtils {
 	 */
 	public static String cellsAsString(CellSequence curve, GridGraph2D<?, ?> grid, int start) {
 		return cells(curve, grid, start).stream()
-				.map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell)))
-				.collect(Collectors.joining());
+				.map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell))).collect(Collectors.joining());
 	}
 }

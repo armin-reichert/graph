@@ -33,13 +33,11 @@ public class DepthFirstTraversalAnimation {
 		this.grid = grid;
 	}
 
-	private ConfigurableGridRenderer createRenderer(DepthFirstSearch dfs, BitSet inPath,
-			GridRenderer base) {
+	private ConfigurableGridRenderer createRenderer(DepthFirstSearch dfs, BitSet inPath, GridRenderer base) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellSize = base.getModel()::getCellSize;
-		r.fnPassageWidth = () -> base.getModel().getPassageWidth() > 5
-				? base.getModel().getPassageWidth() / 2
+		r.fnPassageWidth = () -> base.getModel().getPassageWidth() > 5 ? base.getModel().getPassageWidth() / 2
 				: base.getModel().getPassageWidth();
 		r.fnCellBgColor = cell -> {
 			if (inPath.get(cell)) {
@@ -58,8 +56,7 @@ public class DepthFirstTraversalAnimation {
 			if (dfs.getState(cell) == VISITED && dfs.getState(neighbor) == VISITED) {
 				return visitedCellColor;
 			}
-			if (r.getCellBgColor(cell) == visitedCellColor
-					&& r.getCellBgColor(neighbor) == visitedCellColor) {
+			if (r.getCellBgColor(cell) == visitedCellColor && r.getCellBgColor(neighbor) == visitedCellColor) {
 				return visitedCellColor;
 			}
 			return base.getModel().getCellBgColor(cell);

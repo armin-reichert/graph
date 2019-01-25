@@ -49,7 +49,7 @@ public class GridCanvas extends JComponent {
 	public BufferedImage getDrawingBuffer() {
 		return buffer;
 	}
-	
+
 	public Graphics2D getDrawGraphics() {
 		return g2;
 	}

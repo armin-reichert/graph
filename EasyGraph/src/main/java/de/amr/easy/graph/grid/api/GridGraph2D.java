@@ -133,9 +133,8 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	IntStream neighbors(int cell, IntStream dirs);
 
 	/**
-	 * Returns all neighbors of a cell. A neighbor is a cell that possibly can be connected to the
-	 * cell by an edge. The neighbors are defined by the grid's topology (4 neighbors, 8 neighbors
-	 * etc.).
+	 * Returns all neighbors of a cell. A neighbor is a cell that possibly can be connected to the cell
+	 * by an edge. The neighbors are defined by the grid's topology (4 neighbors, 8 neighbors etc.).
 	 * 
 	 * @param cell
 	 *               a grid cell
@@ -168,8 +167,8 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *               a grid cell
 	 * @param dir
 	 *               a direction
-	 * @return {@code true} if the cell is connected to the neighbor in the given direction
-	 *         ("passage", no "wall")
+	 * @return {@code true} if the cell is connected to the neighbor in the given direction ("passage",
+	 *         no "wall")
 	 */
 	boolean isConnected(int cell, int dir);
 

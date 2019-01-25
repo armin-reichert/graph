@@ -13,13 +13,13 @@ public class Top4 implements Topology {
 
 	/** North */
 	public static final int N = 0;
-	
+
 	/** East */
 	public static final int E = 1;
-	
+
 	/** South */
 	public static final int S = 2;
-	
+
 	/** West */
 	public static final int W = 3;
 
