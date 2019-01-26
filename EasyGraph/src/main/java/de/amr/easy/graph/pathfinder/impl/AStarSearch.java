@@ -15,17 +15,16 @@ import de.amr.easy.graph.core.api.Graph;
  * The A* path finder.
  * 
  * <p>
- * Functions f ("score"), g ("distance from source vertex") and h ("heuristic distance to target
- * vertex") are realized as follows:
+ * Functions f ("score"), g ("cost from source") and h ("heuristic cost to target vertex") are
+ * realized as follows:
  * 
  * <pre>
  * f(v) = score[v]
- * g(v) = distFromSource[v]
- * h(v) = fnEstimatedDist(v, target)
+ * g(v) = costFromSource[v]
+ * h(v) = fnEstimatedCost(v, target)
  * 
- * The "open list" is realized by the inherited priority queue q
- * 
- * vertex is in closed list <=> getState(vertex) == COMPLETED
+ * "open list": priority queue q
+ * "closed list: vertex is in closed list <=> getState(vertex) == COMPLETED
  * </pre>
  * 
  * @param <V>
@@ -41,7 +40,7 @@ import de.amr.easy.graph.core.api.Graph;
 public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private final Function<E, Integer> fnEdgeCost;
-	private final ToIntBiFunction<Integer, Integer> fnEstimatedDist;
+	private final ToIntBiFunction<Integer, Integer> fnEstimatedCost;
 	private final int[] score;
 
 	/**
@@ -54,22 +53,19 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 * @param fnEstimatedDist
 	 *                          heuristics estimating the distance between nodes, for example Euclidean
 	 *                          Manhattan distance
-	 * @param                 <V>
-	 *                          vertex label type
-	 * @param                 <E>
-	 *                          edge label type
 	 */
 	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
 			ToIntBiFunction<Integer, Integer> fnEstimatedDist) {
 		this.graph = graph;
 		this.q = new PriorityQueue<>(comparingInt(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
-		this.fnEstimatedDist = fnEstimatedDist;
+		this.fnEstimatedCost = fnEstimatedDist;
 		this.score = new int[graph.numVertices()];
-		this.distFromSource = new int[graph.numVertices()];	}
+		this.distFromSource = new int[graph.numVertices()];
+	}
 
-	public int getScore(int v) {
-		return score[v];
+	public int getScore(int vertex) {
+		return score[vertex];
 	}
 
 	public boolean inClosedList(int vertex) {
@@ -102,7 +98,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		Arrays.fill(distFromSource, Integer.MAX_VALUE);
 
 		distFromSource[source] = 0;
-		score[source] = fnEstimatedDist.applyAsInt(source, target);
+		score[source] = fnEstimatedCost.applyAsInt(source, target);
 		addToOpenList(source);
 
 		while (!(q.isEmpty() || q.peek() == target)) {
@@ -110,16 +106,16 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 			addToClosedList(vertex);
 			graph.adj(vertex).filter(child -> !inClosedList(child)).forEach(child -> {
 				E edgeData = graph.getEdgeLabel(vertex, child);
-				int newDist = distFromSource[vertex] + fnEdgeCost.apply(edgeData);
-				if (!inOpenList(child) || newDist < distFromSource[child]) {
-					distFromSource[child] = newDist;
-					score[child] = newDist + fnEstimatedDist.applyAsInt(child, target);
-					setParent(child, vertex);
-					if (inOpenList(child)) {
-						decreaseKey(child);
-					} else {
+				int dist = distFromSource[vertex] + fnEdgeCost.apply(edgeData);
+				if (!inOpenList(child) || dist < distFromSource[child]) {
+					distFromSource[child] = dist;
+					score[child] = dist + fnEstimatedCost.applyAsInt(child, target);
+					if (!inOpenList(child)) {
 						addToOpenList(child);
+					} else {
+						decreaseKey(child);
 					}
+					setParent(child, vertex);
 				}
 			});
 		}
