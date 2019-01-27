@@ -108,6 +108,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 		canvas = createAnimatedCanvas();
 		window.add(canvas, BorderLayout.CENTER);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setResizable(false);
 		window.setTitle(getTitleText());
 		window.setBackground(Color.BLACK);
 		if (fullscreen) {
