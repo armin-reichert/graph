@@ -1,23 +1,28 @@
 package de.amr.util;
 
+/**
+ * Simple stopwatch with nanosecond precision.
+ * 
+ * @author Armin Reichert
+ */
 public class StopWatch {
 
 	private long startNanos;
-	private float duration; // milliseconds
+	private float measuredNanos;
 
 	/**
 	 * Starts the watch.
 	 */
 	public void start() {
+		measuredNanos = 0;
 		startNanos = System.nanoTime();
-		duration = 0;
 	}
 
 	/**
-	 * Stops the watch and stores the time elapsed since last start.
+	 * Stops the watch and stores the time passed since start.
 	 */
 	public void stop() {
-		duration = System.nanoTime() - startNanos;
+		measuredNanos = System.nanoTime() - startNanos;
 	}
 
 	/**
@@ -36,13 +41,13 @@ public class StopWatch {
 	 * @return measured time in seconds
 	 */
 	public float getSeconds() {
-		return duration / 1000000000f;
+		return measuredNanos / 1_000_000_000f;
 	}
 
 	/**
 	 * @return measured time in nanoseconds
 	 */
 	public float getNanos() {
-		return duration;
+		return measuredNanos;
 	}
 }
