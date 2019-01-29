@@ -1,11 +1,11 @@
 package de.amr.demos.grid.iterators;
 
-import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 
 import java.util.stream.IntStream;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.graph.grid.traversals.RecursiveCrosses;
+import de.amr.graph.grid.traversals.RecursiveCrosses;
 
 public class RecursiveCrossesApp extends SwingGridSampleApp {
 

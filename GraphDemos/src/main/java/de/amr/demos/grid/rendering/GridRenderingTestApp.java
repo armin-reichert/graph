@@ -1,8 +1,8 @@
 package de.amr.demos.grid.rendering;
 
-import static de.amr.easy.graph.grid.api.GridPosition.CENTER;
-import static de.amr.easy.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
-import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.grid.api.GridPosition.CENTER;
+import static de.amr.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static java.lang.String.format;
 import static java.lang.System.out;
 

@@ -1,13 +1,13 @@
 package de.amr.demos.grid.iterators;
 
-import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.graph.grid.impl.Top4;
-import de.amr.easy.graph.grid.impl.Top8;
+import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Top8;
 
 public class FullGridApp extends SwingGridSampleApp {
 

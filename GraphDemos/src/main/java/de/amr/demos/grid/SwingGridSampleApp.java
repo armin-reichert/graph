@@ -1,7 +1,7 @@
 package de.amr.demos.grid;
 
-import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.easy.graph.pathfinder.api.TraversalState.UNVISITED;
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static java.awt.EventQueue.invokeLater;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
@@ -18,17 +18,17 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import de.amr.easy.graph.core.api.UndirectedEdge;
-import de.amr.easy.graph.grid.api.Topology;
-import de.amr.easy.graph.grid.impl.ObservableGridGraph;
-import de.amr.easy.graph.grid.impl.OrthogonalGrid;
-import de.amr.easy.graph.grid.ui.animation.GridCanvasAnimation;
-import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
-import de.amr.easy.graph.grid.ui.rendering.GridCanvas;
-import de.amr.easy.graph.grid.ui.rendering.PearlsGridRenderer;
-import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
-import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.util.StopWatch;
+import de.amr.graph.core.api.UndirectedEdge;
+import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.impl.ObservableGridGraph;
+import de.amr.graph.grid.impl.OrthogonalGrid;
+import de.amr.graph.grid.ui.animation.GridCanvasAnimation;
+import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
+import de.amr.graph.grid.ui.rendering.GridCanvas;
+import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
+import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.util.StopWatch;
 
 /**
  * Base class for grid sample applications.

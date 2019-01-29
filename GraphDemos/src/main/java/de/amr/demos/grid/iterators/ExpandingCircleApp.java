@@ -1,11 +1,11 @@
 package de.amr.demos.grid.iterators;
 
-import static de.amr.easy.graph.grid.api.GridPosition.CENTER;
-import static de.amr.easy.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.grid.api.GridPosition.CENTER;
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static java.lang.Math.min;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.graph.grid.traversals.ExpandingCircle;
+import de.amr.graph.grid.traversals.ExpandingCircle;
 
 public class ExpandingCircleApp extends SwingGridSampleApp {
 

@@ -5,10 +5,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.amr.easy.graph</groupId>
-	<artifactId>EasyGraph</artifactId>
+	<groupId>de.amr.graph</groupId>
+	<artifactId>Graph</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>EasyGraph</name>
+	<name>Graph</name>
 	<description>Graph API, grid graph and graph traversal algorithms</description>
 	<build>
 		<plugins>

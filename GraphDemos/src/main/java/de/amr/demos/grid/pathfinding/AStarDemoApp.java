@@ -26,18 +26,18 @@ import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import de.amr.easy.graph.core.api.UndirectedEdge;
-import de.amr.easy.graph.grid.api.GridGraph2D;
-import de.amr.easy.graph.grid.api.GridPosition;
-import de.amr.easy.graph.grid.impl.GridGraph;
-import de.amr.easy.graph.grid.impl.Top8;
-import de.amr.easy.graph.grid.ui.rendering.ConfigurableGridRenderer;
-import de.amr.easy.graph.grid.ui.rendering.GridCanvas;
-import de.amr.easy.graph.grid.ui.rendering.WallPassageGridRenderer;
-import de.amr.easy.graph.pathfinder.api.TraversalState;
-import de.amr.easy.graph.pathfinder.impl.AStarSearch;
-import de.amr.easy.graph.util.GraphUtils;
-import de.amr.easy.util.StopWatch;
+import de.amr.graph.core.api.UndirectedEdge;
+import de.amr.graph.grid.api.GridGraph2D;
+import de.amr.graph.grid.api.GridPosition;
+import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
+import de.amr.graph.grid.ui.rendering.GridCanvas;
+import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.pathfinder.impl.AStarSearch;
+import de.amr.graph.util.GraphUtils;
+import de.amr.util.StopWatch;
 
 /**
  * Demo application for A* algorithm.

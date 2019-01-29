@@ -1,16 +1,16 @@
 package de.amr.demos.grid.curves;
 
-import static de.amr.easy.graph.grid.api.GridPosition.BOTTOM_LEFT;
-import static de.amr.easy.graph.grid.api.GridPosition.BOTTOM_RIGHT;
-import static de.amr.easy.graph.grid.api.GridPosition.TOP_LEFT;
-import static de.amr.easy.graph.grid.api.GridPosition.TOP_RIGHT;
-import static de.amr.easy.graph.grid.curves.CurveUtils.traverse;
-import static de.amr.easy.graph.grid.impl.Top4.E;
-import static de.amr.easy.graph.grid.impl.Top4.N;
-import static de.amr.easy.graph.grid.impl.Top4.S;
-import static de.amr.easy.graph.grid.impl.Top4.W;
-import static de.amr.easy.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
-import static de.amr.easy.graph.util.GraphUtils.log;
+import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
+import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
+import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
+import static de.amr.graph.grid.api.GridPosition.TOP_RIGHT;
+import static de.amr.graph.grid.curves.CurveUtils.traverse;
+import static de.amr.graph.grid.impl.Top4.E;
+import static de.amr.graph.grid.impl.Top4.N;
+import static de.amr.graph.grid.impl.Top4.S;
+import static de.amr.graph.grid.impl.Top4.W;
+import static de.amr.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
+import static de.amr.graph.util.GraphUtils.log;
 import static java.util.Arrays.asList;
 
 import java.util.EnumMap;
@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.amr.demos.grid.SwingGridSampleApp;
-import de.amr.easy.graph.grid.api.GridPosition;
-import de.amr.easy.graph.grid.curves.HilbertCurve;
+import de.amr.graph.grid.api.GridPosition;
+import de.amr.graph.grid.curves.HilbertCurve;
 
 /**
  * Creates Hilbert curves of different sizes and shows an animation of the creation and a flood-fill
