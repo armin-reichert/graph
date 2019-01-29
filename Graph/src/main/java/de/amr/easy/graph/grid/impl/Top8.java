@@ -11,6 +11,15 @@ import de.amr.easy.graph.grid.api.Topology;
  */
 public class Top8 implements Topology {
 
+	private static final Top8 SINGLE = new Top8();
+
+	/**
+	 * @return single instance
+	 */
+	public static final Top8 get() {
+		return SINGLE;
+	}
+
 	public static final int N = 0;
 	public static final int NE = 1;
 	public static final int E = 2;
@@ -22,6 +31,10 @@ public class Top8 implements Topology {
 
 	private static final int[][] VEC = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 },
 			{ -1, 0 }, { -1, -1 } };
+
+	private Top8() {
+
+	}
 
 	@Override
 	public IntStream dirs() {

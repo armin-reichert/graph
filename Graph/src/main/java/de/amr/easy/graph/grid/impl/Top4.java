@@ -11,6 +11,15 @@ import de.amr.easy.graph.grid.api.Topology;
  */
 public class Top4 implements Topology {
 
+	private static final Top4 SINGLE = new Top4();
+
+	/**
+	 * @return single instance
+	 */
+	public static final Top4 get() {
+		return SINGLE;
+	}
+
 	/** North */
 	public static final int N = 0;
 
@@ -27,6 +36,10 @@ public class Top4 implements Topology {
 
 	public static String name(int dir) {
 		return String.valueOf("NESW".charAt(dir));
+	}
+
+	private Top4() {
+
 	}
 
 	@Override
