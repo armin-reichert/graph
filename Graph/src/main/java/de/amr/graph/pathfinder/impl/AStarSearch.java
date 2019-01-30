@@ -21,10 +21,10 @@ import de.amr.graph.core.api.Graph;
  * <pre>
  * f(v) = score[v]
  * g(v) = costFromSource[v]
- * h(v) = fnEstimatedCost(v, target)
+ * h(v) = fnEstimatedCost.apply(v, target)
  * 
- * "open list": priority queue q
- * "closed list: vertex is in closed list <=> getState(vertex) == COMPLETED
+ * "v in open list": getState(v) == VISITED && priority queue q contains v
+ * "v in closed list: getState(v) == COMPLETED
  * </pre>
  * 
  * @param <V>
@@ -50,72 +50,73 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 *                          a graph
 	 * @param fnEdgeCost
 	 *                          function giving the cost for each edge
-	 * @param fnEstimatedDist
+	 * @param fnEstimatedCost
 	 *                          heuristics estimating the distance between nodes, for example Euclidean
 	 *                          Manhattan distance
 	 */
 	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
-			ToIntBiFunction<Integer, Integer> fnEstimatedDist) {
+			ToIntBiFunction<Integer, Integer> fnEstimatedCost) {
 		this.graph = graph;
 		this.q = new PriorityQueue<>(comparingInt(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
-		this.fnEstimatedCost = fnEstimatedDist;
+		this.fnEstimatedCost = fnEstimatedCost;
 		this.score = new int[graph.numVertices()];
-		this.distFromSource = new int[graph.numVertices()];
+		this.cost = new int[graph.numVertices()];
 	}
 
-	public int getScore(int vertex) {
-		return score[vertex];
+	public int getScore(int v) {
+		return score[v];
 	}
 
-	public boolean inClosedList(int vertex) {
-		return getState(vertex) == COMPLETED;
+	public boolean isOpen(int v) {
+		return getState(v) == VISITED;
 	}
 
-	private void addToClosedList(int vertex) {
-		setState(vertex, COMPLETED);
+	public boolean isClosed(int v) {
+		return getState(v) == COMPLETED;
 	}
 
-	public boolean inOpenList(int vertex) {
-		return getState(vertex) == VISITED;
+	private void setOpen(int v) {
+		setState(v, VISITED);
+		q.add(v);
 	}
 
-	private void addToOpenList(int vertex) {
-		setState(vertex, VISITED);
-		q.add(vertex);
+	private void setClosed(int v) {
+		setState(v, COMPLETED);
 	}
 
-	private void decreaseKey(int vertex) {
-		// PriorityQueue class has no "decrease-key" operation, therefore remove and add again
-		q.remove(vertex);
-		q.add(vertex);
+	private void decreaseKey(int v) {
+		// Used PriorityQueue has no "decrease-key" operation
+		q.remove(v);
+		q.add(v);
 	}
 
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
 		Arrays.fill(score, Integer.MAX_VALUE);
-		Arrays.fill(distFromSource, Integer.MAX_VALUE);
-
-		distFromSource[source] = 0;
-		score[source] = fnEstimatedCost.applyAsInt(source, target);
-		addToOpenList(source);
-
-		while (!(q.isEmpty() || q.peek() == target)) {
-			int vertex = q.poll();
-			addToClosedList(vertex);
-			graph.adj(vertex).filter(child -> !inClosedList(child)).forEach(child -> {
-				E edgeData = graph.getEdgeLabel(vertex, child);
-				int dist = distFromSource[vertex] + fnEdgeCost.apply(edgeData);
-				if (!inOpenList(child) || dist < distFromSource[child]) {
-					distFromSource[child] = dist;
-					score[child] = dist + fnEstimatedCost.applyAsInt(child, target);
-					if (!inOpenList(child)) {
-						addToOpenList(child);
+		Arrays.fill(cost, Integer.MAX_VALUE);
+		cost[source] = 0;
+		score[source] = cost[source] + fnEstimatedCost.applyAsInt(source, target);
+		setOpen(source);
+		while (!q.isEmpty()) {
+			int current = q.poll();
+			setClosed(current);
+			if (current == target) {
+				break;
+			}
+			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
+				E edge = graph.getEdgeLabel(current, child);
+				int newCostToChild = cost[current] + fnEdgeCost.apply(edge);
+				if (!isOpen(child) || newCostToChild < cost[child]) {
+					cost[child] = newCostToChild;
+					score[child] = cost[child] + fnEstimatedCost.applyAsInt(child, target);
+					if (!isOpen(child)) {
+						setOpen(child);
 					} else {
 						decreaseKey(child);
 					}
-					setParent(child, vertex);
+					setParent(child, current);
 				}
 			});
 		}

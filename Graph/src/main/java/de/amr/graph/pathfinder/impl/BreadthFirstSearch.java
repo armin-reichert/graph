@@ -13,9 +13,9 @@ import java.util.Queue;
 import de.amr.graph.core.api.Graph;
 
 /**
- * Breadth-first traversal of an undirected graph from a given source vertex. After being executed,
- * the distance of each vertex from the source can be queried, as well as the maximal distance of a
- * reachable vertex from the source.
+ * Breadth-first search in undirected graph, starting from a given source vertex. After being
+ * executed, the cost/distance of each vertex from the source can be queried, as well as the maximal
+ * cost/distance of any vertex reachable from the source.
  * 
  * @param <V>
  *          vertex label type
@@ -28,8 +28,8 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 
 	protected Graph<V, E> graph;
 	protected Queue<Integer> q;
-	protected int[] distFromSource;
-	protected int maxDistance;
+	protected int[] cost;
+	protected int maxCost;
 
 	protected BreadthFirstSearch() {
 	}
@@ -37,7 +37,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
 		this.graph = graph;
 		this.q = q;
-		this.distFromSource = new int[graph.numVertices()];
+		this.cost = new int[graph.numVertices()];
 	}
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
@@ -48,18 +48,16 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	protected void init() {
 		super.init();
 		q.clear();
-		Arrays.fill(distFromSource, -1);
-		maxDistance = -1;
+		Arrays.fill(cost, -1);
+		maxCost = -1;
 	}
 
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
-
 		q.add(source);
 		setState(source, VISITED);
-		maxDistance = distFromSource[source] = 0;
-
+		cost[source] = maxCost = 0;
 		while (!q.isEmpty()) {
 			int current = q.poll();
 			setState(current, COMPLETED);
@@ -74,30 +72,30 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 		graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			setState(neighbor, VISITED);
 			setParent(neighbor, current);
-			distFromSource[neighbor] = distFromSource[current] + 1;
-			maxDistance = Math.max(maxDistance, distFromSource[neighbor]);
+			cost[neighbor] = cost[current] + 1;
+			maxCost = Math.max(maxCost, cost[neighbor]);
 			q.add(neighbor);
 		});
 	}
 
 	/**
-	 * The distance of the given vertex from the source.
+	 * The cost/distance of the given vertex from the source.
 	 * 
 	 * @param v
 	 *            some vertex
 	 * @return the distance from the source or {@code -1} if the vertex is not reachable
 	 */
 	public int getDistFromSource(int v) {
-		return distFromSource[v];
+		return cost[v];
 	}
 
 	/**
-	 * Returns the maximum distance of any vertex reachable from the source.
+	 * Returns the maximum cost/distance of any vertex reachable from the source.
 	 * 
 	 * @return the maximum distance
 	 */
 	public int getMaxDistFromSource() {
-		return maxDistance;
+		return maxCost;
 	}
 
 	/**
