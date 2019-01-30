@@ -6,7 +6,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<groupId>de.amr.easy.graph</groupId>
+	<groupId>de.amr.graph</groupId>
 	<artifactId>graph</artifactId>
 	<packaging>pom</packaging>
 
@@ -14,7 +14,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<modules>
-		<module>EasyGraph</module>
+		<module>Graph</module>
 		<module>GraphDemos</module>
 	</modules>
 
