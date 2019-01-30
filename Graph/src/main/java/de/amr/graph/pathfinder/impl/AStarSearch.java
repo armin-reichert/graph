@@ -49,10 +49,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 * @param graph
 	 *                          a graph
 	 * @param fnEdgeCost
-	 *                          function giving the cost for each edge
+	 *                          function returning the cost for each edge
 	 * @param fnEstimatedCost
-	 *                          heuristics estimating the distance between nodes, for example Euclidean
-	 *                          Manhattan distance
+	 *                          cost estimate between two vertices, for example the Euclidean or
+	 *                          Manhattan distance for a 2D grid
 	 */
 	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
 			ToIntBiFunction<Integer, Integer> fnEstimatedCost) {
@@ -62,33 +62,6 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		this.fnEstimatedCost = fnEstimatedCost;
 		this.score = new int[graph.numVertices()];
 		this.cost = new int[graph.numVertices()];
-	}
-
-	public int getScore(int v) {
-		return score[v];
-	}
-
-	public boolean isOpen(int v) {
-		return getState(v) == VISITED;
-	}
-
-	public boolean isClosed(int v) {
-		return getState(v) == COMPLETED;
-	}
-
-	private void setOpen(int v) {
-		setState(v, VISITED);
-		q.add(v);
-	}
-
-	private void setClosed(int v) {
-		setState(v, COMPLETED);
-	}
-
-	private void decreaseKey(int v) {
-		// Used PriorityQueue has no "decrease-key" operation
-		q.remove(v);
-		q.add(v);
 	}
 
 	@Override
@@ -120,5 +93,32 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 				}
 			});
 		}
+	}
+
+	public int getScore(int v) {
+		return score[v];
+	}
+
+	public boolean isOpen(int v) {
+		return getState(v) == VISITED;
+	}
+
+	public boolean isClosed(int v) {
+		return getState(v) == COMPLETED;
+	}
+
+	private void setOpen(int v) {
+		setState(v, VISITED);
+		q.add(v);
+	}
+
+	private void setClosed(int v) {
+		setState(v, COMPLETED);
+	}
+
+	private void decreaseKey(int v) {
+		// Used PriorityQueue has no "decrease-key" operation
+		q.remove(v);
+		q.add(v);
 	}
 }
