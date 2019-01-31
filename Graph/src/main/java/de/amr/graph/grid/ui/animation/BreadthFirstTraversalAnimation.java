@@ -135,9 +135,9 @@ public class BreadthFirstTraversalAnimation {
 		});
 	}
 
-	public void showPath(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int target) {
+	public void showPath(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			Iterable<Integer> path = bfs.path(target);
+			Iterable<Integer> path = bfs.path(source, target);
 			if (floodFillRenderer != null) {
 				canvas.pushRenderer(createPathRenderer(floodFillRenderer, bfs, path));
 			} else {

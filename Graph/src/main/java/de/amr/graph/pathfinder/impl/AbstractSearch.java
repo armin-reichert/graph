@@ -34,6 +34,8 @@ public abstract class AbstractSearch implements PathFinder {
 		parentMap.clear();
 		stateMap.clear();
 	}
+	
+	public abstract void traverseGraph(int source, int target);
 
 	/**
 	 * Traverses the graph starting from the given source until all reachable vertices are visited.
@@ -51,7 +53,8 @@ public abstract class AbstractSearch implements PathFinder {
 	 * @return path from source to target vertex
 	 */
 	@Override
-	public List<Integer> path(int target) {
+	public List<Integer> path(int source, int target) {
+		traverseGraph(source, target);
 		List<Integer> path = new LinkedList<>();
 		for (int v = target; v != -1; v = getParent(v)) {
 			path.add(0, v);

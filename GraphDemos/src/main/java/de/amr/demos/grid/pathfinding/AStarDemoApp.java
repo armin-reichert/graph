@@ -247,11 +247,12 @@ public class AStarDemoApp {
 	private void computePath() {
 		astar = new AStarSearch<>(map, i -> i, this::getDistance);
 		StopWatch watch = new StopWatch();
-		watch.measure(() -> astar.traverseGraph(source, target));
-		List<Integer> path = astar.path(target);
+		watch.start();
+		List<Integer> path = astar.path(source, target);
+		watch.stop();
+		System.out.println(String.format("A*: %.4f seconds", watch.getSeconds()));
 		solution = new BitSet(map.numVertices());
 		path.forEach(solution::set);
-		System.out.println(String.format("A*: %.4f seconds", watch.getSeconds()));
 		System.out.println(String.format("Path length: %d", path.size()));
 	}
 

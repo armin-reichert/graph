@@ -2,22 +2,15 @@ package de.amr.graph.pathfinder.api;
 
 import java.util.List;
 
+/**
+ * Finds a path between two vertices of a graph.
+ * 
+ * @author Armin Reichert
+ */
 public interface PathFinder {
 
 	/**
-	 * Traverses the graph starting from the given source until the target is reached.
-	 * 
-	 * @param source
-	 *                 source vertex
-	 * @param target
-	 *                 target vertex
+	 * A path between the given vertices or an empty list if there is none.
 	 */
-	void traverseGraph(int source, int target);
-
-	/**
-	 * @param target
-	 *                 target vertex
-	 * @return path from source to target vertex
-	 */
-	List<Integer> path(int target);
+	List<Integer> path(int source, int target);
 }
