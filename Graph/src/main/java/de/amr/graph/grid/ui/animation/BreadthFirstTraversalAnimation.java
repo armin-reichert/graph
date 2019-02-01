@@ -162,7 +162,7 @@ public class BreadthFirstTraversalAnimation {
 		r.fnGridBgColor = () -> base.getModel().getGridBgColor();
 		r.fnPassageColor = (u, v) -> colorByDist(u, distanceMap);
 		r.fnPassageWidth = base.getModel()::getPassageWidth;
-		r.fnText = cell -> distanceVisible ? format("%d", distanceMap.getCost(cell)) : "";
+		r.fnText = cell -> distanceVisible ? format("%.0f", distanceMap.getCost(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.BLACK;
 		return r;
@@ -182,7 +182,7 @@ public class BreadthFirstTraversalAnimation {
 			return inPath.get(cell) && inPath.get(neighbor) ? getPathColor() : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
-		r.fnText = cell -> distanceVisible ? format("%d", distanceMap.getCost(cell)) : "";
+		r.fnText = cell -> distanceVisible ? format("%.0f", distanceMap.getCost(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.WHITE;
 		return r;
