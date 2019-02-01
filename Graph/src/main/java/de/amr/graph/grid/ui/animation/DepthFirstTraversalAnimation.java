@@ -33,7 +33,8 @@ public class DepthFirstTraversalAnimation {
 		this.grid = grid;
 	}
 
-	private ConfigurableGridRenderer createRenderer(DepthFirstSearch dfs, BitSet inPath, GridRenderer base) {
+	private ConfigurableGridRenderer createRenderer(DepthFirstSearch<?, ?> dfs, BitSet inPath,
+			GridRenderer base) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellSize = base.getModel()::getCellSize;
@@ -64,7 +65,7 @@ public class DepthFirstTraversalAnimation {
 		return r;
 	}
 
-	public void run(GridCanvas canvas, DepthFirstSearch dfs, int source, int target) {
+	public void run(GridCanvas canvas, DepthFirstSearch<?, ?> dfs, int source, int target) {
 		dfs.addObserver(new GraphTraversalObserver() {
 
 			private void delayed(Runnable code) {

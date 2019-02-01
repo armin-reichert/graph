@@ -16,9 +16,9 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch2 extends DepthFirstSearch {
+public class DepthFirstSearch2<V, E> extends DepthFirstSearch<V, E> {
 
-	public DepthFirstSearch2(Graph<?, ?> graph) {
+	public DepthFirstSearch2(Graph<V, E> graph) {
 		super(graph);
 	}
 

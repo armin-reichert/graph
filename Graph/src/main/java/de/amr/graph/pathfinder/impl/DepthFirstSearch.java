@@ -11,12 +11,12 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch extends AbstractSearch {
+public class DepthFirstSearch<V, E> extends AbstractSearch {
 
-	protected Graph<?, ?> graph;
+	protected Graph<V, E> graph;
 	protected Stack<Integer> stack;
 
-	public DepthFirstSearch(Graph<?, ?> graph) {
+	public DepthFirstSearch(Graph<V, E> graph) {
 		this.graph = graph;
 		stack = new Stack<>();
 	}
