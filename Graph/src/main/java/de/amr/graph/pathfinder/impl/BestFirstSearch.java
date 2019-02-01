@@ -1,7 +1,9 @@
 package de.amr.graph.pathfinder.impl;
 
+import static java.util.Comparator.comparingDouble;
+
 import java.util.PriorityQueue;
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 
@@ -15,12 +17,10 @@ import de.amr.graph.core.api.Graph;
  *          vertex label type
  * @param <E>
  *          edge label type
- * @param <C>
- *          vertex cost type
  * 
  * @author Armin Reichert
  */
-public class BestFirstSearch<V, E, C extends Comparable<C>> extends BreadthFirstSearch<V, E> {
+public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	/**
 	 * Creates a best-first traversal instance for the given graph and vertex cost function.
@@ -28,9 +28,9 @@ public class BestFirstSearch<V, E, C extends Comparable<C>> extends BreadthFirst
 	 * @param graph
 	 *                       a graph
 	 * @param fnVertexCost
-	 *                       vertex cost function. Queue is sorted by increasing cost.
+	 *                       vertex cost function. Queue will always be sorted by increasing cost.
 	 */
-	public BestFirstSearch(Graph<V, E> graph, Function<Integer, C> fnVertexCost) {
-		super(graph, new PriorityQueue<>((u, v) -> fnVertexCost.apply(u).compareTo(fnVertexCost.apply(v))));
+	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexCost) {
+		super(graph, new PriorityQueue<>(comparingDouble(fnVertexCost)));
 	}
 }
