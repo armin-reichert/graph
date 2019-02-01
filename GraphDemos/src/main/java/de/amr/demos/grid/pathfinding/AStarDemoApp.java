@@ -207,7 +207,7 @@ public class AStarDemoApp {
 		};
 		r.fnText = cell -> {
 			if (astar != null && astar.getState(cell) != TraversalState.UNVISITED) {
-				return String.format("%d:%d", astar.getDistFromSource(cell), astar.getScore(cell));
+				return String.format("%d:%d", astar.getCost(cell), astar.getScore(cell));
 			}
 			return "";
 		};

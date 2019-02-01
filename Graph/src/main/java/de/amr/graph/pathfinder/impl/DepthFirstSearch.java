@@ -1,8 +1,5 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
-
 import de.amr.datastruct.Stack;
 import de.amr.graph.core.api.Graph;
 
@@ -11,13 +8,12 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch<V, E> extends AbstractSearch {
+public class DepthFirstSearch<V, E> extends AbstractSearch<V, E> {
 
-	protected Graph<V, E> graph;
 	protected Stack<Integer> stack;
 
 	public DepthFirstSearch(Graph<V, E> graph) {
-		this.graph = graph;
+		super(graph);
 		stack = new Stack<>();
 	}
 
@@ -28,28 +24,22 @@ public class DepthFirstSearch<V, E> extends AbstractSearch {
 	}
 
 	@Override
-	public void traverseGraph(int source, int target) {
-		init();
-		stack.push(source);
-		setState(source, VISITED);
-		while (!stack.isEmpty()) {
-			int current = stack.pop();
-			if (current == target) {
-				return;
-			}
-			expand(current);
-		}
+	protected int dequeue() {
+		return stack.pop();
 	}
 
-	protected void expand(int current) {
-		graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
-			stack.push(neighbor);
-			setState(neighbor, VISITED);
-			setParent(neighbor, current);
-		});
+	@Override
+	protected void enqueue(int v) {
+		stack.push(v);
 	}
 
-	public boolean isStacked(int v) {
+	@Override
+	protected boolean isQueueEmpty() {
+		return stack.isEmpty();
+	}
+
+	@Override
+	public boolean inQueue(int v) {
 		return stack.contains(v);
 	}
 }

@@ -44,7 +44,7 @@ public class DepthFirstTraversalAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.getState(cell) == VISITED || dfs.isStacked(cell)) {
+			if (dfs.getState(cell) == VISITED || dfs.inQueue(cell)) {
 				return visitedCellColor;
 			}
 			return base.getModel().getCellBgColor(cell);

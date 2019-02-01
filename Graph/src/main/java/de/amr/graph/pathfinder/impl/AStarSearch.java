@@ -56,7 +56,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 */
 	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
 			ToIntBiFunction<Integer, Integer> fnEstimatedCost) {
-		this.graph = graph;
+		super(graph);
 		this.q = new PriorityQueue<>(comparingInt(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedCost = fnEstimatedCost;

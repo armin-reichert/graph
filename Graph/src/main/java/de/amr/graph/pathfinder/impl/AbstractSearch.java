@@ -1,6 +1,8 @@
 package de.amr.graph.pathfinder.impl;
 
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
+import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.amr.graph.core.api.Graph;
 import de.amr.graph.event.api.GraphTraversalObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
@@ -23,11 +26,16 @@ import de.amr.graph.pathfinder.api.TraversalState;
  * 
  * @author Armin Reichert
  */
-public abstract class AbstractSearch implements PathFinder {
+public abstract class AbstractSearch<V, E> implements PathFinder {
 
+	protected final Graph<V, E> graph;
 	private final Map<Integer, Integer> parentMap = new HashMap<>();
 	private final Map<Integer, TraversalState> stateMap = new HashMap<>();
 	private final Set<GraphTraversalObserver> observers = new HashSet<>(5);
+
+	public AbstractSearch(Graph<V, E> graph) {
+		this.graph = graph;
+	}
 
 	/**
 	 * Initializes the search such that {@link #traverseGraph(int, int)} starts in a clean state.
@@ -36,17 +44,6 @@ public abstract class AbstractSearch implements PathFinder {
 		parentMap.clear();
 		stateMap.clear();
 	}
-
-	/**
-	 * Runs the search algorithm starting from the given source vertex and ending when the given target
-	 * vertex has been found or all vertices reachable from the source have been visited.
-	 * 
-	 * @param source
-	 *                 source vertex
-	 * @param target
-	 *                 target vertex
-	 */
-	public abstract void traverseGraph(int source, int target);
 
 	/**
 	 * Runs the search algorithm starting from the given source vertex and ending when all vertices
@@ -58,6 +55,75 @@ public abstract class AbstractSearch implements PathFinder {
 	public void traverseGraph(int source) {
 		traverseGraph(source, -1);
 	}
+
+	/**
+	 * Runs the search algorithm starting from the given source vertex and ending when the given target
+	 * vertex has been found or all vertices reachable from the source have been visited.
+	 * 
+	 * @param source
+	 *                 source vertex
+	 * @param target
+	 *                 target vertex
+	 */
+	public void traverseGraph(int source, int target) {
+		init();
+		enqueue(source);
+		setState(source, VISITED);
+		setParent(source, -1);
+		while (!isQueueEmpty()) {
+			int current = dequeue();
+			setState(source, COMPLETED);
+			if (current == target) {
+				return;
+			}
+			expand(current);
+		}
+	}
+
+	/**
+	 * Expands the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected void expand(int current) {
+		graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
+			enqueue(neighbor);
+			setState(neighbor, VISITED);
+			setParent(neighbor, current);
+		});
+	}
+
+	/**
+	 * Adds the given vertex to the search queue.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected abstract void enqueue(int v);
+
+	/**
+	 * Takes the given vertex from the search queue.
+	 * 
+	 * @return vertex taken from queue
+	 */
+	protected abstract int dequeue();
+
+	/**
+	 * Tells if the search queue is empty.
+	 * 
+	 * @return true if the search queue is empty
+	 */
+	protected abstract boolean isQueueEmpty();
+
+	/**
+	 * Tells if the given vertex is in the search queue.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return <code>true</code> if the vertex is on the queue
+	 */
+	public abstract boolean inQueue(int v);
 
 	/**
 	 * Returns the path (list of vertices) between the given source and the given target vertex. If no

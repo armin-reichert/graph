@@ -1,9 +1,5 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -24,24 +20,20 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class BreadthFirstSearch<V, E> extends AbstractSearch {
+public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 
-	protected Graph<V, E> graph;
 	protected Queue<Integer> q;
 	protected int[] cost;
 	protected int maxCost;
 
-	protected BreadthFirstSearch() {
+	public BreadthFirstSearch(Graph<V, E> graph) {
+		this(graph, new ArrayDeque<>());
 	}
 
 	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
-		this.graph = graph;
+		super(graph);
 		this.q = q;
 		this.cost = new int[graph.numVertices()];
-	}
-
-	public BreadthFirstSearch(Graph<V, E> graph) {
-		this(graph, new ArrayDeque<>());
 	}
 
 	@Override
@@ -53,29 +45,34 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	}
 
 	@Override
-	public void traverseGraph(int source, int target) {
-		init();
-		q.add(source);
-		setState(source, VISITED);
-		cost[source] = maxCost = 0;
-		while (!q.isEmpty()) {
-			int current = q.poll();
-			setState(current, COMPLETED);
-			if (current == target) {
-				return;
-			}
-			expand(current);
+	protected void setParent(int child, int parent) {
+		super.setParent(child, parent);
+		if (parent != -1) {
+			cost[child] = cost[parent] + 1;
+			maxCost = Math.max(maxCost, cost[child]);
+		} else {
+			cost[child] = maxCost = 0;
 		}
 	}
 
-	private void expand(int current) {
-		graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
-			setState(neighbor, VISITED);
-			setParent(neighbor, current);
-			cost[neighbor] = cost[current] + 1;
-			maxCost = Math.max(maxCost, cost[neighbor]);
-			q.add(neighbor);
-		});
+	@Override
+	protected int dequeue() {
+		return q.poll();
+	}
+
+	@Override
+	protected void enqueue(int v) {
+		q.add(v);
+	}
+
+	@Override
+	protected boolean isQueueEmpty() {
+		return q.isEmpty();
+	}
+
+	@Override
+	public boolean inQueue(int v) {
+		return q.contains(v);
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	 *            some vertex
 	 * @return the distance from the source or {@code -1} if the vertex is not reachable
 	 */
-	public int getDistFromSource(int v) {
+	public int getCost(int v) {
 		return cost[v];
 	}
 
@@ -94,7 +91,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	 * 
 	 * @return the maximum distance
 	 */
-	public int getMaxDistFromSource() {
+	public int getMaxCost() {
 		return maxCost;
 	}
 
@@ -103,7 +100,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch {
 	 * 
 	 * @return a vertex with maximum distance or empty
 	 */
-	public Optional<Integer> getMaxDistanceVertex() {
-		return graph.vertices().boxed().max(Comparator.comparing(this::getDistFromSource));
+	public Optional<Integer> getMaxCostVertex() {
+		return graph.vertices().boxed().max(Comparator.comparing(this::getCost));
 	}
 }
