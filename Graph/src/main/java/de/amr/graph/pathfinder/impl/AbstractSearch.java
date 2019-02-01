@@ -2,6 +2,7 @@ package de.amr.graph.pathfinder.impl;
 
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,31 +15,42 @@ import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 
 /**
- * Abstract base class for graph traversals. Stores traversal state and parent link for each vertex
- * and allows to register observers for vertex and edge traversals.
+ * Abstract base class for graph search algorithms.
+ * 
+ * <p>
+ * Stores the traversal state and parent link for each vertex and supports registration of observers
+ * for vertex and edge traversals.
  * 
  * @author Armin Reichert
  */
 public abstract class AbstractSearch implements PathFinder {
 
 	private final Map<Integer, Integer> parentMap = new HashMap<>();
-
 	private final Map<Integer, TraversalState> stateMap = new HashMap<>();
-
 	private final Set<GraphTraversalObserver> observers = new HashSet<>(5);
 
 	/**
-	 * Initializes the traversal such that {@link #traverseGraph(int, int)} starts in a clean state.
+	 * Initializes the search such that {@link #traverseGraph(int, int)} starts in a clean state.
 	 */
 	protected void init() {
 		parentMap.clear();
 		stateMap.clear();
 	}
-	
+
+	/**
+	 * Runs the search algorithm starting from the given source vertex and ending when the given target
+	 * vertex has been found or all vertices reachable from the source have been visited.
+	 * 
+	 * @param source
+	 *                 source vertex
+	 * @param target
+	 *                 target vertex
+	 */
 	public abstract void traverseGraph(int source, int target);
 
 	/**
-	 * Traverses the graph starting from the given source until all reachable vertices are visited.
+	 * Runs the search algorithm starting from the given source vertex and ending when all vertices
+	 * reachable from the source have been visited.
 	 * 
 	 * @param source
 	 *                 source vertex
@@ -48,9 +60,14 @@ public abstract class AbstractSearch implements PathFinder {
 	}
 
 	/**
+	 * Returns the path (list of vertices) between the given source and the given target vertex. If no
+	 * such path exists, an empty list is returned.
+	 * 
+	 * @param source
+	 *                 source vertex
 	 * @param target
 	 *                 target vertex
-	 * @return path from source to target vertex
+	 * @return path from source to target vertex or empty list
 	 */
 	@Override
 	public List<Integer> path(int source, int target) {
@@ -59,19 +76,43 @@ public abstract class AbstractSearch implements PathFinder {
 		for (int v = target; v != -1; v = getParent(v)) {
 			path.add(0, v);
 		}
-		return path;
+		return path.isEmpty() ? Collections.emptyList() : path;
 	}
 
+	/**
+	 * Sets the traversal state for the given vertex.
+	 * 
+	 * @param v
+	 *                   vertex
+	 * @param newState
+	 *                   new vertex state
+	 */
 	protected void setState(int v, TraversalState newState) {
 		TraversalState oldState = getState(v);
 		stateMap.put(v, newState);
 		vertexTraversed(v, oldState, newState);
 	}
 
+	/**
+	 * Returns the traversal state of the given vertex. The default state is
+	 * {@link TraversalState#UNVISITED}.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return vertex state
+	 */
 	public TraversalState getState(int v) {
 		return stateMap.getOrDefault(v, UNVISITED);
 	}
 
+	/**
+	 * Sets the parent vertex for the given child vertex.
+	 * 
+	 * @param child
+	 *                 vertex
+	 * @param parent
+	 *                 parent vertex
+	 */
 	protected void setParent(int child, int parent) {
 		parentMap.put(child, parent);
 		if (parent != -1) {
@@ -79,6 +120,13 @@ public abstract class AbstractSearch implements PathFinder {
 		}
 	}
 
+	/**
+	 * Returns the parent vertex for the given vertex. Default is <code>-1</code>.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return parent vertex or <code>-1</code>
+	 */
 	public int getParent(int v) {
 		return parentMap.getOrDefault(v, -1);
 	}

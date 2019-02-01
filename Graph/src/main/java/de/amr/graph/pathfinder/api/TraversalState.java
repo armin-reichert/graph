@@ -6,5 +6,10 @@ package de.amr.graph.pathfinder.api;
  * @author Armin Reichert
  */
 public enum TraversalState {
-	UNVISITED, VISITED, COMPLETED;
+	/** Vertex has not been visited yet. */
+	UNVISITED,
+	/** Vertex has been visited. */
+	VISITED,
+	/** Vertex has been visited and will not be touched again. */
+	COMPLETED;
 }
