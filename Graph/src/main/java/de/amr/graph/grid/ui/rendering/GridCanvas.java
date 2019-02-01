@@ -6,11 +6,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
 
 import javax.swing.JComponent;
 
-import de.amr.datastruct.Stack;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.GridGraph;
 
@@ -21,7 +22,7 @@ import de.amr.graph.grid.impl.GridGraph;
  */
 public class GridCanvas extends JComponent {
 
-	protected final Stack<GridRenderer> rendererStack = new Stack<>();
+	protected final Deque<GridRenderer> rendererStack = new ArrayDeque<>();
 	protected GridGraph2D<?, ?> grid;
 	protected BufferedImage buffer;
 	protected Graphics2D g2;
@@ -101,7 +102,7 @@ public class GridCanvas extends JComponent {
 	}
 
 	public Optional<GridRenderer> getRenderer() {
-		return rendererStack.peek();
+		return Optional.ofNullable(rendererStack.peek());
 	}
 
 	public void pushRenderer(GridRenderer newRenderer) {

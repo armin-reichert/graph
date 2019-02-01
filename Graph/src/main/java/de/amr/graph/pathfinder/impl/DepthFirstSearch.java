@@ -1,6 +1,8 @@
 package de.amr.graph.pathfinder.impl;
 
-import de.amr.datastruct.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import de.amr.graph.core.api.Graph;
 
 /**
@@ -10,11 +12,10 @@ import de.amr.graph.core.api.Graph;
  */
 public class DepthFirstSearch<V, E> extends AbstractSearch<V, E> {
 
-	protected Stack<Integer> stack;
+	protected final Deque<Integer> stack = new ArrayDeque<>();
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		stack = new Stack<>();
 	}
 
 	@Override
