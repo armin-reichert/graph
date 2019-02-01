@@ -2,12 +2,12 @@ package de.amr.graph.pathfinder.impl;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
-import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingDouble;
 
 import java.util.Arrays;
 import java.util.PriorityQueue;
-import java.util.function.Function;
-import java.util.function.ToIntBiFunction;
+import java.util.function.ToDoubleBiFunction;
+import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 
@@ -39,9 +39,9 @@ import de.amr.graph.core.api.Graph;
  */
 public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
-	private final Function<E, Integer> fnEdgeCost;
-	private final ToIntBiFunction<Integer, Integer> fnEstimatedCost;
-	private final int[] score;
+	private final ToDoubleFunction<E> fnEdgeCost;
+	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedCost;
+	private final double[] score;
 
 	/**
 	 * Creates an A* path finder instance.
@@ -54,14 +54,14 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 *                          cost estimate between two vertices, for example the Euclidean or
 	 *                          Manhattan distance for a 2D grid
 	 */
-	public AStarSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost,
-			ToIntBiFunction<Integer, Integer> fnEstimatedCost) {
+	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
+			ToDoubleBiFunction<Integer, Integer> fnEstimatedCost) {
 		super(graph);
-		this.q = new PriorityQueue<>(comparingInt(this::getScore));
+		this.q = new PriorityQueue<>(comparingDouble(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedCost = fnEstimatedCost;
-		this.score = new int[graph.numVertices()];
-		this.cost = new int[graph.numVertices()];
+		this.score = new double[graph.numVertices()];
+		this.cost = new double[graph.numVertices()];
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		Arrays.fill(score, Integer.MAX_VALUE);
 		Arrays.fill(cost, Integer.MAX_VALUE);
 		cost[source] = 0;
-		score[source] = cost[source] + fnEstimatedCost.applyAsInt(source, target);
+		score[source] = cost[source] + fnEstimatedCost.applyAsDouble(source, target);
 		setOpen(source);
 		while (!q.isEmpty()) {
 			int current = q.poll();
@@ -80,10 +80,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 			}
 			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
 				E edge = graph.getEdgeLabel(current, child);
-				int newCostToChild = cost[current] + fnEdgeCost.apply(edge);
+				double newCostToChild = cost[current] + fnEdgeCost.applyAsDouble(edge);
 				if (!isOpen(child) || newCostToChild < cost[child]) {
 					cost[child] = newCostToChild;
-					score[child] = cost[child] + fnEstimatedCost.applyAsInt(child, target);
+					score[child] = cost[child] + fnEstimatedCost.applyAsDouble(child, target);
 					if (!isOpen(child)) {
 						setOpen(child);
 					} else {
@@ -95,7 +95,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		}
 	}
 
-	public int getScore(int v) {
+	public double getScore(int v) {
 		return score[v];
 	}
 

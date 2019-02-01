@@ -52,7 +52,7 @@ public class AStarDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(() -> new AStarDemoApp(20, 20, 600));
+		EventQueue.invokeLater(() -> new AStarDemoApp(16, 16, 800));
 	}
 
 	// model
@@ -207,7 +207,7 @@ public class AStarDemoApp {
 		};
 		r.fnText = cell -> {
 			if (astar != null && astar.getState(cell) != TraversalState.UNVISITED) {
-				return String.format("%d:%d", astar.getCost(cell), astar.getScore(cell));
+				return String.format("%.0f(%.0f)", astar.getCost(cell), astar.getScore(cell));
 			}
 			return "";
 		};
@@ -221,7 +221,7 @@ public class AStarDemoApp {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial Narrow", Font.PLAIN, cellSize / 4);
+		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 4);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = () -> cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;

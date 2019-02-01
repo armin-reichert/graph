@@ -23,8 +23,8 @@ import de.amr.graph.core.api.Graph;
 public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 
 	protected Queue<Integer> q;
-	protected int[] cost;
-	protected int maxCost;
+	protected double[] cost;
+	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
 		this(graph, new ArrayDeque<>());
@@ -33,7 +33,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
 		super(graph);
 		this.q = q;
-		this.cost = new int[graph.numVertices()];
+		this.cost = new double[graph.numVertices()];
 	}
 
 	@Override
@@ -80,9 +80,9 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	 * 
 	 * @param v
 	 *            some vertex
-	 * @return the distance from the source or {@code -1} if the vertex is not reachable
+	 * @return the cost from the source or {@code -1} if the vertex is not reachable
 	 */
-	public int getCost(int v) {
+	public double getCost(int v) {
 		return cost[v];
 	}
 
@@ -91,7 +91,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	 * 
 	 * @return the maximum distance
 	 */
-	public int getMaxCost() {
+	public double getMaxCost() {
 		return maxCost;
 	}
 

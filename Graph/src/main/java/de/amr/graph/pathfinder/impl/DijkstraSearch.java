@@ -1,6 +1,6 @@
 package de.amr.graph.pathfinder.impl;
 
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 
@@ -17,7 +17,7 @@ import de.amr.graph.core.api.Graph;
  */
 public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 
-	public DijkstraSearch(Graph<V, E> graph, Function<E, Integer> fnEdgeCost) {
+	public DijkstraSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
