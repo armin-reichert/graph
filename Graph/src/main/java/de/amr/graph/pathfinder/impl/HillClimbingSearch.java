@@ -2,10 +2,9 @@ package de.amr.graph.pathfinder.impl;
 
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
+import static java.util.Comparator.comparingDouble;
 
-import java.util.Comparator;
 import java.util.function.ToDoubleFunction;
-import java.util.stream.IntStream;
 
 import de.amr.graph.core.api.Graph;
 
@@ -39,18 +38,18 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 
 	@Override
 	protected void expand(int current) {
-		// sort children by decreasing cost such that cheapest vertex will be on top of stack
 		/*@formatter:off*/
-		IntStream verticesByDecreasingCost = graph.adj(current)
-				.filter(neighbor -> getState(neighbor) == UNVISITED)
-				.boxed()
-				.sorted(Comparator.comparingDouble(fnVertexCost).reversed())
-				.mapToInt(Integer::intValue);
+		graph.adj(current)
+			.filter(neighbor -> getState(neighbor) == UNVISITED)
+			.boxed()
+			// sort by decreasing cost such that cheapest vertex will be on top of stack
+			.sorted(comparingDouble(fnVertexCost).reversed())
+			.mapToInt(Integer::intValue)
+			.forEach(neighbor -> {
+				stack.push(neighbor);
+				setState(neighbor, VISITED);
+				setParent(neighbor, current);
+			});
 		/*@formatter:on*/
-		verticesByDecreasingCost.forEach(neighbor -> {
-			stack.push(neighbor);
-			setState(neighbor, VISITED);
-			setParent(neighbor, current);
-		});
 	}
 }
