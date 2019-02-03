@@ -40,15 +40,14 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 	protected void expand(int current) {
 		/*@formatter:off*/
 		graph.adj(current)
-			.filter(neighbor -> getState(neighbor) == UNVISITED)
+			.filter(child -> getState(child) == UNVISITED)
 			.boxed()
 			// sort by decreasing cost such that cheapest vertex will be on top of stack
 			.sorted(comparingDouble(fnVertexCost).reversed())
-			.mapToInt(Integer::intValue)
-			.forEach(neighbor -> {
-				stack.push(neighbor);
-				setState(neighbor, VISITED);
-				setParent(neighbor, current);
+			.forEach(child -> {
+				stack.push(child);
+				setState(child, VISITED);
+				setParent(child, current);
 			});
 		/*@formatter:on*/
 	}
