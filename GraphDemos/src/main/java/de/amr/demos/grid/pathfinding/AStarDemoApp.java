@@ -52,7 +52,7 @@ public class AStarDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(() -> new AStarDemoApp(16, 16, 800));
+		EventQueue.invokeLater(() -> new AStarDemoApp(16, 16, 16 * 40));
 	}
 
 	// model
@@ -61,9 +61,9 @@ public class AStarDemoApp {
 	}
 
 	private GridGraph2D<Tile, Integer> map;
+	private AStarSearch<Tile, Integer> astar;
 	private int source;
 	private int target;
-	private AStarSearch<Tile, Integer> astar;
 	private BitSet solution;
 
 	// UI
@@ -173,6 +173,7 @@ public class AStarDemoApp {
 		popupMenu.add(actionResetScene);
 		window = new JFrame("A* demo application");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setResizable(false);
 		window.add(canvas, BorderLayout.CENTER);
 		window.pack();
 		window.setLocationRelativeTo(null);
