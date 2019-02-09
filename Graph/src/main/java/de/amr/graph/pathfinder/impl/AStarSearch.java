@@ -5,6 +5,8 @@ import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.util.Comparator.comparingDouble;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
@@ -20,7 +22,7 @@ import de.amr.graph.core.api.Graph;
  * 
  * <pre>
  * f(v) = score[v]
- * g(v) = costFromSource[v]
+ * g(v) = cost[v]
  * h(v) = fnEstimatedCost.apply(v, target)
  * 
  * "v in open list": getState(v) == VISITED && priority queue q contains v
@@ -41,7 +43,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private final ToDoubleFunction<E> fnEdgeCost;
 	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedCost;
-	private final double[] score;
+	private final Map<Integer, Double> score;
 
 	/**
 	 * Creates an A* path finder instance.
@@ -57,46 +59,50 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedCost) {
 		super(graph);
-		this.q = new PriorityQueue<>(comparingDouble(this::getScore));
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedCost = fnEstimatedCost;
-		this.score = new double[graph.numVertices()];
+		this.score = new HashMap<>();
 		this.cost = new double[graph.numVertices()];
+	}
+
+	@Override
+	protected void init() {
+		q = new PriorityQueue<>(comparingDouble(this::getScore));
+		super.init();
 	}
 
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
-		Arrays.fill(score, Integer.MAX_VALUE);
 		Arrays.fill(cost, Integer.MAX_VALUE);
 		cost[source] = 0;
-		score[source] = cost[source] + fnEstimatedCost.applyAsDouble(source, target);
-		setOpen(source);
+		score.put(source, cost[source] + fnEstimatedCost.applyAsDouble(source, target));
+		open(source);
 		while (!q.isEmpty()) {
 			int current = q.poll();
-			setClosed(current);
 			if (current == target) {
 				break;
 			}
+			close(current);
 			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
 				E edge = graph.getEdgeLabel(current, child);
-				double newCostToChild = cost[current] + fnEdgeCost.applyAsDouble(edge);
-				if (!isOpen(child) || newCostToChild < cost[child]) {
-					cost[child] = newCostToChild;
-					score[child] = cost[child] + fnEstimatedCost.applyAsDouble(child, target);
-					if (!isOpen(child)) {
-						setOpen(child);
-					} else {
-						decreaseKey(child);
-					}
+				double tentativeCost = cost[current] + fnEdgeCost.applyAsDouble(edge);
+				if (!isOpen(child) || tentativeCost < cost[child]) {
 					setParent(child, current);
+					cost[child] = tentativeCost;
+					score.put(child, tentativeCost + fnEstimatedCost.applyAsDouble(child, target));
+					if (isOpen(child)) {
+						decreaseKey(child);
+					} else {
+						open(child);
+					}
 				}
 			});
 		}
 	}
 
 	public double getScore(int v) {
-		return score[v];
+		return score.getOrDefault(v, Double.MAX_VALUE);
 	}
 
 	public boolean isOpen(int v) {
@@ -107,17 +113,17 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		return getState(v) == COMPLETED;
 	}
 
-	private void setOpen(int v) {
+	private void open(int v) {
 		setState(v, VISITED);
 		q.add(v);
 	}
 
-	private void setClosed(int v) {
+	private void close(int v) {
 		setState(v, COMPLETED);
 	}
 
 	private void decreaseKey(int v) {
-		// Used PriorityQueue has no "decrease-key" operation
+		// PriorityQueue has no "decrease-key" operation
 		q.remove(v);
 		q.add(v);
 	}
