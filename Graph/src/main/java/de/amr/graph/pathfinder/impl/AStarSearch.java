@@ -80,10 +80,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		
 		while (!q.isEmpty()) {
 			int current = q.poll();
+			close(current);
 			if (current == target) {
 				break;
 			}
-			close(current);
 			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
 				E edge = graph.getEdgeLabel(current, child);
 				double tentativeCost = getCost(current) + fnEdgeCost.applyAsDouble(edge);
