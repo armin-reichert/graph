@@ -4,7 +4,6 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.util.Comparator.comparingDouble;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -62,7 +61,6 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedCost = fnEstimatedCost;
 		this.score = new HashMap<>();
-		this.cost = new double[graph.numVertices()];
 	}
 
 	@Override
@@ -74,9 +72,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
-		Arrays.fill(cost, Integer.MAX_VALUE);
-		cost[source] = 0;
-		score.put(source, cost[source] + fnEstimatedCost.applyAsDouble(source, target));
+		cost.clear();
+		// next two lines not needed but included for consistency
+		setCost(source, 0);
+		score.put(source, fnEstimatedCost.applyAsDouble(source, target));
 		open(source);
 		while (!q.isEmpty()) {
 			int current = q.poll();
@@ -86,10 +85,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 			close(current);
 			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
 				E edge = graph.getEdgeLabel(current, child);
-				double tentativeCost = cost[current] + fnEdgeCost.applyAsDouble(edge);
-				if (!isOpen(child) || tentativeCost < cost[child]) {
+				double tentativeCost = getCost(current) + fnEdgeCost.applyAsDouble(edge);
+				if (!isOpen(child) || tentativeCost < getCost(child)) {
 					setParent(child, current);
-					cost[child] = tentativeCost;
+					setCost(child, tentativeCost);
 					score.put(child, tentativeCost + fnEstimatedCost.applyAsDouble(child, target));
 					if (isOpen(child)) {
 						decreaseKey(child);

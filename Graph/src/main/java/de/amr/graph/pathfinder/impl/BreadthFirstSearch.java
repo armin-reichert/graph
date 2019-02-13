@@ -1,8 +1,9 @@
 package de.amr.graph.pathfinder.impl;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -23,7 +24,7 @@ import de.amr.graph.core.api.Graph;
 public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 
 	protected Queue<Integer> q;
-	protected double[] cost;
+	protected Map<Integer, Double> cost;
 	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
@@ -33,14 +34,13 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
 		super(graph);
 		this.q = q;
-		this.cost = new double[graph.numVertices()];
+		this.cost = new HashMap<>();
 	}
 
 	@Override
 	protected void init() {
 		super.init();
 		q.clear();
-		Arrays.fill(cost, -1);
 		maxCost = -1;
 	}
 
@@ -48,10 +48,11 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	protected void setParent(int child, int parent) {
 		super.setParent(child, parent);
 		if (parent != -1) {
-			cost[child] = cost[parent] + 1;
-			maxCost = Math.max(maxCost, cost[child]);
+			setCost(child, getCost(parent) + 1);
+			maxCost = Math.max(maxCost, getCost(child));
 		} else {
-			cost[child] = maxCost = 0;
+			setCost(child, 0);
+			maxCost = 0;
 		}
 	}
 
@@ -75,15 +76,14 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 		return q.contains(v);
 	}
 
-	/**
-	 * The cost/distance of the given vertex from the source.
-	 * 
-	 * @param v
-	 *            some vertex
-	 * @return the cost from the source or {@code -1} if the vertex is not reachable
-	 */
+	@Override
 	public double getCost(int v) {
-		return cost[v];
+		return cost.getOrDefault(v, -1d);
+	}
+
+	@Override
+	public void setCost(int v, double value) {
+		cost.put(v, value);
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
@@ -72,7 +71,6 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 		setParent(source, -1);
 		while (!isQueueEmpty()) {
 			int current = dequeue();
-			setState(current, COMPLETED);
 			if (current == target) {
 				return;
 			}
@@ -124,6 +122,25 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 	 * @return <code>true</code> if the vertex is on the queue
 	 */
 	public abstract boolean inQueue(int v);
+
+	/**
+	 * Gets the cost/distance of the given vertex.
+	 * 
+	 * @param v
+	 *            some vertex
+	 * @return the cost from the source or {@code -1} if the vertex is not reachable
+	 */
+	public abstract double getCost(int v);
+
+	/**
+	 * Sets the cost/distance of the given vertex.
+	 * 
+	 * @param v
+	 *                some vertex
+	 * @param value
+	 *                the cost value
+	 */
+	public abstract void setCost(int v, double value);
 
 	/**
 	 * Returns the path (list of vertices) between the given source and the given target vertex. If no

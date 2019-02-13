@@ -43,4 +43,14 @@ public class DepthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	public boolean inQueue(int v) {
 		return stack.contains(v);
 	}
+
+	@Override
+	public double getCost(int v) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setCost(int v, double value) {
+		throw new UnsupportedOperationException();
+	}
 }
