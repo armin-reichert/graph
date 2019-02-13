@@ -72,11 +72,12 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	@Override
 	public void traverseGraph(int source, int target) {
 		init();
-		cost.clear();
-		// next two lines not needed but included for consistency
+
+		// next two lines only included for consistency
 		setCost(source, 0);
 		score.put(source, fnEstimatedCost.applyAsDouble(source, target));
 		open(source);
+		
 		while (!q.isEmpty()) {
 			int current = q.poll();
 			if (current == target) {

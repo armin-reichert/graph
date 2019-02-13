@@ -41,6 +41,7 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	protected void init() {
 		super.init();
 		q.clear();
+		cost.clear();
 		maxCost = -1;
 	}
 
