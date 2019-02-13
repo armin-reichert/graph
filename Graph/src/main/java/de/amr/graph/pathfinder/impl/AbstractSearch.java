@@ -72,7 +72,7 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 		setParent(source, -1);
 		while (!isQueueEmpty()) {
 			int current = dequeue();
-			setState(source, COMPLETED);
+			setState(current, COMPLETED);
 			if (current == target) {
 				return;
 			}
@@ -86,11 +86,11 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 	 * @param v
 	 *            vertex
 	 */
-	protected void expand(int current) {
-		graph.adj(current).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
+	protected void expand(int v) {
+		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			enqueue(neighbor);
 			setState(neighbor, VISITED);
-			setParent(neighbor, current);
+			setParent(neighbor, v);
 		});
 	}
 
