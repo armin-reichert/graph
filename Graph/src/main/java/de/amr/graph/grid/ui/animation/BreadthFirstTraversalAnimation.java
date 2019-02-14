@@ -97,7 +97,7 @@ public class BreadthFirstTraversalAnimation {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. traverse complete graph for computing maximum distance from source
 			BreadthFirstSearch<?, ?> distanceMap = new BreadthFirstSearch<>(grid);
-			distanceMap.traverseGraph(source);
+			distanceMap.exploreGraph(source);
 
 			// Create renderer using distance map for coloring
 			floodFillRenderer = createFloodFillRenderer(canvasRenderer, distanceMap);
@@ -129,7 +129,7 @@ public class BreadthFirstTraversalAnimation {
 				}
 			};
 			bfs.addObserver(canvasUpdater);
-			bfs.traverseGraph(source, target);
+			bfs.exploreGraph(source, target);
 			bfs.removeObserver(canvasUpdater);
 			canvas.popRenderer();
 		});
@@ -137,7 +137,7 @@ public class BreadthFirstTraversalAnimation {
 
 	public void showPath(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			Iterable<Integer> path = bfs.path(source, target);
+			Iterable<Integer> path = bfs.findPath(source, target);
 			if (floodFillRenderer != null) {
 				canvas.pushRenderer(createPathRenderer(floodFillRenderer, bfs, path));
 			} else {

@@ -37,7 +37,7 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 	}
 
 	@Override
-	protected void expand(int current) {
+	protected void expandFrontier(int current) {
 		/*@formatter:off*/
 		graph.adj(current)
 			.filter(child -> getState(child) == UNVISITED)

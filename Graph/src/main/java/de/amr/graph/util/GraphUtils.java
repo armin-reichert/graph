@@ -76,7 +76,7 @@ public class GraphUtils {
 	 */
 	public static <V, E> boolean areConnected(Graph<V, E> graph, int u, int v) {
 		BreadthFirstSearch<V, E> bfs = new BreadthFirstSearch<>(graph);
-		bfs.traverseGraph(u, v);
+		bfs.exploreGraph(u, v);
 		return bfs.getCost(v) != -1;
 	}
 

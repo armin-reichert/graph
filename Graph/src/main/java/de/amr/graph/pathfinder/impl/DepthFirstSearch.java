@@ -10,7 +10,7 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch<V, E> extends AbstractSearch<V, E> {
+public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	protected final Deque<Integer> stack = new ArrayDeque<>();
 
@@ -25,22 +25,22 @@ public class DepthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	}
 
 	@Override
-	protected int dequeue() {
+	protected int removeFromFrontier() {
 		return stack.pop();
 	}
 
 	@Override
-	protected void enqueue(int v) {
+	protected void addToFrontier(int v) {
 		stack.push(v);
 	}
 
 	@Override
-	protected boolean isQueueEmpty() {
+	protected boolean isFrontierEmpty() {
 		return stack.isEmpty();
 	}
 
 	@Override
-	public boolean inQueue(int v) {
+	public boolean partOfFrontier(int v) {
 		return stack.contains(v);
 	}
 

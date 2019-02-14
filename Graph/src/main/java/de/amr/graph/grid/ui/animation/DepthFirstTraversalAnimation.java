@@ -44,7 +44,7 @@ public class DepthFirstTraversalAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.getState(cell) == VISITED || dfs.inQueue(cell)) {
+			if (dfs.getState(cell) == VISITED || dfs.partOfFrontier(cell)) {
 				return visitedCellColor;
 			}
 			return base.getModel().getCellBgColor(cell);
@@ -92,7 +92,7 @@ public class DepthFirstTraversalAnimation {
 		});
 		BitSet inPath = new BitSet();
 		canvas.pushRenderer(createRenderer(dfs, inPath, canvas.getRenderer().get()));
-		path = dfs.path(source, target);
+		path = dfs.findPath(source, target);
 		path.forEach(inPath::set);
 		path.forEach(canvas::drawGridCell);
 		canvas.popRenderer();

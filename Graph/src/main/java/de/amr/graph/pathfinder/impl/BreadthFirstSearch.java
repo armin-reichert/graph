@@ -21,7 +21,7 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
+public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	protected Queue<Integer> q;
 	protected Map<Integer, Double> cost;
@@ -58,22 +58,22 @@ public class BreadthFirstSearch<V, E> extends AbstractSearch<V, E> {
 	}
 
 	@Override
-	protected int dequeue() {
+	protected int removeFromFrontier() {
 		return q.poll();
 	}
 
 	@Override
-	protected void enqueue(int v) {
+	protected void addToFrontier(int v) {
 		q.add(v);
 	}
 
 	@Override
-	protected boolean isQueueEmpty() {
+	protected boolean isFrontierEmpty() {
 		return q.isEmpty();
 	}
 
 	@Override
-	public boolean inQueue(int v) {
+	public boolean partOfFrontier(int v) {
 		return q.contains(v);
 	}
 

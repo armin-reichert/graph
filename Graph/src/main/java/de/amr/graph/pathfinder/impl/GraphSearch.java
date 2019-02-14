@@ -17,7 +17,7 @@ import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 
 /**
- * Abstract base class for graph search algorithms.
+ * Base class for graph search algorithms.
  * 
  * <p>
  * Stores the traversal state and parent link for each vertex and supports registration of observers
@@ -25,19 +25,19 @@ import de.amr.graph.pathfinder.api.TraversalState;
  * 
  * @author Armin Reichert
  */
-public abstract class AbstractSearch<V, E> implements PathFinder {
+public abstract class GraphSearch<V, E> implements PathFinder {
 
 	protected final Graph<V, E> graph;
 	private final Map<Integer, Integer> parentMap = new HashMap<>();
 	private final Map<Integer, TraversalState> stateMap = new HashMap<>();
 	private final Set<GraphTraversalObserver> observers = new HashSet<>(5);
 
-	public AbstractSearch(Graph<V, E> graph) {
+	public GraphSearch(Graph<V, E> graph) {
 		this.graph = graph;
 	}
 
 	/**
-	 * Initializes the search such that {@link #traverseGraph(int, int)} starts in a clean state.
+	 * Initializes the search such that {@link #exploreGraph(int, int)} starts in a clean state.
 	 */
 	protected void init() {
 		parentMap.clear();
@@ -45,102 +45,38 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 	}
 
 	/**
-	 * Runs the search algorithm starting from the given source vertex and ending when all vertices
-	 * reachable from the source have been visited.
+	 * Explores the graph starting from the given source vertex until all reachable vertices have been
+	 * visited.
 	 * 
 	 * @param source
 	 *                 source vertex
 	 */
-	public void traverseGraph(int source) {
-		traverseGraph(source, -1);
+	public void exploreGraph(int source) {
+		exploreGraph(source, -1);
 	}
 
 	/**
-	 * Runs the search algorithm starting from the given source vertex and ending when the given target
-	 * vertex has been found or all vertices reachable from the source have been visited.
+	 * Explores the graph starting from the given source vertex until the given target vertex has been
+	 * found or all reachable vertices have been visited.
 	 * 
 	 * @param source
 	 *                 source vertex
 	 * @param target
 	 *                 target vertex
 	 */
-	public void traverseGraph(int source, int target) {
+	public void exploreGraph(int source, int target) {
 		init();
-		enqueue(source);
+		addToFrontier(source);
 		setState(source, VISITED);
 		setParent(source, -1);
-		while (!isQueueEmpty()) {
-			int current = dequeue();
+		while (!isFrontierEmpty()) {
+			int current = removeFromFrontier();
 			if (current == target) {
 				return;
 			}
-			expand(current);
+			expandFrontier(current);
 		}
 	}
-
-	/**
-	 * Expands the given vertex.
-	 * 
-	 * @param v
-	 *            vertex
-	 */
-	protected void expand(int v) {
-		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
-			enqueue(neighbor);
-			setState(neighbor, VISITED);
-			setParent(neighbor, v);
-		});
-	}
-
-	/**
-	 * Adds the given vertex to the search queue.
-	 * 
-	 * @param v
-	 *            vertex
-	 */
-	protected abstract void enqueue(int v);
-
-	/**
-	 * Takes the given vertex from the search queue.
-	 * 
-	 * @return vertex taken from queue
-	 */
-	protected abstract int dequeue();
-
-	/**
-	 * Tells if the search queue is empty.
-	 * 
-	 * @return true if the search queue is empty
-	 */
-	protected abstract boolean isQueueEmpty();
-
-	/**
-	 * Tells if the given vertex is in the search queue.
-	 * 
-	 * @param v
-	 *            vertex
-	 * @return <code>true</code> if the vertex is on the queue
-	 */
-	public abstract boolean inQueue(int v);
-
-	/**
-	 * Gets the cost/distance of the given vertex.
-	 * 
-	 * @param v
-	 *            some vertex
-	 * @return the cost from the source or {@code -1} if the vertex is not reachable
-	 */
-	public abstract double getCost(int v);
-
-	/**
-	 * Sets the cost/distance of the given vertex.
-	 * 
-	 * @param v
-	 *                some vertex
-	 * @param value
-	 *                the cost value
-	 */
-	public abstract void setCost(int v, double value);
 
 	/**
 	 * Returns the path (list of vertices) between the given source and the given target vertex. If no
@@ -153,14 +89,82 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 	 * @return path from source to target vertex or empty list
 	 */
 	@Override
-	public List<Integer> path(int source, int target) {
-		traverseGraph(source, target);
+	public List<Integer> findPath(int source, int target) {
+		exploreGraph(source, target);
+		return buildPath(target);
+	}
+
+	private List<Integer> buildPath(int target) {
 		List<Integer> path = new LinkedList<>();
 		for (int v = target; v != -1; v = getParent(v)) {
 			path.add(0, v);
 		}
 		return path.isEmpty() ? Collections.emptyList() : path;
 	}
+
+	/**
+	 * Expands the frontier at the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected void expandFrontier(int v) {
+		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
+			addToFrontier(neighbor);
+			setState(neighbor, VISITED);
+			setParent(neighbor, v);
+		});
+	}
+
+	/**
+	 * Adds the given vertex to the frontier.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected abstract void addToFrontier(int v);
+
+	/**
+	 * Removes the next vertex from the frontier.
+	 * 
+	 * @return the vertex removed from the frontier
+	 */
+	protected abstract int removeFromFrontier();
+
+	/**
+	 * Tells if the frontier is empty.
+	 * 
+	 * @return {@code true} if the frontier is empty
+	 */
+	protected abstract boolean isFrontierEmpty();
+
+	/**
+	 * Tells if the given vertex is part of the frontier.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return <code>true</code> if the vertex is is part of the frontier
+	 */
+	public abstract boolean partOfFrontier(int v);
+
+	/**
+	 * Gets the current cost of the given vertex.
+	 * 
+	 * @param v
+	 *            some vertex
+	 * @return the cost of the vertex if already computed or {@code -1}
+	 */
+	public abstract double getCost(int v);
+
+	/**
+	 * Sets the cost of the given vertex.
+	 * 
+	 * @param v
+	 *                some vertex
+	 * @param value
+	 *                the cost value
+	 */
+	public abstract void setCost(int v, double value);
 
 	/**
 	 * Sets the traversal state for the given vertex.
@@ -189,7 +193,7 @@ public abstract class AbstractSearch<V, E> implements PathFinder {
 	}
 
 	/**
-	 * Sets the parent vertex for the given child vertex.
+	 * Sets the parent vertex for the given vertex.
 	 * 
 	 * @param child
 	 *                 vertex

@@ -23,7 +23,7 @@ public class DepthFirstSearch2<V, E> extends DepthFirstSearch<V, E> {
 	}
 
 	@Override
-	public void traverseGraph(int source, int target) {
+	public void exploreGraph(int source, int target) {
 		init();
 
 		int current = source;

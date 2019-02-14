@@ -66,7 +66,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	}
 
 	@Override
-	public void traverseGraph(int source, int target) {
+	public void exploreGraph(int source, int target) {
 		init();
 
 		// next two lines only included for consistency

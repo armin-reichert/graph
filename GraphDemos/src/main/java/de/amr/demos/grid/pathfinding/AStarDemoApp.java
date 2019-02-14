@@ -249,7 +249,7 @@ public class AStarDemoApp {
 		astar = new AStarSearch<>(map, i -> i, this::getDistance);
 		StopWatch watch = new StopWatch();
 		watch.start();
-		List<Integer> path = astar.path(source, target);
+		List<Integer> path = astar.findPath(source, target);
 		watch.stop();
 		System.out.println(String.format("A*: %.4f seconds", watch.getSeconds()));
 		solution = new BitSet(map.numVertices());

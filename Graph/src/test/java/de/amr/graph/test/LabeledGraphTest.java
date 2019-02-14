@@ -116,7 +116,7 @@ public class LabeledGraphTest {
 		DepthFirstSearch<?, ?> dfs = new DepthFirstSearch<>(g);
 		DFSTracer tracer = new DFSTracer(g);
 		dfs.addObserver(tracer);
-		dfs.traverseGraph(0);
+		dfs.exploreGraph(0);
 		System.out.println(tracer.getVertexTrace());
 		System.out.println(tracer.getVertexLabelTrace());
 	}
