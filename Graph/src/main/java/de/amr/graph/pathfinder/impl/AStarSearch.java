@@ -66,6 +66,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	@Override
 	protected void init() {
 		q = new PriorityQueue<>(comparingDouble(this::getScore));
+		score.clear();
 		super.init();
 	}
 
