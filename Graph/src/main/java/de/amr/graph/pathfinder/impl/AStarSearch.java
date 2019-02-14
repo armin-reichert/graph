@@ -15,15 +15,10 @@ import de.amr.graph.core.api.Graph;
 /**
  * The A* path finder.
  * 
- * <p>
- * Functions f ("score"), g ("cost from source") and h ("heuristic cost to target vertex") are
- * realized as follows:
- * 
  * <pre>
- * f(v) = score[v]
- * g(v) = cost[v]
+ * f(v) = map "score"
+ * g(v) = map "cost"
  * h(v) = fnEstimatedCost.apply(v, target)
- * 
  * "v in open list": getState(v) == VISITED && priority queue q contains v
  * "v in closed list: getState(v) == COMPLETED
  * </pre>
@@ -41,25 +36,25 @@ import de.amr.graph.core.api.Graph;
 public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private final ToDoubleFunction<E> fnEdgeCost;
-	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedCost;
+	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost;
 	private final Map<Integer, Double> score;
 
 	/**
 	 * Creates an A* path finder instance.
 	 * 
 	 * @param graph
-	 *                          a graph
+	 *                              a graph
 	 * @param fnEdgeCost
-	 *                          function returning the cost for each edge
-	 * @param fnEstimatedCost
-	 *                          cost estimate between two vertices, for example the Euclidean or
-	 *                          Manhattan distance for a 2D grid
+	 *                              function returning the cost for each edge
+	 * @param fnEstimatedPathCost
+	 *                              estimated path cost, for example the Euclidean or Manhattan distance
+	 *                              for a 2D grid. Must be an underestimate of the real cost.
 	 */
 	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
-			ToDoubleBiFunction<Integer, Integer> fnEstimatedCost) {
+			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
 		super(graph);
 		this.fnEdgeCost = fnEdgeCost;
-		this.fnEstimatedCost = fnEstimatedCost;
+		this.fnEstimatedPathCost = fnEstimatedPathCost;
 		this.score = new HashMap<>();
 	}
 
@@ -76,9 +71,9 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 		// next two lines only included for consistency
 		setCost(source, 0);
-		score.put(source, fnEstimatedCost.applyAsDouble(source, target));
+		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
 		open(source);
-		
+
 		while (!q.isEmpty()) {
 			int current = q.poll();
 			close(current);
@@ -91,7 +86,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 				if (!isOpen(child) || tentativeCost < getCost(child)) {
 					setParent(child, current);
 					setCost(child, tentativeCost);
-					score.put(child, tentativeCost + fnEstimatedCost.applyAsDouble(child, target));
+					setScore(child, tentativeCost + fnEstimatedPathCost.applyAsDouble(child, target));
 					if (isOpen(child)) {
 						decreaseKey(child);
 					} else {
@@ -104,6 +99,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	public double getScore(int v) {
 		return score.getOrDefault(v, Double.MAX_VALUE);
+	}
+
+	private void setScore(int v, double value) {
+		score.put(v, value);
 	}
 
 	public boolean isOpen(int v) {
