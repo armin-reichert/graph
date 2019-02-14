@@ -7,6 +7,7 @@ import static java.util.Comparator.comparingDouble;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
@@ -16,11 +17,11 @@ import de.amr.graph.core.api.Graph;
  * The A* path finder.
  * 
  * <pre>
- * f(v) = map "score"
- * g(v) = map "cost"
- * h(v) = fnEstimatedCost.apply(v, target)
- * "v in open list": getState(v) == VISITED && priority queue q contains v
- * "v in closed list: getState(v) == COMPLETED
+ * f(v):             map "score"
+ * g(v):             map "cost"
+ * h(v):             fnEstimatedCost.apply(v, target)
+ * v in open list:   isOpen(v)
+ * v in closed list: isClosed(v)
  * </pre>
  * 
  * @param <V>
@@ -55,42 +56,37 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		super(graph);
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedPathCost = fnEstimatedPathCost;
-		this.score = new HashMap<>();
+		score = new HashMap<>();
 	}
 
 	@Override
 	protected void init() {
-		q = new PriorityQueue<>(comparingDouble(this::getScore));
-		score.clear();
 		super.init();
+		score.clear();
 	}
 
 	@Override
 	public void exploreGraph(int source, int target) {
 		init();
-
-		// next two lines only included for consistency
+		addToFrontier(source);
+		// next two lines only included for consistency:
 		setCost(source, 0);
 		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
-		open(source);
-
-		while (!q.isEmpty()) {
-			int current = q.poll();
-			close(current);
+		while (!isFrontierEmpty()) {
+			int current = removeFromFrontier();
 			if (current == target) {
 				break;
 			}
 			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
-				E edge = graph.getEdgeLabel(current, child);
-				double tentativeCost = getCost(current) + fnEdgeCost.applyAsDouble(edge);
-				if (!isOpen(child) || tentativeCost < getCost(child)) {
+				double newCost = getCost(current) + edgeCost(current, child);
+				if (!isOpen(child) || newCost < getCost(child)) {
 					setParent(child, current);
-					setCost(child, tentativeCost);
-					setScore(child, tentativeCost + fnEstimatedPathCost.applyAsDouble(child, target));
+					setCost(child, newCost);
+					setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
 					if (isOpen(child)) {
 						decreaseKey(child);
 					} else {
-						open(child);
+						addToFrontier(child);
 					}
 				}
 			});
@@ -113,18 +109,30 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		return getState(v) == COMPLETED;
 	}
 
-	private void open(int v) {
-		setState(v, VISITED);
-		q.add(v);
-	}
-
-	private void close(int v) {
-		setState(v, COMPLETED);
-	}
-
 	private void decreaseKey(int v) {
-		// PriorityQueue has no "decrease-key" operation
-		q.remove(v);
-		q.add(v);
+		frontier.remove(v);
+		frontier.add(v);
+	}
+
+	private double edgeCost(int u, int v) {
+		return fnEdgeCost.applyAsDouble(graph.getEdgeLabel(u, v));
+	}
+
+	@Override
+	protected Queue<Integer> createFrontier() {
+		return new PriorityQueue<>(comparingDouble(this::getScore));
+	}
+
+	@Override
+	protected void addToFrontier(int v) {
+		frontier.add(v);
+		setState(v, VISITED);
+	}
+
+	@Override
+	protected int removeFromFrontier() {
+		int v = frontier.poll();
+		setState(v, COMPLETED);
+		return v;
 	}
 }

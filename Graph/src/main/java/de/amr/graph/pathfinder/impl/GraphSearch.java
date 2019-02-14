@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
@@ -115,6 +116,8 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 			setParent(neighbor, v);
 		});
 	}
+
+	protected abstract Queue<Integer> createFrontier();
 
 	/**
 	 * Adds the given vertex to the frontier.

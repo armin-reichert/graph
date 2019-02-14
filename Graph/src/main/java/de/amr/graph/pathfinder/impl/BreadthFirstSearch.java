@@ -23,24 +23,19 @@ import de.amr.graph.core.api.Graph;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected Queue<Integer> q;
+	protected Queue<Integer> frontier;
 	protected Map<Integer, Double> cost;
 	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
-		this(graph, new ArrayDeque<>());
-	}
-
-	protected BreadthFirstSearch(Graph<V, E> graph, Queue<Integer> q) {
 		super(graph);
-		this.q = q;
-		this.cost = new HashMap<>();
+		cost = new HashMap<>();
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		q.clear();
+		frontier = createFrontier();
 		cost.clear();
 		maxCost = -1;
 	}
@@ -58,23 +53,28 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 	}
 
 	@Override
+	protected Queue<Integer> createFrontier() {
+		return new ArrayDeque<>();
+	}
+
+	@Override
 	protected int removeFromFrontier() {
-		return q.poll();
+		return frontier.poll();
 	}
 
 	@Override
 	protected void addToFrontier(int v) {
-		q.add(v);
+		frontier.add(v);
 	}
 
 	@Override
 	protected boolean isFrontierEmpty() {
-		return q.isEmpty();
+		return frontier.isEmpty();
 	}
 
 	@Override
 	public boolean partOfFrontier(int v) {
-		return q.contains(v);
+		return frontier.contains(v);
 	}
 
 	@Override
