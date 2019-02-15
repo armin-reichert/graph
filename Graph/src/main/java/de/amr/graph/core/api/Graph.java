@@ -53,6 +53,19 @@ public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 	void addVertex(int v);
 
 	/**
+	 * Adds the given vertex to this graph and assigns the given label.
+	 * 
+	 * @param v
+	 *                a vertex
+	 * @param label
+	 *                vertex label
+	 */
+	default void addVertex(int v, V label) {
+		addVertex(v);
+		set(v, label);
+	}
+
+	/**
 	 * Removes the given vertex from this graph.
 	 * 
 	 * @param v
