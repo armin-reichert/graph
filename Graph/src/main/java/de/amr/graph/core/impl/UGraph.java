@@ -115,6 +115,7 @@ public class UGraph<V, E> implements Graph<V, E> {
 		assertVertexExists(v);
 		assertVertexExists(w);
 		Edge edge = new UndirectedEdge(v, w);
+		setEdgeLabel(v, w, e);
 		adjEdges.get(v).add(edge);
 		adjEdges.get(w).add(edge);
 		numEdges += 1;
