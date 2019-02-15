@@ -92,15 +92,22 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	@Override
 	public List<Integer> findPath(int source, int target) {
 		exploreGraph(source, target);
-		return buildPath(target);
+		return buildPath(source, target);
 	}
 
-	private List<Integer> buildPath(int target) {
+	private List<Integer> buildPath(int source, int target) {
 		List<Integer> path = new LinkedList<>();
+		if (source == target) {
+			path.add(source);
+			return path;
+		}
+		if (getParent(target) == -1) {
+			return Collections.emptyList();
+		}
 		for (int v = target; v != -1; v = getParent(v)) {
 			path.add(0, v);
 		}
-		return path.isEmpty() ? Collections.emptyList() : path;
+		return path;
 	}
 
 	/**
