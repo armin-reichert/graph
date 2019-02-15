@@ -47,7 +47,7 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	@Override
 	public boolean partOfFrontier(int v) {
-		return stack.contains(v);
+		return stack != null && stack.contains(v);
 	}
 
 	@Override

@@ -6,9 +6,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import de.amr.graph.core.api.Edge;
+import de.amr.graph.core.api.ObservableGraph;
 import de.amr.graph.event.api.EdgeEvent;
 import de.amr.graph.event.api.GraphObserver;
-import de.amr.graph.event.api.ObservableGraph;
 import de.amr.graph.event.api.VertexEvent;
 import de.amr.graph.grid.api.ObservableGridGraph2D;
 import de.amr.graph.grid.api.Topology;

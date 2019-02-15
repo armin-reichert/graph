@@ -1,6 +1,6 @@
 package de.amr.graph.grid.api;
 
-import de.amr.graph.event.api.ObservableGraph;
+import de.amr.graph.core.api.ObservableGraph;
 
 /**
  * A 2D grid graph that fires events to its observers.

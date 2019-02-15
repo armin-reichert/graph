@@ -1,5 +1,7 @@
 package de.amr.graph.event.api;
 
+import de.amr.graph.core.api.ObservableGraph;
+
 /**
  * Event for edge related changes of a graph.
  * 

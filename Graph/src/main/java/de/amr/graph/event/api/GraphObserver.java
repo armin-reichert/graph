@@ -1,5 +1,7 @@
 package de.amr.graph.event.api;
 
+import de.amr.graph.core.api.ObservableGraph;
+
 /**
  * Observer interface for graph operations.
  * 

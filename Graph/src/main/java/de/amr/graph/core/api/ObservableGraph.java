@@ -1,6 +1,6 @@
-package de.amr.graph.event.api;
+package de.amr.graph.core.api;
 
-import de.amr.graph.core.api.Graph;
+import de.amr.graph.event.api.GraphObserver;
 
 /**
  * A graph whose operations can be observed.

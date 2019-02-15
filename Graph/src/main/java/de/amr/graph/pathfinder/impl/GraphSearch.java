@@ -31,7 +31,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected final Graph<V, E> graph;
 	private final Map<Integer, Integer> parentMap = new HashMap<>();
 	private final Map<Integer, TraversalState> stateMap = new HashMap<>();
-	private final Set<GraphTraversalObserver> observers = new HashSet<>(5);
+	protected final Set<GraphTraversalObserver> observers = new HashSet<>(5);
 
 	public GraphSearch(Graph<V, E> graph) {
 		this.graph = graph;

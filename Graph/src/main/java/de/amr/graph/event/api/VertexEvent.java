@@ -1,5 +1,7 @@
 package de.amr.graph.event.api;
 
+import de.amr.graph.core.api.ObservableGraph;
+
 /**
  * Information about a change of a vertex.
  * 

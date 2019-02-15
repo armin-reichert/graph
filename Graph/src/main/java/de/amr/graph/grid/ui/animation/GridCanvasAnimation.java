@@ -2,9 +2,9 @@ package de.amr.graph.grid.ui.animation;
 
 import java.util.function.IntSupplier;
 
+import de.amr.graph.core.api.ObservableGraph;
 import de.amr.graph.event.api.EdgeEvent;
 import de.amr.graph.event.api.GraphObserver;
-import de.amr.graph.event.api.ObservableGraph;
 import de.amr.graph.event.api.VertexEvent;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 
