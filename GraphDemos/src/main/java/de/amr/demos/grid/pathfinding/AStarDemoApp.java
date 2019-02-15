@@ -222,7 +222,7 @@ public class AStarDemoApp {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 4);
+		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 5);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = () -> cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
