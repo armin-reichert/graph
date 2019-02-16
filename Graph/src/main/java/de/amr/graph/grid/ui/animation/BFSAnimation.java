@@ -9,7 +9,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import de.amr.graph.event.api.GraphTraversalObserver;
-import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -17,29 +17,28 @@ import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
- * Animation of breadth-first traversal on a grid.
+ * Animation of BFS based grid traversals (BFS, A* etc.).
  * <p>
- * Shows the distances from the source cell while the BFS traverses the graph and colors the cells
- * according to their distance ("flood-fill").
+ * Grid cells are colored depending on their distance from the search start cell. The cell coloring
+ * always follows the gradient from yellow to red in the HSV color model.
  * 
  * @author Armin Reichert
  */
-public class BreadthFirstTraversalAnimation {
+public class BFSAnimation {
 
 	/**
 	 * Runs a "flood-fill" on the given grid.
 	 * 
 	 * @param canvas
 	 *                 grid canvas
-	 * @param grid
-	 *                 grid
 	 * @param source
 	 *                 cell where flood-fill starts
 	 */
-	public static void floodFill(GridCanvas canvas, GridGraph<?, ?> grid, int source) {
-		floodFill(canvas, grid, source, true);
+	public static void floodFill(GridCanvas canvas, int source) {
+		floodFill(canvas, source, true);
 	}
 
 	/**
@@ -47,28 +46,26 @@ public class BreadthFirstTraversalAnimation {
 	 * 
 	 * @param canvas
 	 *                          grid canvas
-	 * @param grid
-	 *                          grid
 	 * @param source
 	 *                          cell where flood-fill starts
 	 * @param distanceVisible
 	 *                          if distances should be displayed as text
 	 */
-	public static void floodFill(GridCanvas canvas, GridGraph<?, ?> grid, int source, boolean distanceVisible) {
-		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(grid);
-		BreadthFirstTraversalAnimation anim = new BreadthFirstTraversalAnimation(grid);
+	public static void floodFill(GridCanvas canvas, int source, boolean distanceVisible) {
+		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(canvas.getGrid());
+		BFSAnimation anim = new BFSAnimation(canvas.getGrid());
 		anim.setDistanceVisible(distanceVisible);
 		anim.run(canvas, bfs, source, -1);
 	}
 
-	private final GridGraph<?, ?> grid;
+	private final GridGraph2D<?, ?> grid;
 	private ConfigurableGridRenderer floodFillRenderer;
 	private boolean distanceVisible;
 
 	public IntSupplier fnDelay = () -> 0;
 	public Supplier<Color> fnPathColor = () -> Color.RED;
 
-	public BreadthFirstTraversalAnimation(GridGraph<?, ?> grid) {
+	public BFSAnimation(GridGraph2D<?, ?> grid) {
 		this.grid = grid;
 		distanceVisible = true;
 	}
@@ -85,25 +82,17 @@ public class BreadthFirstTraversalAnimation {
 		return fnPathColor.get();
 	}
 
-	/**
-	 * @param canvas
-	 *                 grid canvas displaying the animation
-	 * @param source
-	 *                 the source cell
-	 * @param target
-	 *                 the target cell
-	 */
-	public void run(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int source, int target) {
+	public void run(GridCanvas canvas, GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			// 1. traverse complete graph for computing maximum distance from source
-			BreadthFirstSearch<?, ?> distanceMap = new BreadthFirstSearch<>(grid);
-			distanceMap.exploreGraph(source);
+			// 1. traverse complete graph for computing distances from source
+			BreadthFirstSearch<?, ?> distancesComputation = new BreadthFirstSearch<>(grid);
+			distancesComputation.exploreGraph(source);
 
-			// Create renderer using distance map for coloring
-			floodFillRenderer = createFloodFillRenderer(canvasRenderer, distanceMap);
+			// Create renderer using computed distances for coloring
+			floodFillRenderer = createFloodFillRenderer(canvasRenderer, distancesComputation);
 			canvas.pushRenderer(floodFillRenderer);
 
-			// 2. traverse again with events enabled
+			// 2. traverse graph again, now with events enabled
 			GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
 
 				private void delayed(Runnable code) {
@@ -135,7 +124,7 @@ public class BreadthFirstTraversalAnimation {
 		});
 	}
 
-	public void showPath(GridCanvas canvas, BreadthFirstSearch<?, ?> bfs, int source, int target) {
+	public void showPath(GridCanvas canvas, GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			Iterable<Integer> path = bfs.findPath(source, target);
 			if (floodFillRenderer != null) {
@@ -168,8 +157,8 @@ public class BreadthFirstTraversalAnimation {
 		return r;
 	}
 
-	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base,
-			BreadthFirstSearch<?, ?> distanceMap, Iterable<Integer> path) {
+	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base, GraphSearch<?, ?> search,
+			Iterable<Integer> path) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
@@ -182,16 +171,16 @@ public class BreadthFirstTraversalAnimation {
 			return inPath.get(cell) && inPath.get(neighbor) ? getPathColor() : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
-		r.fnText = cell -> distanceVisible ? format("%.0f", distanceMap.getCost(cell)) : "";
+		r.fnText = cell -> distanceVisible ? format("%.0f", search.getCost(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.WHITE;
 		return r;
 	}
 
-	private static Color colorByDist(int cell, BreadthFirstSearch<?, ?> distanceMap) {
+	private static Color colorByDist(int cell, BreadthFirstSearch<?, ?> distancesComputation) {
 		float hue = 0.16f;
-		if (distanceMap.getMaxCost() > 0) {
-			hue += 0.7f * distanceMap.getCost(cell) / distanceMap.getMaxCost();
+		if (distancesComputation.getMaxCost() > 0) {
+			hue += 0.7f * distancesComputation.getCost(cell) / distancesComputation.getMaxCost();
 		}
 		return Color.getHSBColor(hue, 0.5f, 1f);
 	}

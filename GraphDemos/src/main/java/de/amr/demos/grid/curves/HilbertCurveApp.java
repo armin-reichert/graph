@@ -9,7 +9,7 @@ import static de.amr.graph.grid.impl.Top4.E;
 import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
-import static de.amr.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
+import static de.amr.graph.grid.ui.animation.BFSAnimation.floodFill;
 import static de.amr.graph.util.GraphUtils.log;
 import static java.util.Arrays.asList;
 
@@ -30,8 +30,7 @@ import de.amr.graph.grid.curves.HilbertCurve;
  */
 public class HilbertCurveApp extends SwingGridSampleApp {
 
-	private static final EnumMap<GridPosition, List<Integer>> ORIENTATION = new EnumMap<>(
-			GridPosition.class);
+	private static final EnumMap<GridPosition, List<Integer>> ORIENTATION = new EnumMap<>(GridPosition.class);
 
 	static {
 		ORIENTATION.put(TOP_RIGHT, asList(N, E, S, W));
@@ -58,7 +57,7 @@ public class HilbertCurveApp extends SwingGridSampleApp {
 				HilbertCurve hilbert = new HilbertCurve(log(2, getGrid().numCols()), dir.get(0), dir.get(1),
 						dir.get(2), dir.get(3));
 				traverse(hilbert, getGrid(), getGrid().cell(start), this::addEdge);
-				floodFill(getCanvas(), getGrid(), getGrid().cell(start), false);
+				floodFill(getCanvas(), getGrid().cell(start), false);
 				sleep(1000);
 			});
 		});

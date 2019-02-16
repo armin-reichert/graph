@@ -9,7 +9,7 @@ import org.junit.Test;
 import de.amr.graph.core.api.ObservableGraph;
 import de.amr.graph.core.impl.ObservableUGraph;
 import de.amr.graph.pathfinder.api.PathFinder;
-import de.amr.graph.pathfinder.impl.IterativeDeepeningSearch;
+import de.amr.graph.pathfinder.impl.IDDFS;
 
 public class IDDFSTest {
 
@@ -39,7 +39,7 @@ public class IDDFSTest {
 
 	@Test
 	public void testIterativeDeepening() {
-		PathFinder search = new IterativeDeepeningSearch<>(g);
+		PathFinder search = new IDDFS<>(g);
 		List<Integer> path = search.findPath(0, 7);
 		System.out.println("Path=" + path);
 		Assert.assertEquals(5, path.size());

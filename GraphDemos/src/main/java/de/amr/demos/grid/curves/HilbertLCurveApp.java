@@ -2,7 +2,7 @@ package de.amr.demos.grid.curves;
 
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
 import static de.amr.graph.grid.curves.CurveUtils.traverse;
-import static de.amr.graph.grid.ui.animation.BreadthFirstTraversalAnimation.floodFill;
+import static de.amr.graph.grid.ui.animation.BFSAnimation.floodFill;
 import static de.amr.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
@@ -27,7 +27,7 @@ public class HilbertLCurveApp extends SwingGridSampleApp {
 			setCellSize(cellSize);
 			HilbertLCurve curve = new HilbertLCurve(log(2, getGrid().numCols()));
 			traverse(curve, getGrid(), getGrid().cell(BOTTOM_LEFT), this::addEdge);
-			floodFill(getCanvas(), getGrid(), getGrid().cell(BOTTOM_LEFT), false);
+			floodFill(getCanvas(), getGrid().cell(BOTTOM_LEFT), false);
 			sleep(1000);
 		});
 	}

@@ -14,11 +14,11 @@ import de.amr.graph.core.api.Graph;
  * @param <E>
  *          edge label type
  */
-public class IterativeDeepeningSearch<V, E> extends DepthFirstSearch<V, E> {
+public class IDDFS<V, E> extends DepthFirstSearch<V, E> {
 
 	private DepthLimitedDFS<V, E> dls;
 
-	public IterativeDeepeningSearch(Graph<V, E> graph) {
+	public IDDFS(Graph<V, E> graph) {
 		super(graph);
 	}
 
