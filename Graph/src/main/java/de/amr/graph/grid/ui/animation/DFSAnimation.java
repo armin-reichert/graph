@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.IntSupplier;
 
 import de.amr.graph.event.api.GraphTraversalObserver;
-import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -24,14 +23,14 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 public class DFSAnimation {
 
-	private final GridGraph<?, ?> grid;
+	private final GridCanvas canvas;
 	private List<Integer> path;
 	private Color pathColor = Color.RED;
 	private Color visitedCellColor = Color.BLUE;
 	public IntSupplier fnDelay = () -> 0;
 
-	public DFSAnimation(GridGraph<?, ?> grid) {
-		this.grid = grid;
+	public DFSAnimation(GridCanvas canvas) {
+		this.canvas = canvas;
 	}
 
 	private ConfigurableGridRenderer createRenderer(GraphSearch<?, ?> dfs, BitSet inPath, GridRenderer base) {
@@ -50,7 +49,7 @@ public class DFSAnimation {
 			return base.getModel().getCellBgColor(cell);
 		};
 		r.fnPassageColor = (cell, dir) -> {
-			int neighbor = grid.neighbor(cell, dir).getAsInt();
+			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
@@ -65,7 +64,7 @@ public class DFSAnimation {
 		return r;
 	}
 
-	public void run(GridCanvas canvas, GraphSearch<?, ?> dfs, int source, int target) {
+	public void run(GraphSearch<?, ?> dfs, int source, int target) {
 		GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
 
 			private void delayed(Runnable code) {
