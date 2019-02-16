@@ -9,7 +9,6 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import de.amr.graph.event.api.GraphTraversalObserver;
-import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -53,20 +52,20 @@ public class BFSAnimation {
 	 */
 	public static void floodFill(GridCanvas canvas, int source, boolean distanceVisible) {
 		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(canvas.getGrid());
-		BFSAnimation anim = new BFSAnimation(canvas.getGrid());
+		BFSAnimation anim = new BFSAnimation(canvas);
 		anim.setDistanceVisible(distanceVisible);
-		anim.run(canvas, bfs, source, -1);
+		anim.run(bfs, source, -1);
 	}
 
-	private final GridGraph2D<?, ?> grid;
+	private final GridCanvas canvas;
 	private ConfigurableGridRenderer floodFillRenderer;
 	private boolean distanceVisible;
 
 	public IntSupplier fnDelay = () -> 0;
 	public Supplier<Color> fnPathColor = () -> Color.RED;
 
-	public BFSAnimation(GridGraph2D<?, ?> grid) {
-		this.grid = grid;
+	public BFSAnimation(GridCanvas canvas) {
+		this.canvas = canvas;
 		distanceVisible = true;
 	}
 
@@ -82,10 +81,10 @@ public class BFSAnimation {
 		return fnPathColor.get();
 	}
 
-	public void run(GridCanvas canvas, GraphSearch<?, ?> bfs, int source, int target) {
+	public void run(GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. traverse complete graph for computing distances from source
-			BreadthFirstSearch<?, ?> distancesComputation = new BreadthFirstSearch<>(grid);
+			BreadthFirstSearch<?, ?> distancesComputation = new BreadthFirstSearch<>(canvas.getGrid());
 			distancesComputation.exploreGraph(source);
 
 			// Create renderer using computed distances for coloring
@@ -124,7 +123,7 @@ public class BFSAnimation {
 		});
 	}
 
-	public void showPath(GridCanvas canvas, GraphSearch<?, ?> bfs, int source, int target) {
+	public void showPath(GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			Iterable<Integer> path = bfs.findPath(source, target);
 			if (floodFillRenderer != null) {
@@ -167,7 +166,7 @@ public class BFSAnimation {
 		r.fnCellSize = () -> base.getCellSize();
 		r.fnGridBgColor = () -> base.getGridBgColor();
 		r.fnPassageColor = (cell, dir) -> {
-			int neighbor = grid.neighbor(cell, dir).getAsInt();
+			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
 			return inPath.get(cell) && inPath.get(neighbor) ? getPathColor() : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
