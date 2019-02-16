@@ -35,8 +35,8 @@ public class DepthLimitedDFS<V, E> extends DepthFirstSearch<V, E> {
 
 	@Override
 	protected void setParent(int child, int parent) {
-		super.setParent(child, parent);
 		depth.put(child, parent != -1 ? depth.get(parent) + 1 : 0);
+		super.setParent(child, parent);
 	}
 
 	@Override
