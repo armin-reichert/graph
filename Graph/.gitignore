@@ -1,3 +1,7 @@
+# Eclipse
+.externalToolBuilders
+.settings
+
 # Compiled class file
 *.class
 
