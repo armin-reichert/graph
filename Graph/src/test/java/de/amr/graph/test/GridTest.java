@@ -1,11 +1,14 @@
 package de.amr.graph.test;
 
+import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
+import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 import static de.amr.graph.grid.impl.Top4.E;
 import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
+import static de.amr.graph.util.GraphUtils.areConnected;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.core.api.UndirectedEdge;
-import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.ObservableGridGraph;
 import de.amr.graph.grid.impl.Top4;
@@ -95,14 +97,14 @@ public class GridTest {
 
 	@Test
 	public void testAreNeighbors() {
-		int center = grid.cell(CENTER);
-		assertTrue(grid.areNeighbors(center, center + 1));
-		assertTrue(grid.areNeighbors(center, center - 1));
-		assertTrue(grid.areNeighbors(center, center - grid.numCols()));
-		assertTrue(grid.areNeighbors(center, center + grid.numCols()));
-		assertTrue(!grid.areNeighbors(center, center));
-		assertTrue(!grid.areNeighbors(center, center - 2));
-		assertTrue(!grid.areNeighbors(center, center + 2));
+		int v = grid.cell(CENTER);
+		assertFalse(grid.areNeighbors(v, v));
+		assertTrue(grid.areNeighbors(v, v + 1));
+		assertTrue(grid.areNeighbors(v, v - 1));
+		assertTrue(grid.areNeighbors(v, v - grid.numCols()));
+		assertTrue(grid.areNeighbors(v, v + grid.numCols()));
+		assertTrue(!grid.areNeighbors(v, v - 2));
+		assertTrue(!grid.areNeighbors(v, v + 2));
 	}
 
 	@Test
@@ -200,47 +202,46 @@ public class GridTest {
 
 	@Test
 	public void testConnected() {
-		int u = grid.cell(GridPosition.TOP_LEFT);
-		int v = grid.cell(GridPosition.BOTTOM_RIGHT);
-		assertFalse(GraphUtils.areConnected(grid, u, v));
+		int u = grid.cell(TOP_LEFT);
+		int v = grid.cell(BOTTOM_RIGHT);
+		assertFalse(areConnected(grid, u, v));
 		grid.fill();
-		assertTrue(GraphUtils.areConnected(grid, u, v));
+		assertTrue(areConnected(grid, u, v));
 		grid.removeEdges();
 
-		assertFalse(GraphUtils.areConnected(grid, 0, 1));
+		assertFalse(areConnected(grid, 0, 1));
 		grid.addEdge(0, 1);
-		assertTrue(GraphUtils.areConnected(grid, 0, 1));
+		assertTrue(areConnected(grid, 0, 1));
 		grid.removeEdge(0, 1);
-		assertFalse(GraphUtils.areConnected(grid, 0, 1));
+		assertFalse(areConnected(grid, 0, 1));
 
-		assertTrue(GraphUtils.areConnected(grid, 0, 0));
+		assertTrue(areConnected(grid, 0, 0));
 	}
 
 	@Test
 	public void testManhattanDist() {
-		int u = grid.cell(GridPosition.TOP_LEFT);
-		int v = grid.cell(GridPosition.BOTTOM_RIGHT);
-		int dist = grid.manhattan(u, v);
-		assertEquals((grid.numRows() - 1) + (grid.numCols() - 1), dist);
+		int r = grid.numRows(), c = grid.numCols();
+		int u = grid.cell(TOP_LEFT);
+		int v = grid.cell(BOTTOM_RIGHT);
+		assertEquals((r - 1) + (c - 1), grid.manhattan(u, v));
 		assertEquals(0, grid.manhattan(u, u));
 	}
 
 	@Test
 	public void testEuclidian2Dist() {
-		int u = grid.cell(GridPosition.TOP_LEFT);
-		int v = grid.cell(GridPosition.BOTTOM_RIGHT);
-		int dist = grid.euclidean2(u, v);
-		assertEquals((grid.numRows() - 1) * (grid.numRows() - 1) + (grid.numCols() - 1) * (grid.numCols() - 1),
-				dist);
+		int r = grid.numRows(), c = grid.numCols();
+		int u = grid.cell(TOP_LEFT);
+		int v = grid.cell(BOTTOM_RIGHT);
+		assertEquals((r - 1) * (r - 1) + (c - 1) * (c - 1), grid.euclidean2(u, v));
 		assertEquals(0, grid.euclidean2(u, u));
 	}
 
 	@Test
 	public void testChebyshevDist() {
-		int u = grid.cell(GridPosition.TOP_LEFT);
-		int v = grid.cell(GridPosition.BOTTOM_RIGHT);
-		int dist = grid.chebyshev(u, v);
-		assertEquals(Math.max(grid.numRows() - 1, grid.numCols() - 1), dist);
+		int r = grid.numRows(), c = grid.numCols();
+		int u = grid.cell(TOP_LEFT);
+		int v = grid.cell(BOTTOM_RIGHT);
+		assertEquals(Math.max(r - 1, c - 1), grid.chebyshev(u, v));
 		assertEquals(0, grid.chebyshev(u, u));
 	}
 
