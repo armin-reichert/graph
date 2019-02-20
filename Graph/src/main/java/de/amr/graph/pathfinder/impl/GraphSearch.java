@@ -159,25 +159,6 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	}
 
 	/**
-	 * Gets the current cost of the given vertex.
-	 * 
-	 * @param v
-	 *            some vertex
-	 * @return the cost of the vertex if already computed or {@code -1}
-	 */
-	public abstract double getCost(int v);
-
-	/**
-	 * Sets the cost of the given vertex.
-	 * 
-	 * @param v
-	 *                some vertex
-	 * @param value
-	 *                the cost value
-	 */
-	public abstract void setCost(int v, double value);
-
-	/**
 	 * Sets the traversal state for the given vertex.
 	 * 
 	 * @param v

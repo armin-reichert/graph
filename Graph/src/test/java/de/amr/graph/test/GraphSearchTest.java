@@ -43,7 +43,6 @@ public class GraphSearchTest {
 		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		g.vertices().forEach(v -> {
 			assertEquals(-1, search.getParent(v));
-			assertEquals(-1, search.getCost(v), 0);
 		});
 	}
 
@@ -96,17 +95,17 @@ public class GraphSearchTest {
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
 		assertEquals(Arrays.asList(0, 1, 2, 5, 8), path);
-//		assertEquals(Arrays.asList(0, 3, 6, 7, 8), path);
+		// assertEquals(Arrays.asList(0, 3, 6, 7, 8), path);
 	}
-	
+
 	@Test
 	public void testDFS() {
 		GridGraph<Void, Void> g = circle3();
 		GraphSearch<Void, Void> search = new DepthFirstSearch<>(g);
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
-//		assertEquals(Arrays.asList(0, 1, 2, 5, 8), path);
+		// assertEquals(Arrays.asList(0, 1, 2, 5, 8), path);
 		assertEquals(Arrays.asList(0, 3, 6, 7, 8), path);
 	}
-	
+
 }

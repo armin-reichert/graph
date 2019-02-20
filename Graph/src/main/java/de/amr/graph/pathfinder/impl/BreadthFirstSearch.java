@@ -76,12 +76,25 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 		return frontier.contains(v);
 	}
 
-	@Override
+	/**
+	 * Returns the cost of the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return vertex cost
+	 */
 	public double getCost(int v) {
 		return cost.getOrDefault(v, -1d);
 	}
 
-	@Override
+	/**
+	 * Sets the cost for the given vertex.
+	 * 
+	 * @param v
+	 *                vertex
+	 * @param value
+	 *                cost value
+	 */
 	public void setCost(int v, double value) {
 		cost.put(v, value);
 	}

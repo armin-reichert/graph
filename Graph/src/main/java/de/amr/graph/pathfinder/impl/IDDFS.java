@@ -58,14 +58,4 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 	public boolean partOfFrontier(int v) {
 		return dls != null && dls.partOfFrontier(v);
 	}
-
-	@Override
-	public double getCost(int v) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setCost(int v, double value) {
-		throw new UnsupportedOperationException();
-	}
 }

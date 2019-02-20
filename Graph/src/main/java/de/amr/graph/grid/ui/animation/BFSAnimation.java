@@ -124,7 +124,7 @@ public class BFSAnimation {
 		});
 	}
 
-	public void showPath(GraphSearch<?, ?> bfs, int source, int target) {
+	public void showPath(BreadthFirstSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			Iterable<Integer> path = bfs.findPath(source, target);
 			if (floodFillRenderer != null) {
@@ -157,8 +157,8 @@ public class BFSAnimation {
 		return r;
 	}
 
-	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base, GraphSearch<?, ?> search,
-			Iterable<Integer> path) {
+	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base,
+			BreadthFirstSearch<?, ?> search, Iterable<Integer> path) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
