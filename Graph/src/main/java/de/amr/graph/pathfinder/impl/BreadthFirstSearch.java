@@ -52,7 +52,6 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 		}
 	}
 
-	@Override
 	protected Queue<Integer> createFrontier() {
 		return new ArrayDeque<>();
 	}

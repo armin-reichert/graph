@@ -2,7 +2,6 @@ package de.amr.graph.pathfinder.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Queue;
 
 import de.amr.graph.core.api.Graph;
 
@@ -39,11 +38,6 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 	}
 
 	// implemented only to be able to run DFS animation for this pathfinder:
-
-	@Override
-	protected Queue<Integer> createFrontier() {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	protected void addToFrontier(int v) {

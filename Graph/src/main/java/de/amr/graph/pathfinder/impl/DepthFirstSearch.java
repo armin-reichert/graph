@@ -2,7 +2,6 @@ package de.amr.graph.pathfinder.impl;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Queue;
 
 import de.amr.graph.core.api.Graph;
 
@@ -22,11 +21,10 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 	@Override
 	protected void init() {
 		super.init();
-		stack = (Deque<Integer>) createFrontier();
+		stack = createFrontier();
 	}
 
-	@Override
-	protected Queue<Integer> createFrontier() {
+	protected Deque<Integer> createFrontier() {
 		return new ArrayDeque<>();
 	}
 
