@@ -5,8 +5,8 @@ import java.util.function.ToDoubleFunction;
 import de.amr.graph.core.api.Graph;
 
 /**
- * The Dijkstra algorithm is just A* without heuristics. Only the cost from the source is used when
- * the current vertex is expanded.
+ * The Uniform-Cost Search (Dijkstra) can be seen as A* without heuristics. Only the cost-so-far is
+ * used for deciding which vertex to expand next.
  * 
  * @author Armin Reichert
  *

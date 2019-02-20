@@ -23,19 +23,20 @@ import de.amr.graph.core.api.Graph;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected Queue<Integer> frontier;
-	protected Map<Integer, Double> cost;
+	protected final Queue<Integer> frontier;
+	protected final Map<Integer, Double> cost;
 	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
 		super(graph);
+		frontier = createFrontier();
 		cost = new HashMap<>();
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		frontier = createFrontier();
+		frontier.clear();
 		cost.clear();
 		maxCost = -1;
 	}
