@@ -70,12 +70,10 @@ public class GridCanvasAnimation<V, E> implements GraphObserver<V, E> {
 	}
 
 	private void delayed(Runnable code) {
-		if (fnDelay.getAsInt() > 0) {
-			try {
-				Thread.sleep(fnDelay.getAsInt());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		try {
+			Thread.sleep(fnDelay.getAsInt());
+		} catch (InterruptedException e) {
+			throw new AnimationInterruptedException();
 		}
 		code.run();
 		canvas.repaint();
