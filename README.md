@@ -2,7 +2,7 @@
 
 This library has been written as the foundation of my [maze generation library](https://github.com/armin-reichert/mazes). 
 
-![Maze](https://github.com/armin-reichert/mazes/blob/master/Demos/images/mazedemoapp.png)
+![Maze](https://github.com/armin-reichert/mazes/blob/master/MazeDemos/images/mazedemoapp.png)
 
 It contains an efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). 
 
