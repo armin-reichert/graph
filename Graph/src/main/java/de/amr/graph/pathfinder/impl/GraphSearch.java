@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
@@ -18,7 +19,6 @@ import de.amr.graph.pathfinder.api.TraversalState;
 
 /**
  * Base class for graph search algorithms.
- * 
  * <p>
  * Stores the traversal state and parent link for each vertex and supports registration of observers
  * for vertex and edge traversals.
@@ -28,12 +28,16 @@ import de.amr.graph.pathfinder.api.TraversalState;
 public abstract class GraphSearch<V, E> implements PathFinder {
 
 	protected final Graph<V, E> graph;
-	private final Map<Integer, Integer> parentMap = new HashMap<>();
-	private final Map<Integer, TraversalState> stateMap = new HashMap<>();
-	protected final Set<GraphTraversalObserver> observers = new HashSet<>(5);
+	protected final Map<Integer, Integer> parentMap;
+	protected final Map<Integer, TraversalState> stateMap;
+	protected final Set<GraphTraversalObserver> observers;
 
-	public GraphSearch(Graph<V, E> graph) {
+	protected GraphSearch(Graph<V, E> graph) {
+		Objects.requireNonNull(graph);
 		this.graph = graph;
+		parentMap = new HashMap<>();
+		stateMap = new HashMap<>();
+		observers = new HashSet<>(5);
 	}
 
 	/**
@@ -79,6 +83,51 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	}
 
 	/**
+	 * Removes the next vertex from the frontier.
+	 * 
+	 * @return the vertex removed from the frontier
+	 */
+	protected abstract int removeFromFrontier();
+
+	/**
+	 * Expands the frontier at the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected void expandFrontier(int v) {
+		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
+			addToFrontier(neighbor);
+			setState(neighbor, VISITED);
+			setParent(neighbor, v);
+		});
+	}
+
+	/**
+	 * Adds the given vertex to the frontier.
+	 * 
+	 * @param v
+	 *            vertex
+	 */
+	protected abstract void addToFrontier(int v);
+
+	/**
+	 * Tells if the frontier is empty.
+	 * 
+	 * @return {@code true} if the frontier is empty
+	 */
+	protected abstract boolean isFrontierEmpty();
+
+	/**
+	 * Tells if the given vertex is part of the frontier.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return <code>true</code> if the vertex is is part of the frontier
+	 */
+	public abstract boolean partOfFrontier(int v);
+
+	/**
 	 * Returns the path (list of vertices) between the given source and the given target vertex. If no
 	 * such path exists, an empty list is returned.
 	 * 
@@ -108,51 +157,6 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		}
 		return path;
 	}
-
-	/**
-	 * Expands the frontier at the given vertex.
-	 * 
-	 * @param v
-	 *            vertex
-	 */
-	protected void expandFrontier(int v) {
-		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
-			addToFrontier(neighbor);
-			setState(neighbor, VISITED);
-			setParent(neighbor, v);
-		});
-	}
-
-	/**
-	 * Adds the given vertex to the frontier.
-	 * 
-	 * @param v
-	 *            vertex
-	 */
-	protected abstract void addToFrontier(int v);
-
-	/**
-	 * Removes the next vertex from the frontier.
-	 * 
-	 * @return the vertex removed from the frontier
-	 */
-	protected abstract int removeFromFrontier();
-
-	/**
-	 * Tells if the frontier is empty.
-	 * 
-	 * @return {@code true} if the frontier is empty
-	 */
-	protected abstract boolean isFrontierEmpty();
-
-	/**
-	 * Tells if the given vertex is part of the frontier.
-	 * 
-	 * @param v
-	 *            vertex
-	 * @return <code>true</code> if the vertex is is part of the frontier
-	 */
-	public abstract boolean partOfFrontier(int v);
 
 	/**
 	 * Gets the current cost of the given vertex.
