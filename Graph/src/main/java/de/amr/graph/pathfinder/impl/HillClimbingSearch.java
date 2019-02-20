@@ -45,7 +45,7 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 			// sort by decreasing cost such that cheapest vertex will be on top of stack
 			.sorted(comparingDouble(fnVertexCost).reversed())
 			.forEach(child -> {
-				stack.push(child);
+				addToFrontier(child);
 				setState(child, VISITED);
 				setParent(child, current);
 			});

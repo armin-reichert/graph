@@ -4,6 +4,8 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
@@ -16,10 +18,13 @@ import de.amr.graph.core.api.Graph;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch2<V, E> extends DepthFirstSearch<V, E> {
+public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
+
+	private final Deque<Integer> stack;
 
 	public DepthFirstSearch2(Graph<V, E> graph) {
 		super(graph);
+		stack = new ArrayDeque<>();
 	}
 
 	@Override
@@ -59,5 +64,25 @@ public class DepthFirstSearch2<V, E> extends DepthFirstSearch<V, E> {
 
 	private IntStream unvisitedChildren(int v) {
 		return graph.adj(v).filter(child -> getState(child) == UNVISITED);
+	}
+
+	@Override
+	protected int removeFromFrontier() {
+		return stack.pop();
+	}
+
+	@Override
+	protected void addToFrontier(int v) {
+		stack.push(v);
+	}
+
+	@Override
+	protected boolean isFrontierEmpty() {
+		return stack.isEmpty();
+	}
+
+	@Override
+	public boolean partOfFrontier(int v) {
+		return stack.contains(v);
 	}
 }

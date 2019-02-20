@@ -12,20 +12,17 @@ import de.amr.graph.core.api.Graph;
  */
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected Deque<Integer> stack;
+	private final Deque<Integer> stack;
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
+		stack = new ArrayDeque<>();
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		stack = createFrontier();
-	}
-
-	protected Deque<Integer> createFrontier() {
-		return new ArrayDeque<>();
+		stack.clear();
 	}
 
 	@Override
