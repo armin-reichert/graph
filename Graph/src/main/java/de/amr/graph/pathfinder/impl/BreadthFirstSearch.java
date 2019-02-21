@@ -23,13 +23,13 @@ import de.amr.graph.core.api.Graph;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected final Queue<Integer> frontier;
+	protected Queue<Integer> frontier;
 	protected final Map<Integer, Double> cost;
 	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		frontier = createFrontier();
+		frontier = new ArrayDeque<Integer>();
 		cost = new HashMap<>();
 	}
 
@@ -51,10 +51,6 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 			setCost(child, 0);
 			maxCost = 0;
 		}
-	}
-
-	protected Queue<Integer> createFrontier() {
-		return new ArrayDeque<>();
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import static java.util.Comparator.comparingDouble;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
@@ -54,9 +53,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
 		super(graph);
+		frontier = new PriorityQueue<>(comparingDouble(this::getScore));
+		score = new HashMap<>();
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedPathCost = fnEstimatedPathCost;
-		score = new HashMap<>();
 	}
 
 	@Override
@@ -116,11 +116,6 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private double edgeCost(int u, int v) {
 		return fnEdgeCost.applyAsDouble(graph.getEdgeLabel(u, v));
-	}
-
-	@Override
-	protected Queue<Integer> createFrontier() {
-		return new PriorityQueue<>(comparingDouble(this::getScore));
 	}
 
 	@Override
