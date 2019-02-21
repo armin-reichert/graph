@@ -9,7 +9,6 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import de.amr.graph.event.api.GraphTraversalObserver;
-import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -28,37 +27,6 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  * @author Armin Reichert
  */
 public class BFSAnimation {
-
-	/**
-	 * Runs a "flood-fill" on the given grid.
-	 * 
-	 * @param canvas
-	 *                          grid canvas
-	 * @param source
-	 *                          cell where flood-fill starts
-	 * @param distanceVisible
-	 *                          if distances should be displayed as text
-	 */
-	public static void floodFill(GridCanvas canvas, int source, boolean distanceVisible) {
-		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(canvas.getGrid());
-		BFSAnimation anim = new BFSAnimation(canvas);
-		anim.setDistanceVisible(distanceVisible);
-		anim.run(bfs, source, -1);
-	}
-
-	/**
-	 * Runs a "flood-fill" on the given grid.
-	 * 
-	 * @param canvas
-	 *                          grid canvas
-	 * @param sourcePosition
-	 *                          position of cell where flood-fill starts
-	 * @param distanceVisible
-	 *                          if distances should be displayed as text
-	 */
-	public static void floodFill(GridCanvas canvas, GridPosition sourcePosition, boolean distanceVisible) {
-		floodFill(canvas, canvas.getGrid().cell(sourcePosition), distanceVisible);
-	}
 
 	private final GridCanvas canvas;
 	private ConfigurableGridRenderer floodFillRenderer;

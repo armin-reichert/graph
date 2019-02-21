@@ -1,7 +1,5 @@
 package de.amr.demos.grid.rendering;
 
-import static de.amr.graph.grid.api.GridPosition.CENTER;
-import static de.amr.graph.grid.ui.animation.BFSAnimation.floodFill;
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static java.lang.String.format;
 import static java.lang.System.out;
@@ -31,7 +29,7 @@ public class GridRenderingTestApp extends SwingGridSampleApp {
 			watch.measure(getCanvas()::drawGrid);
 			out.println(format("Rendering grid with %d cells took %.3f seconds", getGrid().numVertices(),
 					watch.getSeconds()));
-			floodFill(getCanvas(), CENTER, false);
+			floodfill();
 			sleep(1000);
 		});
 		System.exit(0);

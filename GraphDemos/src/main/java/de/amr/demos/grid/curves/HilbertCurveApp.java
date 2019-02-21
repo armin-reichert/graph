@@ -9,7 +9,6 @@ import static de.amr.graph.grid.impl.Top4.E;
 import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
-import static de.amr.graph.grid.ui.animation.BFSAnimation.floodFill;
 import static de.amr.graph.util.GraphUtils.log;
 import static java.util.Arrays.asList;
 
@@ -57,7 +56,7 @@ public class HilbertCurveApp extends SwingGridSampleApp {
 				HilbertCurve hilbert = new HilbertCurve(log(2, getGrid().numCols()), dir.get(0), dir.get(1),
 						dir.get(2), dir.get(3));
 				traverse(hilbert, getGrid(), getGrid().cell(start), this::addEdge);
-				floodFill(getCanvas(), getGrid().cell(start), false);
+				floodfill(start);
 				sleep(1000);
 			});
 		});

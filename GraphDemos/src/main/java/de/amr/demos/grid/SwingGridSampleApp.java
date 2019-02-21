@@ -19,9 +19,11 @@ import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.core.api.UndirectedEdge;
+import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.ObservableGridGraph;
 import de.amr.graph.grid.impl.OrthogonalGrid;
+import de.amr.graph.grid.ui.animation.Floodfill;
 import de.amr.graph.grid.ui.animation.GridCanvasAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -51,8 +53,8 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	public static Dimension getScreenSize() {
-		DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getDefaultScreenDevice().getDisplayMode();
+		DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDisplayMode();
 		return new Dimension(displayMode.getWidth(), displayMode.getHeight());
 	}
 
@@ -85,8 +87,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 		this.cellSize = cellSize;
 		canvasSize = getScreenSize();
 		style = Style.WALL_PASSAGE;
-		grid = OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
-				UNVISITED);
+		grid = OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED);
 		fullscreen = true;
 		createUI();
 	}
@@ -144,8 +145,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 	private void doResize() {
 		ConfigurableGridRenderer renderer = (ConfigurableGridRenderer) canvas.getRenderer().get();
 		renderer.fnCellSize = () -> cellSize;
-		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
-				UNVISITED));
+		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED));
 		canvas.setGrid(grid);
 		canvas.setCellSize(cellSize);
 		window.setTitle(getTitleText());
@@ -179,8 +179,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	private String getTitleText() {
 		String pattern = "%s [%d cols %d rows %d cells @%d px]";
-		return String.format(pattern, appName, grid.numCols(), grid.numRows(), grid.numVertices(),
-				cellSize);
+		return String.format(pattern, appName, grid.numCols(), grid.numRows(), grid.numVertices(), cellSize);
 	}
 
 	public void sleep(int millis) {
@@ -235,8 +234,8 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	public void setGridTopology(Topology topology) {
-		setGrid(new ObservableGridGraph<>(grid.numCols(), grid.numRows(), topology, v -> UNVISITED,
-				(u, v) -> 1, UndirectedEdge::new));
+		setGrid(new ObservableGridGraph<>(grid.numCols(), grid.numRows(), topology, v -> UNVISITED, (u, v) -> 1,
+				UndirectedEdge::new));
 	}
 
 	public int getCellSize() {
@@ -268,5 +267,17 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	public void setCanvasAnimationDelay(int millis) {
 		canvasAnimation.fnDelay = () -> millis;
+	}
+
+	public void floodfill() {
+		floodfill(GridPosition.CENTER);
+	}
+
+	public void floodfill(int source) {
+		Floodfill.builder().canvas(canvas).source(source).distanceVisible(false).build().run();
+	}
+
+	public void floodfill(GridPosition sourcePosition) {
+		Floodfill.builder().canvas(canvas).source(sourcePosition).distanceVisible(false).build().run();
 	}
 }

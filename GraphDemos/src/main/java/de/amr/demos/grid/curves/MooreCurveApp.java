@@ -1,7 +1,6 @@
 package de.amr.demos.grid.curves;
 
 import static de.amr.graph.grid.curves.CurveUtils.traverse;
-import static de.amr.graph.grid.ui.animation.BFSAnimation.floodFill;
 import static de.amr.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
@@ -33,7 +32,7 @@ public class MooreCurveApp extends SwingGridSampleApp {
 			int startCol = n / 2, startRow = n - 1;
 			int startCell = getGrid().cell(startCol, startRow);
 			traverse(new MooreLCurve(log(2, n)), getGrid(), startCell, this::addEdge);
-			floodFill(getCanvas(), startCell, false);
+			floodfill(startCell);
 			sleep(1000);
 		});
 	}
