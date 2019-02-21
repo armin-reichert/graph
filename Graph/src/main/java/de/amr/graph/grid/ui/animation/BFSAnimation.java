@@ -28,28 +28,50 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 public class BFSAnimation {
 
-	private final GridCanvas canvas;
-	private ConfigurableGridRenderer floodFillRenderer;
+	public static class Builder {
+
+		private final BFSAnimation anim;
+
+		private Builder() {
+			anim = new BFSAnimation();
+		}
+
+		public Builder canvas(GridCanvas canvas) {
+			anim.canvas = canvas;
+			return this;
+		}
+
+		public Builder distanceVisible(boolean distanceVisible) {
+			anim.distanceVisible = distanceVisible;
+			return this;
+		}
+
+		public Builder delay(IntSupplier fnDelay) {
+			anim.fnDelay = fnDelay;
+			return this;
+		}
+
+		public Builder pathColor(Supplier<Color> fnPathColor) {
+			anim.fnPathColor = fnPathColor;
+			return this;
+		}
+
+		public BFSAnimation build() {
+			return anim;
+		}
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	private GridCanvas canvas;
 	private boolean distanceVisible;
+	private IntSupplier fnDelay = () -> 0;
+	private Supplier<Color> fnPathColor = () -> Color.RED;
+	private ConfigurableGridRenderer floodFillRenderer;
 
-	public IntSupplier fnDelay = () -> 0;
-	public Supplier<Color> fnPathColor = () -> Color.RED;
-
-	public BFSAnimation(GridCanvas canvas) {
-		this.canvas = canvas;
-		distanceVisible = true;
-	}
-
-	public boolean isDistanceVisible() {
-		return distanceVisible;
-	}
-
-	public void setDistanceVisible(boolean visible) {
-		this.distanceVisible = visible;
-	}
-
-	public Color getPathColor() {
-		return fnPathColor.get();
+	private BFSAnimation() {
 	}
 
 	public void run(GraphSearch<?, ?> bfs, int source, int target) {
@@ -114,10 +136,10 @@ public class BFSAnimation {
 			BreadthFirstSearch<?, ?> distanceMap) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
-		r.fnCellBgColor = cell -> colorByDist(cell, distanceMap);
+		r.fnCellBgColor = cell -> cellColorByDist(cell, distanceMap);
 		r.fnCellSize = base.getModel()::getCellSize;
 		r.fnGridBgColor = () -> base.getModel().getGridBgColor();
-		r.fnPassageColor = (u, v) -> colorByDist(u, distanceMap);
+		r.fnPassageColor = (u, v) -> cellColorByDist(u, distanceMap);
 		r.fnPassageWidth = base.getModel()::getPassageWidth;
 		r.fnText = cell -> distanceVisible ? format("%.0f", distanceMap.getCost(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
@@ -131,12 +153,12 @@ public class BFSAnimation {
 		path.forEach(inPath::set);
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
-		r.fnCellBgColor = cell -> inPath.get(cell) ? getPathColor() : base.getCellBgColor(cell);
+		r.fnCellBgColor = cell -> inPath.get(cell) ? fnPathColor.get() : base.getCellBgColor(cell);
 		r.fnCellSize = () -> base.getCellSize();
 		r.fnGridBgColor = () -> base.getGridBgColor();
 		r.fnPassageColor = (cell, dir) -> {
 			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
-			return inPath.get(cell) && inPath.get(neighbor) ? getPathColor() : base.getCellBgColor(cell);
+			return inPath.get(cell) && inPath.get(neighbor) ? fnPathColor.get() : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
 		r.fnText = cell -> distanceVisible ? format("%.0f", search.getCost(cell)) : "";
@@ -145,10 +167,10 @@ public class BFSAnimation {
 		return r;
 	}
 
-	private static Color colorByDist(int cell, BreadthFirstSearch<?, ?> distancesComputation) {
+	private Color cellColorByDist(int cell, BreadthFirstSearch<?, ?> dist) {
 		float hue = 0.16f;
-		if (distancesComputation.getMaxCost() > 0) {
-			hue += 0.7f * distancesComputation.getCost(cell) / distancesComputation.getMaxCost();
+		if (dist.getMaxCost() > 0) {
+			hue += 0.7f * dist.getCost(cell) / dist.getMaxCost();
 		}
 		return Color.getHSBColor(hue, 0.5f, 1f);
 	}

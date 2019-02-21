@@ -15,7 +15,7 @@ public class Floodfill {
 
 	public static class Builder {
 
-		private Floodfill ff;
+		private final Floodfill ff;
 
 		public Builder() {
 			ff = new Floodfill();
@@ -67,10 +67,7 @@ public class Floodfill {
 	}
 
 	public void run() {
-		BreadthFirstSearch<?, ?> bfs = new BreadthFirstSearch<>(canvas.getGrid());
-		BFSAnimation anim = new BFSAnimation(canvas);
-		anim.fnDelay = fnDelay;
-		anim.setDistanceVisible(distanceVisible);
-		anim.run(bfs, source, -1);
+		BFSAnimation.builder().canvas(canvas).delay(fnDelay).distanceVisible(distanceVisible).build()
+				.run(new BreadthFirstSearch<>(canvas.getGrid()), source, -1);
 	}
 }

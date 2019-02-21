@@ -23,14 +23,50 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 public class DFSAnimation {
 
-	private final GridCanvas canvas;
-	private List<Integer> path;
+	public static class Builder {
+
+		private final DFSAnimation anim;
+
+		public Builder() {
+			anim = new DFSAnimation();
+		}
+
+		public Builder canvas(GridCanvas canvas) {
+			anim.canvas = canvas;
+			return this;
+		}
+
+		public Builder delay(IntSupplier fnDelay) {
+			anim.fnDelay = fnDelay;
+			return this;
+		}
+
+		public Builder pathColor(Color color) {
+			anim.pathColor = color;
+			return this;
+		}
+
+		public Builder visitedCellColor(Color color) {
+			anim.visitedCellColor = color;
+			return this;
+		}
+
+		public DFSAnimation build() {
+			return anim;
+		}
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	private GridCanvas canvas;
 	private Color pathColor = Color.RED;
 	private Color visitedCellColor = Color.BLUE;
-	public IntSupplier fnDelay = () -> 0;
+	private IntSupplier fnDelay = () -> 0;
+	private List<Integer> path;
 
-	public DFSAnimation(GridCanvas canvas) {
-		this.canvas = canvas;
+	private DFSAnimation() {
 	}
 
 	private ConfigurableGridRenderer createRenderer(GraphSearch<?, ?> dfs, BitSet inPath, GridRenderer base) {
@@ -95,21 +131,5 @@ public class DFSAnimation {
 		path.forEach(canvas::drawGridCell);
 		canvas.popRenderer();
 		dfs.removeObserver(canvasUpdater);
-	}
-
-	public Color getPathColor() {
-		return pathColor;
-	}
-
-	public void setPathColor(Color pathColor) {
-		this.pathColor = pathColor;
-	}
-
-	public Color getVisitedCellColor() {
-		return visitedCellColor;
-	}
-
-	public void setVisitedCellColor(Color visitedCellColor) {
-		this.visitedCellColor = visitedCellColor;
 	}
 }
