@@ -68,8 +68,20 @@ public class BFSAnimation extends AbstractAnimation {
 
 	private GridCanvas canvas;
 	private boolean distanceVisible;
-	private Supplier<Color> fnPathColor = () -> Color.RED;
 	private ConfigurableGridRenderer distanceMapRenderer;
+	private Supplier<Color> fnPathColor = () -> Color.RED;
+	private GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
+
+		@Override
+		public void edgeTraversed(int either, int other) {
+			delayed(() -> canvas.drawGridPassage(either, other, true));
+		}
+
+		@Override
+		public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
+			delayed(() -> canvas.drawGridCell(v));
+		}
+	};
 
 	private BFSAnimation() {
 	}
@@ -85,18 +97,6 @@ public class BFSAnimation extends AbstractAnimation {
 			canvas.pushRenderer(distanceMapRenderer);
 
 			// 2. traverse graph again, now with events enabled
-			GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
-
-				@Override
-				public void edgeTraversed(int either, int other) {
-					delayed(() -> canvas.drawGridPassage(either, other, true));
-				}
-
-				@Override
-				public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
-					delayed(() -> canvas.drawGridCell(v));
-				}
-			};
 			bfs.addObserver(canvasUpdater);
 			bfs.exploreGraph(source, target);
 			bfs.removeObserver(canvasUpdater);
