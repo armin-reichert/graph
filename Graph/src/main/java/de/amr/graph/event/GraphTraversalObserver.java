@@ -1,4 +1,4 @@
-package de.amr.graph.event.api;
+package de.amr.graph.event;
 
 import de.amr.graph.pathfinder.api.TraversalState;
 

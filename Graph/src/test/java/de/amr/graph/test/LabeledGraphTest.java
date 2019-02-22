@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.core.impl.UGraph;
-import de.amr.graph.event.api.GraphTraversalObserver;
+import de.amr.graph.event.GraphTraversalObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 

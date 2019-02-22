@@ -3,9 +3,9 @@ package de.amr.graph.grid.ui.animation;
 import java.util.function.IntSupplier;
 
 import de.amr.graph.core.api.ObservableGraph;
-import de.amr.graph.event.api.EdgeEvent;
-import de.amr.graph.event.api.GraphObserver;
-import de.amr.graph.event.api.VertexEvent;
+import de.amr.graph.event.EdgeEvent;
+import de.amr.graph.event.GraphObserver;
+import de.amr.graph.event.VertexEvent;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 
 public class GridCanvasAnimation<V, E> implements GraphObserver<V, E> {

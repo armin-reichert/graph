@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.amr.graph.core.api.ObservableGraph;
-import de.amr.graph.event.api.EdgeEvent;
-import de.amr.graph.event.api.GraphObserver;
+import de.amr.graph.event.EdgeEvent;
+import de.amr.graph.event.GraphObserver;
 
 /**
  * Undirected graph that may be observed.

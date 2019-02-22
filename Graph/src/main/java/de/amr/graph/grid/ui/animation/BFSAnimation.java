@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import de.amr.graph.event.api.GraphTraversalObserver;
+import de.amr.graph.event.GraphTraversalObserver;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;

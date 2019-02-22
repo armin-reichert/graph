@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.event.api.GraphTraversalObserver;
+import de.amr.graph.event.GraphTraversalObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 
