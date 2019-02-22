@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.event.GraphTraversalObserver;
+import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 
@@ -30,7 +30,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected final Graph<V, E> graph;
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
-	protected final Set<GraphTraversalObserver> observers;
+	protected final Set<GraphSearchObserver> observers;
 
 	protected GraphSearch(Graph<V, E> graph) {
 		Objects.requireNonNull(graph);
@@ -179,7 +179,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected void setState(int v, TraversalState newState) {
 		TraversalState oldState = getState(v);
 		stateMap.put(v, newState);
-		vertexTraversed(v, oldState, newState);
+		fireVertexStateChanged(v, oldState, newState);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected void setParent(int child, int parent) {
 		parentMap.put(child, parent);
 		if (parent != -1) {
-			edgeTraversed(parent, child);
+			fireEdgeTraversed(parent, child);
 		}
 	}
 
@@ -222,11 +222,11 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 
 	// Observer related stuff
 
-	public void addObserver(GraphTraversalObserver observer) {
+	public void addObserver(GraphSearchObserver observer) {
 		observers.add(observer);
 	}
 
-	public void removeObserver(GraphTraversalObserver observer) {
+	public void removeObserver(GraphSearchObserver observer) {
 		observers.remove(observer);
 	}
 
@@ -234,11 +234,19 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		observers.clear();
 	}
 
-	public void edgeTraversed(int either, int other) {
+	protected void fireEdgeTraversed(int either, int other) {
 		observers.forEach(observer -> observer.edgeTraversed(either, other));
 	}
 
-	public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
-		observers.forEach(observer -> observer.vertexTraversed(v, oldState, newState));
+	protected void fireVertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
+		observers.forEach(observer -> observer.vertexStateChanged(v, oldState, newState));
+	}
+
+	protected void fireVertexAddedToFrontier(int vertex) {
+		observers.forEach(observer -> observer.vertexAddedToFrontier(vertex));
+	}
+
+	protected void fireVertexRemovedFromFrontier(int vertex) {
+		observers.forEach(observer -> observer.vertexAddedToFrontier(vertex));
 	}
 }

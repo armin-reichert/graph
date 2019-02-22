@@ -10,13 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.core.impl.UGraph;
-import de.amr.graph.event.GraphTraversalObserver;
+import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
 public class LabeledGraphTest {
 
-	private class DFSTracer implements GraphTraversalObserver {
+	private class DFSTracer implements GraphSearchObserver {
 
 		private final UGraph<String, Integer> graph;
 		private final List<Integer> trace = new ArrayList<>();
@@ -26,13 +26,20 @@ public class LabeledGraphTest {
 		}
 
 		@Override
-		public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
+		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			trace.add(v);
 		}
 
 		@Override
 		public void edgeTraversed(int either, int other) {
+		}
 
+		@Override
+		public void vertexAddedToFrontier(int vertex) {
+		}
+
+		@Override
+		public void vertexRemovedFromFrontier(int vertex) {
 		}
 
 		public String getVertexTrace() {

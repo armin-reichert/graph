@@ -7,12 +7,12 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.IntSupplier;
 
-import de.amr.graph.event.GraphTraversalObserver;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
@@ -88,19 +88,20 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
-			if (dfs.getState(cell) == VISITED && dfs.getState(neighbor) == VISITED) {
-				return visitedCellColor;
-			}
-			if (r.getCellBgColor(cell) == visitedCellColor && r.getCellBgColor(neighbor) == visitedCellColor) {
-				return visitedCellColor;
-			}
+			// if (dfs.getState(cell) == VISITED && dfs.getState(neighbor) == VISITED) {
+			// return visitedCellColor;
+			// }
+			// if (r.getCellBgColor(cell) == visitedCellColor && r.getCellBgColor(neighbor) == visitedCellColor)
+			// {
+			// return visitedCellColor;
+			// }
 			return base.getModel().getCellBgColor(cell);
 		};
 		return r;
 	}
 
 	public void run(GraphSearch<?, ?> dfs, int source, int target) {
-		GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
+		GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
 
 			@Override
 			public void edgeTraversed(int either, int other) {
@@ -108,9 +109,22 @@ public class DFSAnimation extends AbstractAnimation {
 			}
 
 			@Override
-			public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
+			public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 				delayed(() -> canvas.drawGridCell(v));
 			}
+
+			@Override
+			public void vertexAddedToFrontier(int vertex) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void vertexRemovedFromFrontier(int vertex) {
+				// TODO Auto-generated method stub
+
+			}
+
 		};
 		BitSet inPath = new BitSet();
 		canvas.pushRenderer(createRenderer(dfs, inPath, canvas.getRenderer().get()));

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import de.amr.graph.event.GraphTraversalObserver;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
@@ -70,7 +70,7 @@ public class BFSAnimation extends AbstractAnimation {
 	private boolean distanceVisible;
 	private ConfigurableGridRenderer distanceMapRenderer;
 	private Supplier<Color> fnPathColor = () -> Color.RED;
-	private GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
+	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
 
 		@Override
 		public void edgeTraversed(int either, int other) {
@@ -78,8 +78,20 @@ public class BFSAnimation extends AbstractAnimation {
 		}
 
 		@Override
-		public void vertexTraversed(int v, TraversalState oldState, TraversalState newState) {
+		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			delayed(() -> canvas.drawGridCell(v));
+		}
+		
+		@Override
+		public void vertexAddedToFrontier(int vertex) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void vertexRemovedFromFrontier(int vertex) {
+			// TODO Auto-generated method stub
+			
 		}
 	};
 
