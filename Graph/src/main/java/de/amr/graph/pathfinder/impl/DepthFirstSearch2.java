@@ -68,12 +68,15 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 
 	@Override
 	protected int removeFromFrontier() {
-		return stack.pop();
+		int v = stack.pop();
+		fireVertexRemovedFromFrontier(v);
+		return v;
 	}
 
 	@Override
 	protected void addToFrontier(int v) {
 		stack.push(v);
+		fireVertexAddedToFrontier(v);
 	}
 
 	@Override
