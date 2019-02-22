@@ -86,6 +86,17 @@ public class BFSAnimation extends AbstractAnimation {
 	private BFSAnimation() {
 	}
 
+	/**
+	 * Runs an animation of a BFS from the given source vertex to the given target vertex. Cells are
+	 * colored according to their distance from the source. Optionally the distance value is displayed.
+	 * 
+	 * @param bfs
+	 *                 BFS instance
+	 * @param source
+	 *                 source vertex
+	 * @param target
+	 *                 target vertex
+	 */
 	public void run(GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. explore graph to compute distances from source
