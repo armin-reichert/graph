@@ -1,9 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Depth-first traversal of a graph.
@@ -12,39 +10,14 @@ import de.amr.graph.core.api.Graph;
  */
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	private final Deque<Integer> stack;
+	private final LIFOFrontier frontier = new LIFOFrontier();
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		stack = new ArrayDeque<>();
 	}
 
 	@Override
-	protected void init() {
-		super.init();
-		stack.clear();
-	}
-
-	@Override
-	protected int removeFromFrontier() {
-		int v = stack.pop();
-		fireVertexRemovedFromFrontier(v);
-		return v;
-	}
-
-	@Override
-	protected void addToFrontier(int v) {
-		stack.push(v);
-		fireVertexAddedToFrontier(v);
-	}
-
-	@Override
-	protected boolean isFrontierEmpty() {
-		return stack.isEmpty();
-	}
-
-	@Override
-	public boolean partOfFrontier(int v) {
-		return stack.contains(v);
+	public Frontier frontier() {
+		return frontier;
 	}
 }

@@ -38,11 +38,4 @@ public class DepthLimitedDFS<V, E> extends DepthFirstSearch<V, E> {
 		depth.put(child, parent != -1 ? depth.get(parent) + 1 : 0);
 		super.setParent(child, parent);
 	}
-
-	@Override
-	protected int removeFromFrontier() {
-		int v = super.removeFromFrontier();
-		System.out.println(String.format("Vertex %d ('%s') at depth %d", v, graph.get(v), depth.get(v)));
-		return v;
-	}
 }

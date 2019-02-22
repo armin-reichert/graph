@@ -4,27 +4,28 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Alternative implementation of depth-first traversal of an undirected graph.
- * <p>
- * This implementation has a nicer visualization.
  * 
  * @author Armin Reichert
  */
 public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 
-	private final Deque<Integer> stack;
+	private final LIFOFrontier frontier = new LIFOFrontier();
 
 	public DepthFirstSearch2(Graph<V, E> graph) {
 		super(graph);
-		stack = new ArrayDeque<>();
+	}
+
+	@Override
+	public Frontier frontier() {
+		return frontier;
 	}
 
 	@Override
@@ -32,60 +33,38 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 		init();
 
 		int current = source;
-		stack.push(current);
+		frontier.add(current);
 		setState(current, VISITED);
 
-		while (!stack.isEmpty()) {
+		while (!frontier.isEmpty()) {
 			if (current == target) {
 				break;
 			}
-			OptionalInt neighbor = unvisitedChildren(current).findAny();
-			if (neighbor.isPresent()) {
-				setState(neighbor.getAsInt(), VISITED);
-				setParent(neighbor.getAsInt(), current);
-				if (unvisitedChildren(neighbor.getAsInt()).findAny().isPresent()) {
-					stack.push(neighbor.getAsInt());
+			OptionalInt neighborIfAny = unvisitedChildren(current).findAny();
+			if (neighborIfAny.isPresent()) {
+				int neighbor = neighborIfAny.getAsInt();
+				setState(neighbor, VISITED);
+				setParent(neighbor, current);
+				if (unvisitedChildren(neighbor).findAny().isPresent()) {
+					frontier.add(neighbor);
 				}
-				current = neighbor.getAsInt();
+				current = neighbor;
 			} else {
 				setState(current, COMPLETED);
-				if (!stack.isEmpty()) {
-					current = stack.pop();
+				if (!frontier.isEmpty()) {
+					current = frontier.next();
 				}
 				if (getState(current) == VISITED) {
-					stack.push(current);
+					frontier.add(current);
 				}
 			}
 		}
-		while (!stack.isEmpty()) {
-			setState(stack.pop(), COMPLETED);
+		while (!frontier.isEmpty()) {
+			setState(frontier.next(), COMPLETED);
 		}
 	}
 
 	private IntStream unvisitedChildren(int v) {
 		return graph.adj(v).filter(child -> getState(child) == UNVISITED);
-	}
-
-	@Override
-	protected int removeFromFrontier() {
-		int v = stack.pop();
-		fireVertexRemovedFromFrontier(v);
-		return v;
-	}
-
-	@Override
-	protected void addToFrontier(int v) {
-		stack.push(v);
-		fireVertexAddedToFrontier(v);
-	}
-
-	@Override
-	protected boolean isFrontierEmpty() {
-		return stack.isEmpty();
-	}
-
-	@Override
-	public boolean partOfFrontier(int v) {
-		return stack.contains(v);
 	}
 }

@@ -1,13 +1,12 @@
 package de.amr.graph.pathfinder.impl;
 
-import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Breadth-first search in undirected graph, starting from a given source vertex. After being
@@ -23,20 +22,24 @@ import de.amr.graph.core.api.Graph;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected Queue<Integer> frontier;
+	protected Frontier frontier;
 	protected final Map<Integer, Double> cost;
 	protected double maxCost;
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		frontier = new ArrayDeque<Integer>();
+		frontier = new FIFOFrontier();
 		cost = new HashMap<>();
+	}
+
+	@Override
+	public Frontier frontier() {
+		return frontier;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		frontier.clear();
 		cost.clear();
 		maxCost = -1;
 	}
@@ -51,26 +54,6 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 			setCost(child, 0);
 			maxCost = 0;
 		}
-	}
-
-	@Override
-	protected int removeFromFrontier() {
-		return frontier.poll();
-	}
-
-	@Override
-	protected void addToFrontier(int v) {
-		frontier.add(v);
-	}
-
-	@Override
-	protected boolean isFrontierEmpty() {
-		return frontier.isEmpty();
-	}
-
-	@Override
-	public boolean partOfFrontier(int v) {
-		return frontier.contains(v);
 	}
 
 	/**

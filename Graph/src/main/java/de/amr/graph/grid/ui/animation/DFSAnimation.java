@@ -76,7 +76,7 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.partOfFrontier(cell)) {
+			if (dfs.frontier().contains(cell)) {
 				return visitedCellColor;
 			}
 			return Color.WHITE;
@@ -86,7 +86,7 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
-			if (dfs.partOfFrontier(cell) && dfs.partOfFrontier(neighbor)) {
+			if (dfs.frontier().contains(cell) && dfs.frontier().contains(neighbor)) {
 				return visitedCellColor;
 			}
 			return Color.WHITE;
@@ -99,12 +99,12 @@ public class DFSAnimation extends AbstractAnimation {
 
 			@Override
 			public void edgeTraversed(int either, int other) {
-//				delayed(() -> canvas.drawGridPassage(either, other, true));
+				// delayed(() -> canvas.drawGridPassage(either, other, true));
 			}
 
 			@Override
 			public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-//				delayed(() -> canvas.drawGridCell(v));
+				// delayed(() -> canvas.drawGridCell(v));
 			}
 
 			@Override

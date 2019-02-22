@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Iterative deepening depth-first search (IDDFS).
@@ -24,6 +25,11 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 	}
 
 	@Override
+	public Frontier frontier() {
+		return dls != null ? dls.frontier() : null;
+	}
+
+	@Override
 	public List<Integer> findPath(int source, int target) {
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
 			dls = new DepthLimitedDFS<>(graph, depth);
@@ -35,27 +41,5 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 			}
 		}
 		return Collections.emptyList();
-	}
-
-	// implemented only to be able to run DFS animation for this pathfinder:
-
-	@Override
-	protected void addToFrontier(int v) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	protected int removeFromFrontier() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	protected boolean isFrontierEmpty() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean partOfFrontier(int v) {
-		return dls != null && dls.partOfFrontier(v);
 	}
 }

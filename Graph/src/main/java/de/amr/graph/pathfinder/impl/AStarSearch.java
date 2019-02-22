@@ -2,11 +2,9 @@ package de.amr.graph.pathfinder.impl;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
-import static java.util.Comparator.comparingDouble;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
@@ -53,7 +51,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
 		super(graph);
-		frontier = new PriorityQueue<>(comparingDouble(this::getScore));
+		frontier = new PQFrontier(this::getScore);
 		score = new HashMap<>();
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedPathCost = fnEstimatedPathCost;
@@ -68,12 +66,14 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	@Override
 	public void exploreGraph(int source, int target) {
 		init();
-		addToFrontier(source);
+		setState(source, VISITED);
 		// next two lines only included for consistency:
 		setCost(source, 0);
 		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
-		while (!isFrontierEmpty()) {
-			int current = removeFromFrontier();
+		frontier.add(source);
+		while (!frontier().isEmpty()) {
+			int current = frontier.next();
+			setState(current, COMPLETED);
 			if (current == target) {
 				break;
 			}
@@ -84,9 +84,10 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 					setCost(child, newCost);
 					setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
 					if (isOpen(child)) {
-						decreaseKey(child);
+						((PQFrontier) frontier).decreaseKey(child);
 					} else {
-						addToFrontier(child);
+						setState(child, VISITED);
+						frontier.add(child);
 					}
 				}
 			});
@@ -109,25 +110,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		return getState(v) == COMPLETED;
 	}
 
-	private void decreaseKey(int v) {
-		frontier.remove(v);
-		frontier.add(v);
-	}
-
 	private double edgeCost(int u, int v) {
 		return fnEdgeCost.applyAsDouble(graph.getEdgeLabel(u, v));
-	}
-
-	@Override
-	protected void addToFrontier(int v) {
-		frontier.add(v);
-		setState(v, VISITED);
-	}
-
-	@Override
-	protected int removeFromFrontier() {
-		int v = frontier.poll();
-		setState(v, COMPLETED);
-		return v;
 	}
 }

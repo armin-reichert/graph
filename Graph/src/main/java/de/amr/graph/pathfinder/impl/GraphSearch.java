@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Frontier;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
@@ -40,12 +41,15 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		observers = new HashSet<>(5);
 	}
 
+	public abstract Frontier frontier();
+
 	/**
 	 * Initializes the search such that {@link #exploreGraph(int, int)} starts in a clean state.
 	 */
 	protected void init() {
 		parentMap.clear();
 		stateMap.clear();
+		frontier().clear();
 	}
 
 	/**
@@ -72,22 +76,15 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		init();
 		setState(source, VISITED);
 		setParent(source, -1);
-		addToFrontier(source);
-		while (!isFrontierEmpty()) {
-			int current = removeFromFrontier();
+		frontier().add(source);
+		while (!frontier().isEmpty()) {
+			int current = frontier().next();
 			if (current == target) {
 				return;
 			}
 			expandFrontier(current);
 		}
 	}
-
-	/**
-	 * Removes the next vertex from the frontier.
-	 * 
-	 * @return the vertex removed from the frontier
-	 */
-	protected abstract int removeFromFrontier();
 
 	/**
 	 * Expands the frontier at the given vertex.
@@ -99,33 +96,9 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);
-			addToFrontier(neighbor);
+			frontier().add(neighbor);
 		});
 	}
-
-	/**
-	 * Adds the given vertex to the frontier.
-	 * 
-	 * @param v
-	 *            vertex
-	 */
-	protected abstract void addToFrontier(int v);
-
-	/**
-	 * Tells if the frontier is empty.
-	 * 
-	 * @return {@code true} if the frontier is empty
-	 */
-	protected abstract boolean isFrontierEmpty();
-
-	/**
-	 * Tells if the given vertex is part of the frontier.
-	 * 
-	 * @param v
-	 *            vertex
-	 * @return <code>true</code> if the vertex is is part of the frontier
-	 */
-	public abstract boolean partOfFrontier(int v);
 
 	/**
 	 * Returns the path (list of vertices) between the given source and the given target vertex. If no
