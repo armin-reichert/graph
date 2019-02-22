@@ -1,7 +1,5 @@
 package de.amr.graph.grid.ui.animation;
 
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
-
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.List;
@@ -78,24 +76,20 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.getState(cell) == VISITED || dfs.partOfFrontier(cell)) {
+			if (dfs.partOfFrontier(cell)) {
 				return visitedCellColor;
 			}
-			return base.getModel().getCellBgColor(cell);
+			return Color.WHITE;
 		};
 		r.fnPassageColor = (cell, dir) -> {
 			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
-			// if (dfs.getState(cell) == VISITED && dfs.getState(neighbor) == VISITED) {
-			// return visitedCellColor;
-			// }
-			// if (r.getCellBgColor(cell) == visitedCellColor && r.getCellBgColor(neighbor) == visitedCellColor)
-			// {
-			// return visitedCellColor;
-			// }
-			return base.getModel().getCellBgColor(cell);
+			if (dfs.partOfFrontier(cell) && dfs.partOfFrontier(neighbor)) {
+				return visitedCellColor;
+			}
+			return Color.WHITE;
 		};
 		return r;
 	}
@@ -105,34 +99,39 @@ public class DFSAnimation extends AbstractAnimation {
 
 			@Override
 			public void edgeTraversed(int either, int other) {
-				delayed(() -> canvas.drawGridPassage(either, other, true));
+//				delayed(() -> canvas.drawGridPassage(either, other, true));
 			}
 
 			@Override
 			public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-				delayed(() -> canvas.drawGridCell(v));
+//				delayed(() -> canvas.drawGridCell(v));
 			}
 
 			@Override
 			public void vertexAddedToFrontier(int vertex) {
-				// TODO Auto-generated method stub
-
+				int parent = dfs.getParent(vertex);
+				if (parent != -1) {
+					delayed(() -> canvas.drawGridPassage(parent, vertex, true));
+				}
 			}
 
 			@Override
 			public void vertexRemovedFromFrontier(int vertex) {
-				// TODO Auto-generated method stub
-
+				int parent = dfs.getParent(vertex);
+				if (parent != -1) {
+					delayed(() -> canvas.drawGridPassage(parent, vertex, false));
+				}
 			}
 
 		};
+
 		BitSet inPath = new BitSet();
 		canvas.pushRenderer(createRenderer(dfs, inPath, canvas.getRenderer().get()));
 		dfs.addObserver(canvasUpdater);
 		path = dfs.findPath(source, target);
+		dfs.removeObserver(canvasUpdater);
 		path.forEach(inPath::set);
 		path.forEach(canvas::drawGridCell);
 		canvas.popRenderer();
-		dfs.removeObserver(canvasUpdater);
 	}
 }

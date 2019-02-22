@@ -70,9 +70,9 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 */
 	public void exploreGraph(int source, int target) {
 		init();
-		addToFrontier(source);
 		setState(source, VISITED);
 		setParent(source, -1);
+		addToFrontier(source);
 		while (!isFrontierEmpty()) {
 			int current = removeFromFrontier();
 			if (current == target) {
@@ -97,9 +97,9 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 */
 	protected void expandFrontier(int v) {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
-			addToFrontier(neighbor);
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);
+			addToFrontier(neighbor);
 		});
 	}
 
