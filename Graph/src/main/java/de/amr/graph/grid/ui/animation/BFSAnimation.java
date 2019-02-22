@@ -27,7 +27,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  * 
  * @author Armin Reichert
  */
-public class BFSAnimation {
+public class BFSAnimation extends AbstractAnimation {
 
 	public static class Builder {
 
@@ -48,7 +48,7 @@ public class BFSAnimation {
 		}
 
 		public Builder delay(IntSupplier fnDelay) {
-			anim.fnDelay = fnDelay;
+			anim.setFnDelay(fnDelay);
 			return this;
 		}
 
@@ -68,9 +68,8 @@ public class BFSAnimation {
 
 	private GridCanvas canvas;
 	private boolean distanceVisible;
-	private IntSupplier fnDelay = () -> 0;
 	private Supplier<Color> fnPathColor = () -> Color.RED;
-	private ConfigurableGridRenderer distColorRenderer;
+	private ConfigurableGridRenderer distanceMapRenderer;
 
 	private BFSAnimation() {
 	}
@@ -82,21 +81,11 @@ public class BFSAnimation {
 			distExplorer.exploreGraph(source);
 
 			// Create renderer using computed distances
-			distColorRenderer = createDistColorRenderer(canvasRenderer, distExplorer);
-			canvas.pushRenderer(distColorRenderer);
+			distanceMapRenderer = createDistanceMapRenderer(canvasRenderer, distExplorer);
+			canvas.pushRenderer(distanceMapRenderer);
 
 			// 2. traverse graph again, now with events enabled
 			GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
-
-				private void delayed(Runnable code) {
-					try {
-						Thread.sleep(fnDelay.getAsInt());
-					} catch (InterruptedException e) {
-						throw new AnimationInterruptedException();
-					}
-					code.run();
-					canvas.repaint();
-				}
 
 				@Override
 				public void edgeTraversed(int either, int other) {
@@ -115,25 +104,36 @@ public class BFSAnimation {
 		});
 	}
 
+	/**
+	 * Highlights the path from the source to the target cell. The BFS search must have been run before
+	 * calling this method.
+	 * 
+	 * @param bfs
+	 *                 BFS
+	 * @param source
+	 *                 source cell
+	 * @param target
+	 *                 target cell
+	 */
 	public void showPath(BreadthFirstSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			List<Integer> path = bfs.findPath(source, target);
-			if (distColorRenderer != null) {
-				canvas.pushRenderer(createPathRenderer(distColorRenderer, bfs, path));
+			List<Integer> path = bfs.buildPath(source, target);
+			if (path.isEmpty()) {
+				return;
+			}
+			if (distanceMapRenderer != null) {
+				canvas.pushRenderer(createPathRenderer(distanceMapRenderer, bfs, path));
+			} else if (canvasRenderer instanceof ConfigurableGridRenderer) {
+				canvas.pushRenderer(createPathRenderer((ConfigurableGridRenderer) canvasRenderer, bfs, path));
 			} else {
-				if (canvas.getRenderer().get() instanceof ConfigurableGridRenderer) {
-					canvas.pushRenderer(
-							createPathRenderer((ConfigurableGridRenderer) canvas.getRenderer().get(), bfs, path));
-				} else {
-					throw new IllegalStateException();
-				}
+				throw new IllegalStateException();
 			}
 			path.forEach(canvas::drawGridCell);
 			canvas.popRenderer();
 		});
 	}
 
-	private ConfigurableGridRenderer createDistColorRenderer(GridRenderer base,
+	private ConfigurableGridRenderer createDistanceMapRenderer(GridRenderer base,
 			BreadthFirstSearch<?, ?> distExplorer) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();

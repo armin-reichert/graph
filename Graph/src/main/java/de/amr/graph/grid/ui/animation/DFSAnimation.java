@@ -21,7 +21,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  * 
  * @author Armin Reichert
  */
-public class DFSAnimation {
+public class DFSAnimation extends AbstractAnimation {
 
 	public static class Builder {
 
@@ -37,7 +37,7 @@ public class DFSAnimation {
 		}
 
 		public Builder delay(IntSupplier fnDelay) {
-			anim.fnDelay = fnDelay;
+			anim.setFnDelay(fnDelay);
 			return this;
 		}
 
@@ -63,7 +63,6 @@ public class DFSAnimation {
 	private GridCanvas canvas;
 	private Color pathColor = Color.RED;
 	private Color visitedCellColor = Color.BLUE;
-	private IntSupplier fnDelay = () -> 0;
 	private List<Integer> path;
 
 	private DFSAnimation() {
@@ -102,16 +101,6 @@ public class DFSAnimation {
 
 	public void run(GraphSearch<?, ?> dfs, int source, int target) {
 		GraphTraversalObserver canvasUpdater = new GraphTraversalObserver() {
-
-			private void delayed(Runnable code) {
-				try {
-					Thread.sleep(fnDelay.getAsInt());
-				} catch (InterruptedException e) {
-					throw new AnimationInterruptedException();
-				}
-				code.run();
-				canvas.repaint();
-			}
 
 			@Override
 			public void edgeTraversed(int either, int other) {

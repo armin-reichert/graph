@@ -143,7 +143,17 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		return buildPath(source, target);
 	}
 
-	private List<Integer> buildPath(int source, int target) {
+	/**
+	 * Creates the path from the source vertex to the target vertex as a list of vertices. Before
+	 * calling this method, the graph search must have been executed.
+	 * 
+	 * @param source
+	 *                 source vertex
+	 * @param target
+	 *                 target vertex
+	 * @return path as list of vertices
+	 */
+	public List<Integer> buildPath(int source, int target) {
 		List<Integer> path = new LinkedList<>();
 		if (source == target) {
 			path.add(source);
