@@ -76,8 +76,10 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		setState(source, VISITED);
 		setParent(source, -1);
 		frontier.add(source);
+		fireVertexAddedToFrontier(source);
 		while (!frontier.isEmpty()) {
 			int current = frontier.next();
+			fireVertexRemovedFromFrontier(current);
 			if (current == target) {
 				return;
 			}
@@ -96,6 +98,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);
 			frontier.add(neighbor);
+			fireVertexAddedToFrontier(neighbor);
 		});
 	}
 

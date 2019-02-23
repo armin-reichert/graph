@@ -11,8 +11,9 @@ public abstract class AbstractAnimation {
 	}
 
 	protected void delayed(Runnable code) {
+		int delay = fnDelay.getAsInt();
 		try {
-			Thread.sleep(fnDelay.getAsInt());
+			Thread.sleep(delay);
 		} catch (InterruptedException e) {
 			throw new AnimationInterruptedException();
 		}

@@ -2,7 +2,6 @@ package de.amr.graph.grid.ui.animation;
 
 import java.awt.Color;
 import java.util.BitSet;
-import java.util.List;
 import java.util.function.IntSupplier;
 
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -44,11 +43,6 @@ public class DFSAnimation extends AbstractAnimation {
 			return this;
 		}
 
-		public Builder visitedCellColor(Color color) {
-			anim.visitedCellColor = color;
-			return this;
-		}
-
 		public DFSAnimation build() {
 			return anim;
 		}
@@ -58,15 +52,49 @@ public class DFSAnimation extends AbstractAnimation {
 		return new Builder();
 	}
 
+	private GraphSearch<?, ?> dfs;
 	private GridCanvas canvas;
 	private Color pathColor = Color.RED;
-	private Color visitedCellColor = Color.BLUE;
-	private List<Integer> path;
+	private BitSet inPath = new BitSet();
+	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
+
+		@Override
+		public void edgeTraversed(int either, int other) {
+		}
+
+		@Override
+		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
+		}
+
+		@Override
+		public void vertexAddedToFrontier(int vertex) {
+			delayed(() -> drawPath(vertex));
+		}
+
+		@Override
+		public void vertexRemovedFromFrontier(int vertex) {
+			delayed(() -> drawPath(vertex));
+		}
+	};
 
 	private DFSAnimation() {
 	}
 
-	private ConfigurableGridRenderer createRenderer(GraphSearch<?, ?> dfs, BitSet inPath, GridRenderer base) {
+	private void drawPath(int vertex) {
+		inPath.clear();
+		int v = vertex;
+		while (v != -1) {
+			inPath.set(v);
+			v = dfs.getParent(v);
+		}
+		canvas.getGrid().vertices().forEach(cell -> {
+			if (dfs.getState(cell) != TraversalState.UNVISITED) {
+				canvas.drawGridCell(cell);
+			}
+		});
+	}
+
+	private ConfigurableGridRenderer createRenderer(GridRenderer base) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellSize = base.getModel()::getCellSize;
@@ -76,9 +104,6 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.getFrontier().contains(cell)) {
-				return visitedCellColor;
-			}
 			return Color.WHITE;
 		};
 		r.fnPassageColor = (cell, dir) -> {
@@ -86,52 +111,19 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
-			if (dfs.getFrontier().contains(cell) && dfs.getFrontier().contains(neighbor)) {
-				return visitedCellColor;
-			}
 			return Color.WHITE;
 		};
 		return r;
 	}
 
 	public void run(GraphSearch<?, ?> dfs, int source, int target) {
-		GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
-
-			@Override
-			public void edgeTraversed(int either, int other) {
-				// delayed(() -> canvas.drawGridPassage(either, other, true));
-			}
-
-			@Override
-			public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-				// delayed(() -> canvas.drawGridCell(v));
-			}
-
-			@Override
-			public void vertexAddedToFrontier(int vertex) {
-				int parent = dfs.getParent(vertex);
-				if (parent != -1) {
-					delayed(() -> canvas.drawGridPassage(parent, vertex, true));
-				}
-			}
-
-			@Override
-			public void vertexRemovedFromFrontier(int vertex) {
-				int parent = dfs.getParent(vertex);
-				if (parent != -1) {
-					delayed(() -> canvas.drawGridPassage(parent, vertex, false));
-				}
-			}
-
-		};
-
-		BitSet inPath = new BitSet();
-		canvas.pushRenderer(createRenderer(dfs, inPath, canvas.getRenderer().get()));
+		this.dfs = dfs;
+		canvas.pushRenderer(createRenderer(canvas.getRenderer().get()));
 		dfs.addObserver(canvasUpdater);
-		path = dfs.findPath(source, target);
+		dfs.exploreGraph(source, target);
 		dfs.removeObserver(canvasUpdater);
-		path.forEach(inPath::set);
-		path.forEach(canvas::drawGridCell);
+		canvas.drawGrid();
+		dfs.buildPath(source, target).forEach(canvas::drawGridCell);
 		canvas.popRenderer();
 	}
 }

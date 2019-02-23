@@ -25,10 +25,11 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 	public void exploreGraph(int source, int target) {
 		init();
 
-		int current = source;
-		frontier.add(current);
-		setState(current, VISITED);
+		setState(source, VISITED);
+		frontier.add(source);
+		fireVertexAddedToFrontier(source);
 
+		int current = source;
 		while (!frontier.isEmpty()) {
 			if (current == target) {
 				break;
@@ -40,15 +41,18 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 				setParent(neighbor, current);
 				if (unvisitedChildren(neighbor).findAny().isPresent()) {
 					frontier.add(neighbor);
+					fireVertexAddedToFrontier(neighbor);
 				}
 				current = neighbor;
 			} else {
 				setState(current, COMPLETED);
 				if (!frontier.isEmpty()) {
 					current = frontier.next();
+					fireVertexRemovedFromFrontier(current);
 				}
 				if (getState(current) == VISITED) {
 					frontier.add(current);
+					fireVertexAddedToFrontier(current);
 				}
 			}
 		}
