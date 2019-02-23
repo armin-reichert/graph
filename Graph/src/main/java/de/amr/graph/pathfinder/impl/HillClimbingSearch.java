@@ -4,6 +4,7 @@ import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.util.Comparator.comparingDouble;
 
+import java.util.Comparator;
 import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
@@ -23,7 +24,7 @@ import de.amr.graph.core.api.Graph;
  */
 public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 
-	private final ToDoubleFunction<Integer> fnVertexCost;
+	private final Comparator<Integer> vertexPushOrder;
 
 	/**
 	 * @param graph
@@ -33,7 +34,8 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 	 */
 	public HillClimbingSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexCost) {
 		super(graph);
-		this.fnVertexCost = fnVertexCost;
+		// reversed because cheapest vertex has to be added to the frontier (stack) last
+		vertexPushOrder = comparingDouble(fnVertexCost).reversed();
 	}
 
 	@Override
@@ -41,8 +43,7 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 		/*@formatter:off*/
 		graph.adj(current)
 			.filter(child -> getState(child) == UNVISITED).boxed()
-			// sort decreasing such that cheapest vertex will be on top of stack
-			.sorted(comparingDouble(fnVertexCost).reversed())
+			.sorted(vertexPushOrder)
 			.forEach(child -> {
 				setState(child, VISITED);
 				setParent(child, current);
