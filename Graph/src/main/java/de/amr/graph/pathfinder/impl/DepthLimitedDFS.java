@@ -23,7 +23,7 @@ public class DepthLimitedDFS<V, E> extends DepthFirstSearch<V, E> {
 	public DepthLimitedDFS(Graph<V, E> graph, int depthLimit) {
 		super(graph);
 		this.depthLimit = depthLimit;
-		System.out.println("DLS with depth limit " + depthLimit);
+		// System.out.println("DLS with depth limit " + depthLimit);
 	}
 
 	@Override

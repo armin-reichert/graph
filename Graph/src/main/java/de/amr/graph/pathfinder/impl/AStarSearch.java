@@ -9,16 +9,17 @@ import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.TraversalState;
 
 /**
  * The A* path finder.
  * 
  * <pre>
- * f(v):             map "score"
- * g(v):             map "cost"
+ * f(v):             getScore(v)
+ * g(v):             getCost(v)
  * h(v):             fnEstimatedCost.apply(v, target)
- * v in open list:   isOpen(v)
- * v in closed list: isClosed(v)
+ * v in open list:   getState(v) == OPEN
+ * v in closed list: getState(v) == CLOSED
  * </pre>
  * 
  * @param <V>
@@ -33,6 +34,9 @@ import de.amr.graph.core.api.Graph;
  */
 public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
+	public static final TraversalState OPEN = VISITED;
+	public static final TraversalState CLOSED = COMPLETED;
+
 	private final ToDoubleFunction<E> fnEdgeCost;
 	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost;
 	private final Map<Integer, Double> score;
@@ -43,7 +47,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 * @param graph
 	 *                              a graph
 	 * @param fnEdgeCost
-	 *                              function returning the cost for each edge
+	 *                              function defining the cost for each edge
 	 * @param fnEstimatedPathCost
 	 *                              estimated path cost, for example the Euclidean or Manhattan distance
 	 *                              for a 2D grid. Must be an underestimate of the real cost.
@@ -66,27 +70,27 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	@Override
 	public void exploreGraph(int source, int target) {
 		init();
-		setState(source, VISITED);
+		setState(source, OPEN);
 		// next two lines only included for consistency:
 		setCost(source, 0);
 		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
 		frontier.add(source);
 		while (!frontier.isEmpty()) {
 			int current = frontier.next();
-			setState(current, COMPLETED);
+			setState(current, CLOSED);
 			if (current == target) {
 				break;
 			}
-			graph.adj(current).filter(child -> !isClosed(child)).forEach(child -> {
+			graph.adj(current).filter(child -> getState(child) != CLOSED).forEach(child -> {
 				double newCost = getCost(current) + edgeCost(current, child);
-				if (!isOpen(child) || newCost < getCost(child)) {
+				if (getState(child) != OPEN || newCost < getCost(child)) {
 					setParent(child, current);
 					setCost(child, newCost);
 					setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
-					if (isOpen(child)) {
+					if (getState(child) == OPEN) {
 						((PQFrontier) frontier).decreaseKey(child);
 					} else {
-						setState(child, VISITED);
+						setState(child, OPEN);
 						frontier.add(child);
 					}
 				}
@@ -100,14 +104,6 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 
 	private void setScore(int v, double value) {
 		score.put(v, value);
-	}
-
-	public boolean isOpen(int v) {
-		return getState(v) == VISITED;
-	}
-
-	public boolean isClosed(int v) {
-		return getState(v) == COMPLETED;
 	}
 
 	private double edgeCost(int u, int v) {

@@ -194,10 +194,10 @@ public class AStarDemoApp {
 				return Color.RED.brighter();
 			}
 			if (astar != null) {
-				if (astar.isClosed(cell)) {
+				if (astar.getState(cell) == AStarSearch.CLOSED) {
 					return new Color(180, 180, 180);
 				}
-				if (astar.isOpen(cell)) {
+				if (astar.getState(cell) == AStarSearch.OPEN) {
 					return new Color(220, 220, 220);
 				}
 			}
