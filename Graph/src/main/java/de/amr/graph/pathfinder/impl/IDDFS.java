@@ -33,6 +33,8 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
 			dls = new DepthLimitedDFS<>(graph, depth);
 			observersCopy.forEach(dls::addObserver);
+			stateMap.clear();
+			parentMap.clear();
 			List<Integer> path = dls.findPath(source, target);
 			observersCopy.forEach(dls::removeObserver);
 			if (!path.isEmpty()) {
