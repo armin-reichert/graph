@@ -2,6 +2,7 @@ package de.amr.graph.grid.ui.animation;
 
 import java.awt.Color;
 import java.util.BitSet;
+import java.util.List;
 import java.util.function.IntSupplier;
 
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -94,7 +95,7 @@ public class DFSAnimation extends AbstractAnimation {
 		});
 	}
 
-	private ConfigurableGridRenderer createRenderer(GridRenderer base) {
+	private ConfigurableGridRenderer createPathRenderer(GridRenderer base) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellSize = base.getModel()::getCellSize;
@@ -118,12 +119,14 @@ public class DFSAnimation extends AbstractAnimation {
 
 	public void run(GraphSearch<?, ?> dfs, int source, int target) {
 		this.dfs = dfs;
-		canvas.pushRenderer(createRenderer(canvas.getRenderer().get()));
-		dfs.addObserver(canvasUpdater);
-		dfs.exploreGraph(source, target);
-		dfs.removeObserver(canvasUpdater);
-		canvas.drawGrid();
-		dfs.buildPath(source, target).forEach(canvas::drawGridCell);
-		canvas.popRenderer();
+		canvas.getRenderer().ifPresent(canvasRenderer -> {
+			canvas.pushRenderer(createPathRenderer(canvasRenderer));
+			dfs.addObserver(canvasUpdater);
+			List<Integer> path = dfs.findPath(source, target);
+			dfs.removeObserver(canvasUpdater);
+			canvas.drawGrid();
+			path.forEach(canvas::drawGridCell);
+			canvas.popRenderer();
+		});
 	}
 }
