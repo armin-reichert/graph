@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Breadth-first search in undirected graph, starting from a given source vertex. After being
@@ -22,7 +21,6 @@ import de.amr.graph.pathfinder.api.Frontier;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
-	protected Frontier frontier;
 	protected final Map<Integer, Double> cost;
 	protected double maxCost;
 
@@ -30,11 +28,6 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 		super(graph);
 		frontier = new FIFOFrontier();
 		cost = new HashMap<>();
-	}
-
-	@Override
-	public Frontier frontier() {
-		return frontier;
 	}
 
 	@Override

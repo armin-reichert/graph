@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Iterative deepening depth-first search (IDDFS).
@@ -22,11 +21,6 @@ public class IDDFS<V, E> extends GraphSearch<V, E> {
 
 	public IDDFS(Graph<V, E> graph) {
 		super(graph);
-	}
-
-	@Override
-	public Frontier frontier() {
-		return dls != null ? dls.frontier() : null;
 	}
 
 	@Override

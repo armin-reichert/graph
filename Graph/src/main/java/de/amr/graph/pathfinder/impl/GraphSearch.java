@@ -32,6 +32,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
 	protected final Set<GraphSearchObserver> observers;
+	protected Frontier frontier;
 
 	protected GraphSearch(Graph<V, E> graph) {
 		Objects.requireNonNull(graph);
@@ -41,15 +42,13 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		observers = new HashSet<>(5);
 	}
 
-	public abstract Frontier frontier();
-
 	/**
 	 * Initializes the search such that {@link #exploreGraph(int, int)} starts in a clean state.
 	 */
 	protected void init() {
 		parentMap.clear();
 		stateMap.clear();
-		frontier().clear();
+		frontier.clear();
 	}
 
 	/**
@@ -76,9 +75,9 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		init();
 		setState(source, VISITED);
 		setParent(source, -1);
-		frontier().add(source);
-		while (!frontier().isEmpty()) {
-			int current = frontier().next();
+		frontier.add(source);
+		while (!frontier.isEmpty()) {
+			int current = frontier.next();
 			if (current == target) {
 				return;
 			}
@@ -96,7 +95,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);
-			frontier().add(neighbor);
+			frontier.add(neighbor);
 		});
 	}
 
@@ -139,6 +138,10 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 			path.add(0, v);
 		}
 		return path;
+	}
+
+	public Frontier getFrontier() {
+		return frontier;
 	}
 
 	/**

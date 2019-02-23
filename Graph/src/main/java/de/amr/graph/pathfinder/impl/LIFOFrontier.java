@@ -10,7 +10,7 @@ public class LIFOFrontier implements Frontier {
 
 	@Override
 	public void add(int v) {
-		stack.add(v);
+		stack.push(v);
 	}
 
 	@Override

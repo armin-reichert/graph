@@ -46,7 +46,7 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 			.forEach(child -> {
 				setState(child, VISITED);
 				setParent(child, current);
-				frontier().add(child);
+				frontier.add(child);
 			});
 		/*@formatter:on*/
 	}

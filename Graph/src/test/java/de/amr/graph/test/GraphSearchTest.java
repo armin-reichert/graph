@@ -1,10 +1,12 @@
 package de.amr.graph.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.amr.graph.core.api.Graph;
@@ -94,8 +96,7 @@ public class GraphSearchTest {
 		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
-		assertEquals(Arrays.asList(0, 1, 2, 5, 8), path);
-		// assertEquals(Arrays.asList(0, 3, 6, 7, 8), path);
+		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
 	}
 
 	@Test
@@ -104,8 +105,7 @@ public class GraphSearchTest {
 		GraphSearch<Void, Void> search = new DepthFirstSearch<>(g);
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
-		assertEquals(Arrays.asList(0, 1, 2, 5, 8), path);
-		// assertEquals(Arrays.asList(0, 3, 6, 7, 8), path);
+		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
 	}
 
 }

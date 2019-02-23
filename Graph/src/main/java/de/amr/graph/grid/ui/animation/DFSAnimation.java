@@ -76,7 +76,7 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell)) {
 				return pathColor;
 			}
-			if (dfs.frontier().contains(cell)) {
+			if (dfs.getFrontier().contains(cell)) {
 				return visitedCellColor;
 			}
 			return Color.WHITE;
@@ -86,7 +86,7 @@ public class DFSAnimation extends AbstractAnimation {
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}
-			if (dfs.frontier().contains(cell) && dfs.frontier().contains(neighbor)) {
+			if (dfs.getFrontier().contains(cell) && dfs.getFrontier().contains(neighbor)) {
 				return visitedCellColor;
 			}
 			return Color.WHITE;

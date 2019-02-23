@@ -71,7 +71,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 		setCost(source, 0);
 		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
 		frontier.add(source);
-		while (!frontier().isEmpty()) {
+		while (!frontier.isEmpty()) {
 			int current = frontier.next();
 			setState(current, COMPLETED);
 			if (current == target) {

@@ -8,7 +8,6 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.Frontier;
 
 /**
  * Alternative implementation of depth-first traversal of an undirected graph.
@@ -17,15 +16,9 @@ import de.amr.graph.pathfinder.api.Frontier;
  */
 public class DepthFirstSearch2<V, E> extends GraphSearch<V, E> {
 
-	private final LIFOFrontier frontier = new LIFOFrontier();
-
 	public DepthFirstSearch2(Graph<V, E> graph) {
 		super(graph);
-	}
-
-	@Override
-	public Frontier frontier() {
-		return frontier;
+		frontier = new LIFOFrontier();
 	}
 
 	@Override
