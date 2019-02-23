@@ -125,7 +125,13 @@ public class DFSAnimation extends AbstractAnimation {
 			List<Integer> path = dfs.findPath(source, target);
 			dfs.removeObserver(canvasUpdater);
 			canvas.drawGrid();
-			path.forEach(canvas::drawGridCell);
+			path.forEach(v -> {
+				int w = dfs.getParent(v);
+				canvas.drawGridCell(v);
+				if (w != -1) {
+					canvas.drawGridPassage(v, w, true);
+				}
+			});
 			canvas.popRenderer();
 		});
 	}
