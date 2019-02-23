@@ -1,6 +1,6 @@
 # Graph data structures and algorithms.
 
-This library has been written as the foundation of my [maze generation library](https://github.com/armin-reichert/mazes). 
+This library has been written as the foundation of my [maze generation library](https://github.com/armin-reichert/mazes). My goal is to provide the path finding algorithms in "text book quality", i.e. in a very concise and readable form.
 
 <img width="640" src="https://github.com/armin-reichert/mazes/blob/master/MazeDemos/images/gen/maze_80x60_WilsonUSTRecursiveCrosses.gif"/>
 
