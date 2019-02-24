@@ -254,7 +254,7 @@ public class PathFinderDemoApp {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 5);
+		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 2);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = () -> cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
@@ -267,7 +267,7 @@ public class PathFinderDemoApp {
 		}
 		if (pathFinder instanceof AStarSearch) {
 			AStarSearch<Tile, Integer> astar = (AStarSearch<Tile, Integer>) pathFinder;
-			return String.format("%.0f(%.0f)", astar.getCost(cell), astar.getScore(cell));
+			return String.format("%.0f", astar.getScore(cell));
 		} else if (pathFinder instanceof BreadthFirstSearch) {
 			BreadthFirstSearch<Tile, Integer> bfs = (BreadthFirstSearch<Tile, Integer>) pathFinder;
 			return String.format("%.0f", bfs.getCost(cell));
