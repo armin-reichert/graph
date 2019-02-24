@@ -131,7 +131,7 @@ public class PathFinderDemoApp {
 		public void mouseClicked(MouseEvent mouse) {
 			if (mouse.getButton() == MouseEvent.BUTTON1) {
 				int cell = cellAt(mouse.getX(), mouse.getY());
-				setTile(cell, mouse.isShiftDown() ? FREE : WALL);
+				setTile(cell, map.get(cell) == WALL ? FREE : WALL);
 				updatePath();
 			}
 		}
