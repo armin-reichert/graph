@@ -21,8 +21,11 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -36,7 +39,9 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
-import de.amr.graph.util.GraphUtils;
+import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
+import de.amr.graph.pathfinder.impl.DijkstraSearch;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 import de.amr.util.StopWatch;
 
 /**
@@ -60,8 +65,13 @@ public class AStarDemoApp {
 		FREE, WALL;
 	}
 
+	public enum PathFinderAlgorithm {
+		BFS, Dijkstra, AStar;
+	}
+
 	private GridGraph2D<Tile, Integer> map;
-	private AStarSearch<Tile, Integer> astar;
+	private PathFinderAlgorithm algorithm;
+	private GraphSearch<Tile, Integer> pathFinder;
 	private int source;
 	private int target;
 	private BitSet solution;
@@ -99,6 +109,17 @@ public class AStarDemoApp {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			resetScene();
+			updatePath();
+		}
+	};
+
+	private Action actionSelectAlgorithm = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JComponent source = (JComponent) e.getSource();
+			algorithm = (PathFinderAlgorithm) source.getClientProperty("algorithm");
+			System.out.println("Selected " + algorithm);
 			updatePath();
 		}
 	};
@@ -142,10 +163,10 @@ public class AStarDemoApp {
 	};
 
 	public AStarDemoApp(int numCols, int numRows, int canvasSize) {
+		algorithm = PathFinderAlgorithm.AStar;
 		map = new GridGraph<>(numCols, numRows, Top8.get(), v -> Tile.FREE, (u, v) -> getDistance(u, v),
 				UndirectedEdge::new);
 		map.fill();
-		GraphUtils.print(map, System.out);
 		cellSize = canvasSize / numCols;
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
@@ -154,6 +175,7 @@ public class AStarDemoApp {
 		solution = new BitSet();
 		createUI();
 		updatePath();
+		// GraphUtils.print(map, System.out);
 	}
 
 	private int getDistance(int u, int v) {
@@ -171,13 +193,27 @@ public class AStarDemoApp {
 		popupMenu.add(actionSetTarget);
 		popupMenu.addSeparator();
 		popupMenu.add(actionResetScene);
-		window = new JFrame("A* demo application");
+		popupMenu.addSeparator();
+		addAlgorithmItems();
+		window = new JFrame("Pathfinder demo");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 		window.add(canvas, BorderLayout.CENTER);
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+	}
+
+	private void addAlgorithmItems() {
+		ButtonGroup bg = new ButtonGroup();
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			JRadioButtonMenuItem rb = new JRadioButtonMenuItem(actionSelectAlgorithm);
+			rb.putClientProperty("algorithm", algorithm);
+			rb.setText(algorithm.name());
+			rb.setSelected(algorithm == this.algorithm);
+			bg.add(rb);
+			popupMenu.add(rb);
+		}
 	}
 
 	private ConfigurableGridRenderer createRenderer() {
@@ -193,11 +229,11 @@ public class AStarDemoApp {
 			if (solution != null && solution.get(cell)) {
 				return Color.RED.brighter();
 			}
-			if (astar != null) {
-				if (astar.getState(cell) == AStarSearch.CLOSED) {
+			if (pathFinder != null) {
+				if (pathFinder.getState(cell) == TraversalState.COMPLETED) {
 					return new Color(180, 180, 180);
 				}
-				if (astar.getState(cell) == AStarSearch.OPEN) {
+				if (pathFinder.getState(cell) == TraversalState.VISITED) {
 					return new Color(220, 220, 220);
 				}
 			}
@@ -206,12 +242,7 @@ public class AStarDemoApp {
 			}
 			return Color.WHITE;
 		};
-		r.fnText = cell -> {
-			if (astar != null && astar.getState(cell) != TraversalState.UNVISITED) {
-				return String.format("%.0f(%.0f)", astar.getCost(cell), astar.getScore(cell));
-			}
-			return "";
-		};
+		r.fnText = this::cellText;
 		r.fnTextColor = cell -> {
 			if (cell == source || cell == target) {
 				return Color.WHITE;
@@ -229,6 +260,20 @@ public class AStarDemoApp {
 		return r;
 	}
 
+	private String cellText(int cell) {
+		if (pathFinder == null || pathFinder.getState(cell) == TraversalState.UNVISITED) {
+			return "";
+		}
+		if (pathFinder instanceof AStarSearch) {
+			AStarSearch<Tile, Integer> astar = (AStarSearch<Tile, Integer>) pathFinder;
+			return String.format("%.0f(%.0f)", astar.getCost(cell), astar.getScore(cell));
+		} else if (pathFinder instanceof BreadthFirstSearch) {
+			BreadthFirstSearch<Tile, Integer> bfs = (BreadthFirstSearch<Tile, Integer>) pathFinder;
+			return String.format("%.0f", bfs.getCost(cell));
+		}
+		return "";
+	}
+
 	private void setSource(int cell) {
 		source = cell;
 	}
@@ -241,17 +286,27 @@ public class AStarDemoApp {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		map.vertices().forEach(cell -> setTile(cell, FREE));
-		astar = null;
+		pathFinder = null;
 		solution.clear();
 	}
 
 	private void computePath() {
-		astar = new AStarSearch<>(map, i -> i, this::getDistance);
+		switch (algorithm) {
+		case AStar:
+			pathFinder = new AStarSearch<>(map, i -> i, this::getDistance);
+			break;
+		case BFS:
+			pathFinder = new BreadthFirstSearch<>(map);
+			break;
+		case Dijkstra:
+			pathFinder = new DijkstraSearch<>(map, e -> e);
+			break;
+		}
 		StopWatch watch = new StopWatch();
 		watch.start();
-		List<Integer> path = astar.findPath(source, target);
+		List<Integer> path = pathFinder.findPath(source, target);
 		watch.stop();
-		System.out.println(String.format("A*: %.4f seconds", watch.getSeconds()));
+		System.out.println(String.format("Path finding (%s): %.4f seconds", algorithm, watch.getSeconds()));
 		solution = new BitSet(map.numVertices());
 		path.forEach(solution::set);
 		System.out.println(String.format("Path length: %d", path.size()));
