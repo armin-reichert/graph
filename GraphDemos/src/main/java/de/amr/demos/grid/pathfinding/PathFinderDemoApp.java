@@ -57,7 +57,8 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(() -> new PathFinderDemoApp(16, 16, 16 * 40));
+		int size = 32;
+		EventQueue.invokeLater(() -> new PathFinderDemoApp(size, size, 800));
 	}
 
 	// model
