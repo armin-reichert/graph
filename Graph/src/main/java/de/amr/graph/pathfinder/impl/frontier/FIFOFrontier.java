@@ -1,11 +1,11 @@
-package de.amr.graph.pathfinder.impl;
+package de.amr.graph.pathfinder.impl.frontier;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import de.amr.graph.pathfinder.api.Frontier;
 
-class FIFOFrontier implements Frontier {
+public class FIFOFrontier implements Frontier {
 
 	protected Queue<Integer> q = new ArrayDeque<>();
 

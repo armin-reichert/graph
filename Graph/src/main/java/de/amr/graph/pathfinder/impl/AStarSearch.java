@@ -10,6 +10,7 @@ import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.pathfinder.impl.frontier.PQFrontier;
 
 /**
  * The A* path finder.

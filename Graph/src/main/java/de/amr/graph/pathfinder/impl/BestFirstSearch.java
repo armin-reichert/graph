@@ -3,6 +3,7 @@ package de.amr.graph.pathfinder.impl;
 import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.impl.frontier.PQFrontier;
 
 /**
  * A heuristic variant of breadth-first-search, sorting the entire queue when a vertex is expanded.

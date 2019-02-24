@@ -1,4 +1,4 @@
-package de.amr.graph.pathfinder.impl;
+package de.amr.graph.pathfinder.impl.frontier;
 
 import java.util.ArrayDeque;
 

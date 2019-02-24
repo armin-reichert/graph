@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.impl.frontier.FIFOFrontier;
 
 /**
  * Breadth-first search in undirected graph, starting from a given source vertex. After being

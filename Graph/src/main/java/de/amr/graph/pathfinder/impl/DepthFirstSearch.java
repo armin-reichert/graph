@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.impl.frontier.LIFOFrontier;
 
 /**
  * Depth-first traversal of a graph.

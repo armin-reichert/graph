@@ -8,6 +8,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.impl.frontier.LIFOFrontier;
 
 /**
  * Alternative implementation of depth-first traversal of an undirected graph.
