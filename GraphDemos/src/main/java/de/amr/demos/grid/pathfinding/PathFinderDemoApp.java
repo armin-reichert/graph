@@ -1,7 +1,7 @@
 package de.amr.demos.grid.pathfinding;
 
-import static de.amr.demos.grid.pathfinding.AStarDemoApp.Tile.FREE;
-import static de.amr.demos.grid.pathfinding.AStarDemoApp.Tile.WALL;
+import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.FREE;
+import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.WALL;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
@@ -49,7 +49,7 @@ import de.amr.util.StopWatch;
  * 
  * @author Armin Reichert
  */
-public class AStarDemoApp {
+public class PathFinderDemoApp {
 
 	public static void main(String[] args) {
 		try {
@@ -57,7 +57,7 @@ public class AStarDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(() -> new AStarDemoApp(16, 16, 16 * 40));
+		EventQueue.invokeLater(() -> new PathFinderDemoApp(16, 16, 16 * 40));
 	}
 
 	// model
@@ -162,7 +162,7 @@ public class AStarDemoApp {
 		}
 	};
 
-	public AStarDemoApp(int numCols, int numRows, int canvasSize) {
+	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
 		algorithm = PathFinderAlgorithm.AStar;
 		map = new GridGraph<>(numCols, numRows, Top8.get(), v -> Tile.FREE, (u, v) -> getDistance(u, v),
 				UndirectedEdge::new);
