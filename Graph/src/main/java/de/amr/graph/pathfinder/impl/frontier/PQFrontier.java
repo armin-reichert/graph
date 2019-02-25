@@ -26,7 +26,7 @@ public class PQFrontier implements Frontier {
 
 	@Override
 	public int next() {
-		return pq.poll();
+		return pq.remove();
 	}
 
 	@Override

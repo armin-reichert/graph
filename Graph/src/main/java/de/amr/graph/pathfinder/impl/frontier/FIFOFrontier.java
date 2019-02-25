@@ -7,7 +7,7 @@ import de.amr.graph.pathfinder.api.Frontier;
 
 public class FIFOFrontier implements Frontier {
 
-	protected Queue<Integer> q = new ArrayDeque<>();
+	private final Queue<Integer> q = new ArrayDeque<>();
 
 	@Override
 	public void add(int v) {
@@ -16,7 +16,7 @@ public class FIFOFrontier implements Frontier {
 
 	@Override
 	public int next() {
-		return q.poll();
+		return q.remove();
 	}
 
 	@Override
