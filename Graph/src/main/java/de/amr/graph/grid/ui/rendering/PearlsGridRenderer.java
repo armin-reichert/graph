@@ -54,10 +54,11 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	private void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 		final int cellX = grid.col(cell) * getCellSize();
 		final int cellY = grid.row(cell) * getCellSize();
-		final int offset = (int) ceil((getCellSize() / 2 - getPassageWidth() / 2));
+		final int passageWidth = getPassageWidth(cell, cell);// TODO
+		final int offset = (int) ceil((getCellSize() / 2 - passageWidth / 2));
 		g.translate(cellX, cellY);
 		g.setColor(getCellBgColor(cell));
-		g.fillRect(offset, offset, getPassageWidth(), getPassageWidth());
+		g.fillRect(offset, offset, passageWidth, passageWidth);
 		drawCellText(g, grid, cell);
 		g.translate(-cellX, -cellY);
 	}

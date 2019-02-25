@@ -17,7 +17,7 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	/** Function providing the grid cell size. */
 	public IntSupplier fnCellSize;
 	/** Function providing the passage width. */
-	public IntSupplier fnPassageWidth;
+	public BiFunction<Integer, Integer, Integer> fnPassageWidth;
 	/** Function providing the grid background color. */
 	public Supplier<Color> fnGridBgColor;
 	/**
@@ -40,7 +40,7 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	 */
 	public ConfigurableGridRenderer() {
 		fnCellSize = () -> 8;
-		fnPassageWidth = () -> getCellSize() / 2;
+		fnPassageWidth = (u, v) -> getCellSize() / 2;
 		fnGridBgColor = () -> Color.BLACK;
 		fnPassageColor = (cell, dir) -> getCellBgColor(cell);
 		fnCellBgColor = cell -> Color.WHITE;
@@ -61,8 +61,8 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	}
 
 	@Override
-	public final int getPassageWidth() {
-		return fnPassageWidth.getAsInt();
+	public final int getPassageWidth(int u, int v) {
+		return fnPassageWidth.apply(u, v);
 	}
 
 	@Override

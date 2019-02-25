@@ -18,7 +18,7 @@ public interface GridRenderingModel {
 	/**
 	 * @return thickness of a passage / edge
 	 */
-	int getPassageWidth();
+	int getPassageWidth(int u, int v);
 
 	/**
 	 * @return the background color of a cell

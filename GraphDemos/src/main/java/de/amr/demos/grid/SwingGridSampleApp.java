@@ -173,7 +173,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 				return Color.BLACK;
 			}
 		};
-		r.fnPassageWidth = () -> Math.max(1, cellSize / 4);
+		r.fnPassageWidth = (u, v) -> Math.max(1, cellSize / 4);
 		return r;
 	}
 

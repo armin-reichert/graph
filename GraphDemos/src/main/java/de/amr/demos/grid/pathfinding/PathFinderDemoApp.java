@@ -258,7 +258,7 @@ public class PathFinderDemoApp {
 		};
 		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 2);
 		r.fnMinFontSize = () -> 4;
-		r.fnPassageWidth = () -> cellSize - 1;
+		r.fnPassageWidth = (u, v) -> cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
 		return r;
 	}
