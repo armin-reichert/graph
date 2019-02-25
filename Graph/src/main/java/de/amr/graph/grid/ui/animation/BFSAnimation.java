@@ -7,7 +7,7 @@ import java.awt.Font;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.IntSupplier;
-import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -52,8 +52,8 @@ public class BFSAnimation extends AbstractAnimation {
 			return this;
 		}
 
-		public Builder pathColor(Supplier<Color> fnPathColor) {
-			anim.fnPathColor = fnPathColor;
+		public Builder pathColor(Color pathColor) {
+			anim.pathColor = pathColor;
 			return this;
 		}
 
@@ -68,8 +68,8 @@ public class BFSAnimation extends AbstractAnimation {
 
 	private GridCanvas canvas;
 	private boolean distanceVisible;
-	private ConfigurableGridRenderer distanceMapRenderer;
-	private Supplier<Color> fnPathColor = () -> Color.RED;
+	private Color pathColor;
+	private ConfigurableGridRenderer mapRenderer;
 	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
 
 		@Override
@@ -81,21 +81,18 @@ public class BFSAnimation extends AbstractAnimation {
 		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			delayed(() -> canvas.drawGridCell(v));
 		}
-		
+
 		@Override
 		public void vertexAddedToFrontier(int vertex) {
-			// TODO Auto-generated method stub
-			
 		}
-		
+
 		@Override
 		public void vertexRemovedFromFrontier(int vertex) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 
 	private BFSAnimation() {
+		pathColor = Color.RED;
 	}
 
 	/**
@@ -103,7 +100,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 * colored according to their distance from the source. Optionally the distance value is displayed.
 	 * 
 	 * @param bfs
-	 *                 BFS instance
+	 *                 BFS to be animated
 	 * @param source
 	 *                 source vertex
 	 * @param target
@@ -111,15 +108,13 @@ public class BFSAnimation extends AbstractAnimation {
 	 */
 	public void run(GraphSearch<?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			// 1. explore graph to compute distances from source
-			BreadthFirstSearch<?, ?> distExplorer = new BreadthFirstSearch<>(canvas.getGrid());
-			distExplorer.exploreGraph(source);
+			// 1. explore graph to measure distances of all vertices reachable from source
+			BreadthFirstSearch<?, ?> distMeasurer = new BreadthFirstSearch<>(canvas.getGrid());
+			distMeasurer.exploreGraph(source);
+			mapRenderer = createMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
+			canvas.pushRenderer(mapRenderer);
 
-			// Create renderer using computed distances
-			distanceMapRenderer = createDistanceMapRenderer(canvasRenderer, distExplorer);
-			canvas.pushRenderer(distanceMapRenderer);
-
-			// 2. traverse graph again, now with events enabled
+			// 2. traverse graph with events enabled
 			bfs.addObserver(canvasUpdater);
 			bfs.exploreGraph(source, target);
 			bfs.removeObserver(canvasUpdater);
@@ -144,10 +139,11 @@ public class BFSAnimation extends AbstractAnimation {
 			if (path.isEmpty()) {
 				return;
 			}
-			if (distanceMapRenderer != null) {
-				canvas.pushRenderer(createPathRenderer(distanceMapRenderer, bfs, path));
+			if (mapRenderer != null) {
+				canvas.pushRenderer(createPathRenderer(mapRenderer, path, bfs::getCost));
 			} else if (canvasRenderer instanceof ConfigurableGridRenderer) {
-				canvas.pushRenderer(createPathRenderer((ConfigurableGridRenderer) canvasRenderer, bfs, path));
+				canvas
+						.pushRenderer(createPathRenderer((ConfigurableGridRenderer) canvasRenderer, path, bfs::getCost));
 			} else {
 				throw new IllegalStateException();
 			}
@@ -156,45 +152,45 @@ public class BFSAnimation extends AbstractAnimation {
 		});
 	}
 
-	private ConfigurableGridRenderer createDistanceMapRenderer(GridRenderer base,
-			BreadthFirstSearch<?, ?> distExplorer) {
+	private ConfigurableGridRenderer createMapRenderer(GridRenderer base, ToDoubleFunction<Integer> distance,
+			double maxDistance) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
-		r.fnCellBgColor = cell -> cellColorByDist(cell, distExplorer);
+		r.fnCellBgColor = cell -> cellColorByDistance(cell, distance, maxDistance);
 		r.fnCellSize = base.getModel()::getCellSize;
 		r.fnGridBgColor = () -> base.getModel().getGridBgColor();
-		r.fnPassageColor = (u, v) -> cellColorByDist(u, distExplorer);
+		r.fnPassageColor = (u, v) -> cellColorByDistance(u, distance, maxDistance);
 		r.fnPassageWidth = base.getModel()::getPassageWidth;
-		r.fnText = cell -> distanceVisible ? format("%.0f", distExplorer.getCost(cell)) : "";
+		r.fnText = cell -> distanceVisible ? format("%.0f", distance.applyAsDouble(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.BLACK;
 		return r;
 	}
 
-	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base,
-			BreadthFirstSearch<?, ?> bfs, List<Integer> path) {
+	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base, List<Integer> path,
+			ToDoubleFunction<Integer> distance) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
-		r.fnCellBgColor = cell -> inPath.get(cell) ? fnPathColor.get() : base.getCellBgColor(cell);
+		r.fnCellBgColor = cell -> inPath.get(cell) ? pathColor : base.getCellBgColor(cell);
 		r.fnCellSize = () -> base.getCellSize();
 		r.fnGridBgColor = () -> base.getGridBgColor();
 		r.fnPassageColor = (cell, dir) -> {
 			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
-			return inPath.get(cell) && inPath.get(neighbor) ? fnPathColor.get() : base.getCellBgColor(cell);
+			return inPath.get(cell) && inPath.get(neighbor) ? pathColor : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = () -> base.getPassageWidth() > 5 ? base.getPassageWidth() / 2 : base.getPassageWidth();
-		r.fnText = cell -> distanceVisible ? format("%.0f", bfs.getCost(cell)) : "";
+		r.fnText = cell -> distanceVisible ? format("%.0f", distance.applyAsDouble(cell)) : "";
 		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth() / 2);
 		r.fnTextColor = cell -> Color.WHITE;
 		return r;
 	}
 
-	private Color cellColorByDist(int cell, BreadthFirstSearch<?, ?> distExplorer) {
+	private Color cellColorByDistance(int cell, ToDoubleFunction<Integer> distance, double maxDistance) {
 		float hue = 0.16f;
-		if (distExplorer.getMaxCost() > 0) {
-			hue += 0.7f * distExplorer.getCost(cell) / distExplorer.getMaxCost();
+		if (maxDistance > 0) {
+			hue += 0.7f * distance.applyAsDouble(cell) / maxDistance;
 		}
 		return Color.getHSBColor(hue, 0.5f, 1f);
 	}
