@@ -3,7 +3,6 @@ package de.amr.demos.grid.pathfinding;
 import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.FREE;
 import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.WALL;
 import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -32,7 +32,9 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
+import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -73,6 +75,7 @@ public class PathFinderDemoApp {
 	private GridGraph2D<Tile, Double> map;
 	private BreadthFirstSearch<Tile, Double> pathFinder;
 	private PathFinderAlgorithm selectedAlgorithm;
+	private Topology selectedTopology;
 	private int source;
 	private int target;
 	private BitSet solution;
@@ -120,7 +123,20 @@ public class PathFinderDemoApp {
 		public void actionPerformed(ActionEvent e) {
 			JComponent source = (JComponent) e.getSource();
 			selectedAlgorithm = (PathFinderAlgorithm) source.getClientProperty("algorithm");
-			System.out.println("Selected " + selectedAlgorithm);
+			System.out.println("Algorithm set to " + selectedAlgorithm);
+			newPathFinder();
+			updatePath();
+		}
+	};
+
+	private Action actionSelectTopology = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JComponent source = (JComponent) e.getSource();
+			selectedTopology = (Topology) source.getClientProperty("topology");
+			createMap(map.numCols(), map.numRows(), selectedTopology);
+			System.out.println("Topology set to " + selectedTopology);
 			newPathFinder();
 			updatePath();
 		}
@@ -166,8 +182,8 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
 		selectedAlgorithm = PathFinderAlgorithm.AStar;
-		map = new GridGraph<>(numCols, numRows, Top8.get(), v -> Tile.FREE, (u, v) -> map.euclidean(u, v),
-				UndirectedEdge::new);
+		selectedTopology = Top8.get();
+		createMap(numCols, numRows, Top8.get());
 		map.fill();
 		cellSize = canvasSize / numCols;
 		source = map.cell(GridPosition.TOP_LEFT);
@@ -179,10 +195,6 @@ public class PathFinderDemoApp {
 		newPathFinder();
 		updatePath();
 		// GraphUtils.print(map, System.out);
-	}
-
-	private double getDistance(int u, int v) {
-		return sqrt(map.euclidean2(u, v));
 	}
 
 	private void createUI() {
@@ -198,6 +210,8 @@ public class PathFinderDemoApp {
 		popupMenu.add(actionResetScene);
 		popupMenu.addSeparator();
 		addAlgorithmItems();
+		popupMenu.addSeparator();
+		addTopologyItems();
 		window = new JFrame("Pathfinder demo");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
@@ -205,6 +219,43 @@ public class PathFinderDemoApp {
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+	}
+
+	private void createMap(int numCols, int numRows, Topology top) {
+		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.FREE, (u, v) -> 1.0,
+				UndirectedEdge::new);
+		newMap.setDefaultEdgeLabel((u, v) -> newMap.euclidean(u, v));
+		newMap.fill();
+		if (map != null) {
+			map.vertices().forEach(v -> {
+				newMap.set(v, map.get(v));
+				if (map.get(v) == WALL) {
+					newMap.neighbors(v).forEach(neighbor -> {
+						if (newMap.adjacent(v, neighbor)) {
+							newMap.removeEdge(v, neighbor);
+						}
+					});
+				} else {
+					newMap.neighbors(v).forEach(neighbor -> {
+						if (!newMap.adjacent(v, neighbor)) {
+							newMap.addEdge(v, neighbor);
+						}
+					});
+				}
+			});
+		}
+		map = newMap;
+	}
+
+	private void addTopologyItems() {
+		ButtonGroup bg = new ButtonGroup();
+		for (Topology topology : Arrays.asList(Top4.get(), Top8.get())) {
+			JRadioButtonMenuItem rb = new JRadioButtonMenuItem(actionSelectTopology);
+			rb.putClientProperty("topology", topology);
+			rb.setText(topology == Top4.get() ? "4 Neighbor Cells" : "8 Neighbor Cells");
+			rb.setSelected(topology == this.selectedTopology);
+			bg.add(popupMenu.add(rb));
+		}
 	}
 
 	private void addAlgorithmItems() {
@@ -233,7 +284,7 @@ public class PathFinderDemoApp {
 			}
 			if (pathFinder != null) {
 				if (pathFinder.getState(cell) == TraversalState.COMPLETED) {
-					return new Color(180, 180, 180);
+					return new Color(160, 160, 160);
 				}
 				if (pathFinder.getState(cell) == TraversalState.VISITED) {
 					return new Color(220, 220, 220);
@@ -295,7 +346,7 @@ public class PathFinderDemoApp {
 	private void newPathFinder() {
 		switch (selectedAlgorithm) {
 		case AStar:
-			pathFinder = new AStarSearch<>(map, i -> i, this::getDistance);
+			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> map.euclidean(u, v));
 			break;
 		case BFS:
 			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> map.euclidean(u, v));
