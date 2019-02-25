@@ -3,13 +3,13 @@ package de.amr.demos.grid.pathfinding;
 import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.FREE;
 import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.WALL;
 import static java.lang.Math.min;
-import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -57,8 +57,9 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int size = 32;
-		EventQueue.invokeLater(() -> new PathFinderDemoApp(size, size, 800));
+		int gridSize = 40;
+		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
+		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
 	}
 
 	// model
@@ -121,6 +122,7 @@ public class PathFinderDemoApp {
 			JComponent source = (JComponent) e.getSource();
 			algorithm = (PathFinderAlgorithm) source.getClientProperty("algorithm");
 			System.out.println("Selected " + algorithm);
+			newPathFinder();
 			updatePath();
 		}
 	};
@@ -165,8 +167,7 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
 		algorithm = PathFinderAlgorithm.AStar;
-		map = new GridGraph<>(numCols, numRows, Top8.get(), v -> Tile.FREE, (u, v) -> getDistance(u, v),
-				UndirectedEdge::new);
+		map = new GridGraph<>(numCols, numRows, Top8.get(), v -> Tile.FREE, (u, v) -> 1, UndirectedEdge::new);
 		map.fill();
 		cellSize = canvasSize / numCols;
 		source = map.cell(GridPosition.TOP_LEFT);
@@ -175,12 +176,13 @@ public class PathFinderDemoApp {
 		draggedCell = -1;
 		solution = new BitSet();
 		createUI();
+		newPathFinder();
 		updatePath();
 		// GraphUtils.print(map, System.out);
 	}
 
-	private int getDistance(int u, int v) {
-		return (int) round(10 * sqrt(map.euclidean2(u, v)));
+	private double getDistance(int u, int v) {
+		return sqrt(map.euclidean2(u, v));
 	}
 
 	private void createUI() {
@@ -287,11 +289,11 @@ public class PathFinderDemoApp {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		map.vertices().forEach(cell -> setTile(cell, FREE));
-		pathFinder = null;
+		pathFinder.findPath(source, target);
 		solution.clear();
 	}
 
-	private void computePath() {
+	private void newPathFinder() {
 		switch (algorithm) {
 		case AStar:
 			pathFinder = new AStarSearch<>(map, i -> i, this::getDistance);
@@ -303,6 +305,9 @@ public class PathFinderDemoApp {
 			pathFinder = new DijkstraSearch<>(map, e -> e);
 			break;
 		}
+	}
+
+	private void computePath() {
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pathFinder.findPath(source, target);
