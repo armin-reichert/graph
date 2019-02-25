@@ -56,7 +56,7 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int gridSize = 40;
+		int gridSize = 30;
 		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
 		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
 	}
@@ -214,8 +214,7 @@ public class PathFinderDemoApp {
 			rb.putClientProperty("algorithm", algorithm);
 			rb.setText(algorithm.name());
 			rb.setSelected(algorithm == this.selectedAlgorithm);
-			bg.add(rb);
-			popupMenu.add(rb);
+			bg.add(popupMenu.add(rb));
 		}
 	}
 
@@ -256,7 +255,7 @@ public class PathFinderDemoApp {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial", Font.PLAIN, cellSize / 2);
+		r.fnTextFont = () -> new Font("Arial Narrow", Font.PLAIN, cellSize * 40 / 100);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = (u, v) -> cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
@@ -269,10 +268,10 @@ public class PathFinderDemoApp {
 		}
 		if (pathFinder instanceof AStarSearch) {
 			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pathFinder;
-			return String.format("%.0f", astar.getScore(cell));
+			return String.format("%.2f", astar.getScore(cell));
 		} else if (pathFinder instanceof BreadthFirstSearch) {
 			BreadthFirstSearch<Tile, Double> bfs = pathFinder;
-			return String.format("%.0f", bfs.getCost(cell));
+			return String.format("%.2f", bfs.getCost(cell));
 		}
 		return "";
 	}
@@ -299,7 +298,7 @@ public class PathFinderDemoApp {
 			pathFinder = new AStarSearch<>(map, i -> i, this::getDistance);
 			break;
 		case BFS:
-			pathFinder = new BreadthFirstSearch<>(map);
+			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> map.euclidean(u, v));
 			break;
 		case Dijkstra:
 			pathFinder = new DijkstraSearch<>(map, e -> e);
