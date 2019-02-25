@@ -108,6 +108,20 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	}
 
 	/**
+	 * Returns the Euclidean distance between the given grid cells.
+	 * 
+	 * @param u
+	 *            grid cell
+	 * @param v
+	 *            grid cell
+	 * @return squared Euclidean distance between cells
+	 */
+	default double euclidean(int u, int v) {
+		int dx = col(u) - col(v), dy = row(u) - row(v);
+		return Math.hypot(dx, dy);
+	}
+
+	/**
 	 * @param col
 	 *              the column index
 	 * @return {@code true} if the given column index is valid
