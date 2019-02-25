@@ -6,7 +6,7 @@ import de.amr.graph.pathfinder.api.Frontier;
 
 public class LIFOFrontier implements Frontier {
 
-	protected ArrayDeque<Integer> stack = new ArrayDeque<>();
+	private final ArrayDeque<Integer> stack = new ArrayDeque<>();
 
 	@Override
 	public void add(int v) {
