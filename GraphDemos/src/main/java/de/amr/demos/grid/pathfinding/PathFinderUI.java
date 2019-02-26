@@ -199,7 +199,7 @@ public class PathFinderUI extends JFrame {
 		public void mouseClicked(MouseEvent mouse) {
 			if (mouse.getButton() == MouseEvent.BUTTON1) {
 				int cell = app.cellAt(mouse.getX(), mouse.getY());
-				app.setTile(cell, app.getMap().get(cell) == WALL ? FREE : WALL);
+				app.changeTile(cell, app.getMap().get(cell) == WALL ? FREE : WALL);
 				app.updatePath();
 			}
 		}
@@ -225,7 +225,7 @@ public class PathFinderUI extends JFrame {
 			if (cell != draggedCell) {
 				// drag enters new cell
 				draggedCell = cell;
-				app.setTile(cell, mouse.isShiftDown() ? FREE : WALL);
+				app.changeTile(cell, mouse.isShiftDown() ? FREE : WALL);
 				app.updatePath();
 			}
 		}
@@ -272,5 +272,4 @@ public class PathFinderUI extends JFrame {
 		}
 		return "";
 	}
-
 }

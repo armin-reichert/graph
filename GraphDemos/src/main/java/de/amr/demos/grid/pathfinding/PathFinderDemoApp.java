@@ -24,7 +24,7 @@ import de.amr.graph.pathfinder.impl.DijkstraSearch;
 import de.amr.util.StopWatch;
 
 /**
- * Demo application for A* algorithm.
+ * Demo application for path finder algorithms.
  * 
  * @author Armin Reichert
  */
@@ -36,12 +36,11 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int gridSize = 20;
 		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
+		int gridSize = 20;
 		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
 	}
 
-	// model
 	public enum Tile {
 		FREE, WALL;
 	}
@@ -68,19 +67,11 @@ public class PathFinderDemoApp {
 		cellSize = canvasSize / numCols;
 		passageWidthPct = 95;
 
-		createMap(numCols, numRows, Top8.get());
-		map.fill();
+		createMap(numCols, numRows, topology);
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
-
 		solution = new BitSet(map.numVertices());
-		createPathFinder();
-		createUI();
-		updatePath();
-		// GraphUtils.print(map, System.out);
-	}
 
-	private void createUI() {
 		window = new PathFinderUI();
 		window.setApp(this);
 		window.pack();
@@ -88,18 +79,16 @@ public class PathFinderDemoApp {
 		window.setVisible(true);
 	}
 
-	private void createPathFinder() {
+	private BreadthFirstSearch<Tile, Double> createPathFinder() {
 		switch (algorithm) {
 		case AStar:
-			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
-			break;
+			return new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
 		case BFS:
-			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
-			break;
+			return new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
 		case Dijkstra:
-			pathFinder = new DijkstraSearch<>(map, e -> e);
-			break;
+			return new DijkstraSearch<>(map, e -> e);
 		}
+		throw new IllegalArgumentException();
 	}
 
 	private void createMap(int numCols, int numRows, Topology top) {
@@ -130,7 +119,7 @@ public class PathFinderDemoApp {
 
 	public void setAlgorithm(PathFinderAlgorithm alg) {
 		algorithm = alg;
-		createPathFinder();
+		pathFinder = createPathFinder();
 		updatePath();
 	}
 
@@ -141,7 +130,7 @@ public class PathFinderDemoApp {
 	public void setTopology(Topology topology) {
 		this.topology = topology;
 		createMap(map.numCols(), map.numRows(), topology);
-		createPathFinder();
+		pathFinder = createPathFinder();
 		updatePath();
 	}
 
@@ -193,7 +182,7 @@ public class PathFinderDemoApp {
 		this.target = target;
 	}
 
-	public void setTile(int cell, Tile tile) {
+	public void changeTile(int cell, Tile tile) {
 		if (cell == source || cell == target || map.get(cell) == tile) {
 			return;
 		}
@@ -214,21 +203,20 @@ public class PathFinderDemoApp {
 	public void resetScene() {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
-		map.vertices().forEach(cell -> setTile(cell, FREE));
-		pathFinder.findPath(source, target);
-		solution.clear();
+		map.vertices().forEach(cell -> changeTile(cell, FREE));
+		computePath();
 	}
 
 	private void computePath() {
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pathFinder.findPath(source, target);
-		watch.stop();
-		System.out.println(String.format("Path finding (%s): %.4f seconds", algorithm, watch.getSeconds()));
 		solution.clear();
 		path.forEach(solution::set);
-		System.out.println(String.format("Path length: %d", path.size() - 1));
-		System.out.println(String.format("Path cost: %.2f", pathFinder.getCost(target)));
+		watch.stop();
+		System.out.println(String.format("Find path using (%s): %.4f seconds:", algorithm, watch.getSeconds()));
+		System.out
+				.println(String.format("  Length: %d, Cost: %.2f", path.size() - 1, pathFinder.getCost(target)));
 	}
 
 	public void updatePath() {
