@@ -236,7 +236,7 @@ public class PathFinderDemoApp {
 						}
 					});
 				} else {
-					newMap.neighbors(v).forEach(neighbor -> {
+					newMap.neighbors(v).filter(neighbor -> newMap.get(neighbor) != WALL).forEach(neighbor -> {
 						if (!newMap.adjacent(v, neighbor)) {
 							newMap.addEdge(v, neighbor);
 						}
@@ -366,7 +366,7 @@ public class PathFinderDemoApp {
 				.println(String.format("Path finding (%s): %.4f seconds", selectedAlgorithm, watch.getSeconds()));
 		solution = new BitSet(map.numVertices());
 		path.forEach(solution::set);
-		System.out.println(String.format("Path length: %d", path.size()));
+		System.out.println(String.format("Path length: %d", path.size() - 1));
 		System.out.println(String.format("Path cost: %.2f", pathFinder.getCost(target)));
 	}
 
