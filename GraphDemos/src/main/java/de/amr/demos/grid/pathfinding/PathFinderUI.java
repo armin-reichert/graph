@@ -39,6 +39,8 @@ import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class PathFinderUI extends JFrame {
 
@@ -56,7 +58,7 @@ public class PathFinderUI extends JFrame {
 		this.app = app;
 
 		canvas = new GridCanvas(app.getMap(), app.getCellSize());
-		add(canvas, BorderLayout.CENTER);
+		getContentPane().add(canvas, BorderLayout.CENTER);
 		canvas.pushRenderer(createRenderer());
 		canvas.addMouseListener(mouseHandler);
 		canvas.addMouseMotionListener(mouseMotionHandler);
@@ -77,7 +79,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(300, 10));
 		settingsPanel.setMinimumSize(new Dimension(300, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[][grow]", "[][][]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][grow]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -131,6 +133,14 @@ public class PathFinderUI extends JFrame {
 		sliderPassageWidth.setPaintTicks(true);
 		settingsPanel.add(sliderPassageWidth, "cell 1 2");
 
+		JScrollPane scrollPane = new JScrollPane();
+		settingsPanel.add(scrollPane, "cell 0 3 2 1,grow");
+
+		textLog = new JTextArea();
+		textLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
+		textLog.setEditable(false);
+		scrollPane.setViewportView(textLog);
+
 		popupCell = -1;
 		draggedCell = -1;
 
@@ -146,6 +156,11 @@ public class PathFinderUI extends JFrame {
 			canvas.clear();
 		}
 		canvas.drawGrid();
+	}
+
+	public void log(String line, Object... args) {
+		textLog.append(String.format(line, args));
+		textLog.append("\n");
 	}
 
 	private ConfigurableGridRenderer createRenderer() {
@@ -258,6 +273,7 @@ public class PathFinderUI extends JFrame {
 			app.updatePath();
 		}
 	};
+	private JTextArea textLog;
 
 	private String cellText(int cell) {
 		if (app.getPathFinder() == null || app.getPathFinder().getState(cell) == TraversalState.UNVISITED) {

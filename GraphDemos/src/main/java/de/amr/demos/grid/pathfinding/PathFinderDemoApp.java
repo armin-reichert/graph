@@ -214,9 +214,11 @@ public class PathFinderDemoApp {
 		solution.clear();
 		path.forEach(solution::set);
 		watch.stop();
-		System.out.println(String.format("Find path using (%s): %.4f seconds:", algorithm, watch.getSeconds()));
-		System.out
-				.println(String.format("  Length: %d, Cost: %.2f", path.size() - 1, pathFinder.getCost(target)));
+		window.log("%s", algorithm);
+		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
+		window.log("  Length: %d", path.size() - 1);
+		window.log("  Cost: %.2f", pathFinder.getCost(target));
+		window.log("");
 	}
 
 	public void updatePath() {
