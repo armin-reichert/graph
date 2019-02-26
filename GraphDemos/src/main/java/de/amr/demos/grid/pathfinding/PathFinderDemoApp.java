@@ -33,7 +33,6 @@ import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
-import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
@@ -75,7 +74,7 @@ public class PathFinderDemoApp {
 	private int passageWidthPct;
 	private int source;
 	private int target;
-	private BitSet solution;
+	private final BitSet solution;
 
 	// UI
 	private int draggedCell;
@@ -155,40 +154,21 @@ public class PathFinderDemoApp {
 	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
 		algorithm = PathFinderAlgorithm.AStar;
 		topology = Top8.get();
-		createMap(numCols, numRows, Top8.get());
-		map.fill();
 		cellSize = canvasSize / numCols;
 		passageWidthPct = 95;
-		source = map.cell(GridPosition.TOP_LEFT);
-		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		popupCell = -1;
 		draggedCell = -1;
-		solution = new BitSet();
+		
+		createMap(numCols, numRows, Top8.get());
+		map.fill();
+		source = map.cell(GridPosition.TOP_LEFT);
+		target = map.cell(GridPosition.BOTTOM_RIGHT);
+		
+		solution = new BitSet(map.numVertices());
+		createPathFinder();
 		createUI();
-		newPathFinder();
 		updatePath();
 		// GraphUtils.print(map, System.out);
-	}
-
-	public void setAlgorithm(PathFinderAlgorithm alg) {
-		algorithm = alg;
-		newPathFinder();
-		updatePath();
-	}
-
-	public PathFinderAlgorithm getAlgorithm() {
-		return algorithm;
-	}
-
-	public void setTopology(Topology topology) {
-		this.topology = topology;
-		createMap(map.numCols(), map.numRows(), topology);
-		newPathFinder();
-		updatePath();
-	}
-
-	public Topology getTopology() {
-		return topology;
 	}
 
 	private void createUI() {
@@ -203,13 +183,27 @@ public class PathFinderDemoApp {
 		popupMenu.add(actionSetTarget);
 		popupMenu.addSeparator();
 		popupMenu.add(actionResetScene);
-
+	
 		window = new PathFinderUI();
 		window.setApp(this);
 		window.add(canvas, BorderLayout.CENTER);
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+	}
+
+	private void createPathFinder() {
+		switch (algorithm) {
+		case AStar:
+			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
+			break;
+		case BFS:
+			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
+			break;
+		case Dijkstra:
+			pathFinder = new DijkstraSearch<>(map, e -> e);
+			break;
+		}
 	}
 
 	private void createMap(int numCols, int numRows, Topology top) {
@@ -274,7 +268,7 @@ public class PathFinderDemoApp {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
-
+	
 		};
 		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD, cellSize * 40 / 100);
 		r.fnMinFontSize = () -> 4;
@@ -283,18 +277,38 @@ public class PathFinderDemoApp {
 		return r;
 	}
 
-	private String cellText(int cell) {
-		if (pathFinder == null || pathFinder.getState(cell) == TraversalState.UNVISITED) {
-			return "";
-		}
-		if (pathFinder instanceof AStarSearch) {
-			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pathFinder;
-			return String.format("%.0f", astar.getScore(cell));
-		} else if (pathFinder instanceof BreadthFirstSearch) {
-			BreadthFirstSearch<Tile, Double> bfs = pathFinder;
-			return String.format("%.0f", bfs.getCost(cell));
-		}
-		return "";
+	public void redraw() {
+		canvas.clear();
+		canvas.drawGrid();
+	}
+
+	public void setAlgorithm(PathFinderAlgorithm alg) {
+		algorithm = alg;
+		createPathFinder();
+		updatePath();
+	}
+
+	public PathFinderAlgorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setTopology(Topology topology) {
+		this.topology = topology;
+		createMap(map.numCols(), map.numRows(), topology);
+		createPathFinder();
+		updatePath();
+	}
+
+	public Topology getTopology() {
+		return topology;
+	}
+
+	public void setPassageWidthPct(int passageWidthPct) {
+		this.passageWidthPct = passageWidthPct;
+	}
+
+	public int getPassageWidthPct() {
+		return passageWidthPct;
 	}
 
 	private void setSource(int cell) {
@@ -303,50 +317,6 @@ public class PathFinderDemoApp {
 
 	private void setTarget(int cell) {
 		target = cell;
-	}
-
-	private void resetScene() {
-		source = map.cell(GridPosition.TOP_LEFT);
-		target = map.cell(GridPosition.BOTTOM_RIGHT);
-		map.vertices().forEach(cell -> setTile(cell, FREE));
-		pathFinder.findPath(source, target);
-		solution.clear();
-	}
-
-	private void newPathFinder() {
-		switch (algorithm) {
-		case AStar:
-			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
-			break;
-		case BFS:
-			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
-			break;
-		case Dijkstra:
-			pathFinder = new DijkstraSearch<>(map, e -> e);
-			break;
-		}
-	}
-
-	private void computePath() {
-		StopWatch watch = new StopWatch();
-		watch.start();
-		List<Integer> path = pathFinder.findPath(source, target);
-		watch.stop();
-		System.out.println(String.format("Path finding (%s): %.4f seconds", algorithm, watch.getSeconds()));
-		solution = new BitSet(map.numVertices());
-		path.forEach(solution::set);
-		System.out.println(String.format("Path length: %d", path.size() - 1));
-		System.out.println(String.format("Path cost: %.2f", pathFinder.getCost(target)));
-	}
-
-	private void updatePath() {
-		computePath();
-		canvas.drawGrid();
-	}
-
-	private int cellAt(int x, int y) {
-		int gridX = min(x / cellSize, map.numCols() - 1), gridY = min(y / cellSize, map.numRows() - 1);
-		return map.cell(gridX, gridY);
 	}
 
 	private void setTile(int cell, Tile tile) {
@@ -365,5 +335,49 @@ public class PathFinderDemoApp {
 				}
 			}
 		});
+	}
+
+	private void resetScene() {
+		source = map.cell(GridPosition.TOP_LEFT);
+		target = map.cell(GridPosition.BOTTOM_RIGHT);
+		map.vertices().forEach(cell -> setTile(cell, FREE));
+		pathFinder.findPath(source, target);
+		solution.clear();
+	}
+
+	private void computePath() {
+		StopWatch watch = new StopWatch();
+		watch.start();
+		List<Integer> path = pathFinder.findPath(source, target);
+		watch.stop();
+		System.out.println(String.format("Path finding (%s): %.4f seconds", algorithm, watch.getSeconds()));
+		solution.clear();
+		path.forEach(solution::set);
+		System.out.println(String.format("Path length: %d", path.size() - 1));
+		System.out.println(String.format("Path cost: %.2f", pathFinder.getCost(target)));
+	}
+
+	private void updatePath() {
+		computePath();
+		canvas.drawGrid();
+	}
+	
+	private String cellText(int cell) {
+		if (pathFinder == null || pathFinder.getState(cell) == TraversalState.UNVISITED) {
+			return "";
+		}
+		if (pathFinder instanceof AStarSearch) {
+			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pathFinder;
+			return String.format("%.0f", astar.getScore(cell));
+		} else if (pathFinder instanceof BreadthFirstSearch) {
+			BreadthFirstSearch<Tile, Double> bfs = pathFinder;
+			return String.format("%.0f", bfs.getCost(cell));
+		}
+		return "";
+	}
+
+	private int cellAt(int x, int y) {
+		int gridX = min(x / cellSize, map.numCols() - 1), gridY = min(y / cellSize, map.numRows() - 1);
+		return map.cell(gridX, gridY);
 	}
 }

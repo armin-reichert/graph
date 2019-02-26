@@ -10,6 +10,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import de.amr.demos.grid.pathfinding.PathFinderDemoApp.PathFinderAlgorithm;
 import de.amr.graph.grid.impl.Top4;
@@ -21,11 +24,13 @@ public class PathFinderUI extends JFrame {
 	private PathFinderDemoApp app;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
+	private JSlider sliderPassageWidth;
 
 	public void setApp(PathFinderDemoApp app) {
 		this.app = app;
 		comboAlgorithm.setSelectedItem(app.getAlgorithm());
 		comboTopology.setSelectedItem(app.getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
+		sliderPassageWidth.setValue(app.getPassageWidthPct());
 	}
 
 	public PathFinderUI() {
@@ -37,7 +42,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(300, 10));
 		settingsPanel.setMinimumSize(new Dimension(300, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[][grow]", "[][]"));
+		settingsPanel.setLayout(new MigLayout("", "[][grow]", "[][][]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -70,5 +75,26 @@ public class PathFinderUI extends JFrame {
 		});
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
 		settingsPanel.add(comboTopology, "cell 1 1,growx");
+
+		JLabel lblPassageWidth = new JLabel("Passage Width");
+		settingsPanel.add(lblPassageWidth, "cell 0 2");
+
+		sliderPassageWidth = new JSlider();
+		sliderPassageWidth.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if (app == null) {
+					return;
+				}
+				app.setPassageWidthPct(sliderPassageWidth.getValue());
+				app.redraw();
+				System.out.println("New passage width %" + app.getPassageWidthPct());
+			}
+		});
+		sliderPassageWidth.setMinorTickSpacing(10);
+		sliderPassageWidth.setMinimum(1);
+		sliderPassageWidth.setPaintTicks(true);
+		settingsPanel.add(sliderPassageWidth, "cell 1 2");
 	}
 }
