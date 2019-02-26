@@ -33,6 +33,7 @@ import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
+import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
@@ -50,6 +51,7 @@ public class PathFinderUI extends JFrame {
 	private int draggedCell;
 	private int popupCell;
 	private JPopupMenu popupMenu;
+	private RenderingStyle style;
 
 	public void setApp(PathFinderDemoApp app) {
 		this.app = app;
@@ -81,7 +83,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(300, 10));
 		settingsPanel.setMinimumSize(new Dimension(300, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][grow]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -98,7 +100,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.add(comboAlgorithm, "cell 1 0,growx");
 
 		JLabel lblTopology = new JLabel("Topology");
-		settingsPanel.add(lblTopology, "cell 0 1,alignx trailing");
+		settingsPanel.add(lblTopology, "flowy,cell 0 1,alignx trailing");
 
 		comboTopology = new JComboBox<>();
 		comboTopology.addActionListener(new ActionListener() {
@@ -115,8 +117,22 @@ public class PathFinderUI extends JFrame {
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
 		settingsPanel.add(comboTopology, "cell 1 1,growx");
 
+		JLabel lblStyle = new JLabel("Style");
+		settingsPanel.add(lblStyle, "cell 0 2,alignx trailing");
+
+		style = RenderingStyle.WALL_PASSAGES;
+		JComboBox<RenderingStyle> comboStyle = new JComboBox<>();
+		comboStyle.addActionListener(e -> {
+			style = (RenderingStyle) comboStyle.getSelectedItem();
+			canvas.popRenderer();
+			canvas.pushRenderer(createRenderer());
+			redraw(true);
+		});
+		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
+		settingsPanel.add(comboStyle, "cell 1 2,growx");
+
 		JLabel lblPassageWidth = new JLabel("Passage Width");
-		settingsPanel.add(lblPassageWidth, "cell 0 2");
+		settingsPanel.add(lblPassageWidth, "cell 0 3,alignx trailing");
 
 		sliderPassageWidth = new JSlider();
 		sliderPassageWidth.addChangeListener(new ChangeListener() {
@@ -133,10 +149,10 @@ public class PathFinderUI extends JFrame {
 		sliderPassageWidth.setMinorTickSpacing(10);
 		sliderPassageWidth.setMinimum(1);
 		sliderPassageWidth.setPaintTicks(true);
-		settingsPanel.add(sliderPassageWidth, "cell 1 2");
+		settingsPanel.add(sliderPassageWidth, "cell 1 3");
 
 		JScrollPane scrollPane = new JScrollPane();
-		settingsPanel.add(scrollPane, "cell 0 3 2 1,grow");
+		settingsPanel.add(scrollPane, "cell 0 4 2 1,grow");
 
 		textLog = new JTextArea();
 		textLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -153,6 +169,10 @@ public class PathFinderUI extends JFrame {
 		popupMenu.add(actionResetScene);
 	}
 
+	public GridCanvas getCanvas() {
+		return canvas;
+	}
+
 	public void redraw(boolean clear) {
 		if (clear) {
 			canvas.clear();
@@ -166,8 +186,8 @@ public class PathFinderUI extends JFrame {
 	}
 
 	private ConfigurableGridRenderer createRenderer() {
-		// ConfigurableGridRenderer r = new PearlsGridRenderer();
-		ConfigurableGridRenderer r = new WallPassageGridRenderer();
+		ConfigurableGridRenderer r = style == RenderingStyle.WALL_PASSAGES ? new WallPassageGridRenderer()
+				: new PearlsGridRenderer();
 		r.fnCellSize = () -> app.getCellSize();
 		r.fnCellBgColor = cell -> {
 			if (cell == app.getSource()) {
@@ -203,9 +223,11 @@ public class PathFinderUI extends JFrame {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD, app.getCellSize() * 40 / 100);
+		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD,
+				style == RenderingStyle.PEARLS ? app.getCellSize() * 30 / 100 : app.getCellSize() * 40 / 100);
 		r.fnMinFontSize = () -> 4;
-		r.fnPassageWidth = (u, v) -> app.getCellSize() * app.getPassageWidthPct() / 100;
+		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1
+				: app.getCellSize() * app.getPassageWidthPct() / 100;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
 		return r;
 	}
@@ -217,7 +239,8 @@ public class PathFinderUI extends JFrame {
 			if (mouse.getButton() == MouseEvent.BUTTON1) {
 				int cell = app.cellAt(mouse.getX(), mouse.getY());
 				app.changeTile(cell, app.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
-				app.updatePath();
+				app.computePath();
+				redraw(false);
 			}
 		}
 
@@ -226,7 +249,8 @@ public class PathFinderUI extends JFrame {
 			if (draggedCell != -1) {
 				// dragging ends
 				draggedCell = -1;
-				app.updatePath();
+				app.computePath();
+				redraw(false);
 			} else if (mouse.isPopupTrigger()) {
 				popupCell = app.cellAt(mouse.getX(), mouse.getY());
 				popupMenu.show(canvas, mouse.getX(), mouse.getY());
@@ -243,7 +267,8 @@ public class PathFinderUI extends JFrame {
 				// drag enters new cell
 				draggedCell = cell;
 				app.changeTile(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
-				app.updatePath();
+				app.computePath();
+				redraw(false);
 			}
 		}
 	};
@@ -253,7 +278,8 @@ public class PathFinderUI extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			app.setSource(popupCell);
 			popupCell = -1;
-			app.updatePath();
+			app.computePath();
+			redraw(false);
 		}
 	};
 
@@ -263,7 +289,8 @@ public class PathFinderUI extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			app.setTarget(popupCell);
 			popupCell = -1;
-			app.updatePath();
+			app.computePath();
+			redraw(false);
 		}
 	};
 
@@ -272,7 +299,8 @@ public class PathFinderUI extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			app.resetScene();
-			app.updatePath();
+			app.computePath();
+			redraw(true);
 		}
 	};
 	private JTextArea textLog;

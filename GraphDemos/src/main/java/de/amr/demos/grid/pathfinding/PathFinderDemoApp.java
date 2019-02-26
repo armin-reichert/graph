@@ -34,7 +34,7 @@ public class PathFinderDemoApp {
 		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
 	}
 
-	private GridGraph2D<Tile, Double> map;
+	private GridGraph<Tile, Double> map;
 	private BreadthFirstSearch<Tile, Double> pathFinder;
 	private PathFinderAlgorithm algorithm;
 	private Topology topology;
@@ -52,7 +52,7 @@ public class PathFinderDemoApp {
 		cellSize = canvasSize / numCols;
 		passageWidthPct = 95;
 
-		createMap(numCols, numRows, topology);
+		map = createMap(numCols, numRows, topology);
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		solution = new BitSet(map.numVertices());
@@ -76,7 +76,7 @@ public class PathFinderDemoApp {
 		throw new IllegalArgumentException();
 	}
 
-	private void createMap(int numCols, int numRows, Topology top) {
+	private GridGraph<Tile, Double> createMap(int numCols, int numRows, Topology top) {
 		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.BLANK, (u, v) -> 10.0,
 				UndirectedEdge::new);
 		newMap.setDefaultEdgeLabel((u, v) -> 10 * newMap.euclidean(u, v));
@@ -99,13 +99,14 @@ public class PathFinderDemoApp {
 				}
 			});
 		}
-		map = newMap;
+		return newMap;
 	}
 
 	public void setAlgorithm(PathFinderAlgorithm alg) {
 		algorithm = alg;
 		pathFinder = createPathFinder();
-		updatePath();
+		computePath();
+		window.redraw(false);
 	}
 
 	public PathFinderAlgorithm getAlgorithm() {
@@ -113,10 +114,15 @@ public class PathFinderDemoApp {
 	}
 
 	public void setTopology(Topology topology) {
+		if (this.topology == topology) {
+			return;
+		}
 		this.topology = topology;
-		createMap(map.numCols(), map.numRows(), topology);
+		map = createMap(map.numCols(), map.numRows(), topology);
 		pathFinder = createPathFinder();
-		updatePath();
+		computePath();
+		window.getCanvas().setGrid(map);
+		window.redraw(true);
 	}
 
 	public Topology getTopology() {
@@ -192,7 +198,7 @@ public class PathFinderDemoApp {
 		computePath();
 	}
 
-	private void computePath() {
+	public void computePath() {
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pathFinder.findPath(source, target);
@@ -206,11 +212,6 @@ public class PathFinderDemoApp {
 		window.log("  Visited cells: %d",
 				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
 		window.log("");
-	}
-
-	public void updatePath() {
-		computePath();
-		window.redraw(false);
 	}
 
 	public int cellAt(int x, int y) {
