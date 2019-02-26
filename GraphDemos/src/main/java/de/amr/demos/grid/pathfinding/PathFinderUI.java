@@ -1,8 +1,5 @@
 package de.amr.demos.grid.pathfinding;
 
-import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.FREE;
-import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.WALL;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,12 +21,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import de.amr.demos.grid.pathfinding.PathFinderDemoApp.PathFinderAlgorithm;
-import de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -39,8 +38,6 @@ import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 public class PathFinderUI extends JFrame {
 
@@ -71,6 +68,11 @@ public class PathFinderUI extends JFrame {
 	}
 
 	public PathFinderUI() {
+		try {
+			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pathfinder Demo");
@@ -185,7 +187,7 @@ public class PathFinderUI extends JFrame {
 					return new Color(220, 220, 220);
 				}
 			}
-			if (app.getMap().get(cell) == WALL) {
+			if (app.getMap().get(cell) == Tile.WALL) {
 				return new Color(139, 69, 19);
 			}
 			return Color.WHITE;
@@ -214,7 +216,7 @@ public class PathFinderUI extends JFrame {
 		public void mouseClicked(MouseEvent mouse) {
 			if (mouse.getButton() == MouseEvent.BUTTON1) {
 				int cell = app.cellAt(mouse.getX(), mouse.getY());
-				app.changeTile(cell, app.getMap().get(cell) == WALL ? FREE : WALL);
+				app.changeTile(cell, app.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
 				app.updatePath();
 			}
 		}
@@ -240,7 +242,7 @@ public class PathFinderUI extends JFrame {
 			if (cell != draggedCell) {
 				// drag enters new cell
 				draggedCell = cell;
-				app.changeTile(cell, mouse.isShiftDown() ? FREE : WALL);
+				app.changeTile(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
 				app.updatePath();
 			}
 		}

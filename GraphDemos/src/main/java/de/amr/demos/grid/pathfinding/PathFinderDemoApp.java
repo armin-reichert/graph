@@ -1,16 +1,13 @@
 package de.amr.demos.grid.pathfinding;
 
-import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.FREE;
-import static de.amr.demos.grid.pathfinding.PathFinderDemoApp.Tile.WALL;
+import static de.amr.demos.grid.pathfinding.Tile.BLANK;
+import static de.amr.demos.grid.pathfinding.Tile.WALL;
 import static java.lang.Math.min;
 
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.util.BitSet;
 import java.util.List;
-
-import javax.swing.UIManager;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
@@ -32,22 +29,9 @@ import de.amr.util.StopWatch;
 public class PathFinderDemoApp {
 
 	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
 		int gridSize = 20;
 		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
-	}
-
-	public enum Tile {
-		FREE, WALL;
-	}
-
-	public enum PathFinderAlgorithm {
-		BFS, Dijkstra, AStar;
 	}
 
 	private GridGraph2D<Tile, Double> map;
@@ -93,7 +77,7 @@ public class PathFinderDemoApp {
 	}
 
 	private void createMap(int numCols, int numRows, Topology top) {
-		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.FREE, (u, v) -> 10.0,
+		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.BLANK, (u, v) -> 10.0,
 				UndirectedEdge::new);
 		newMap.setDefaultEdgeLabel((u, v) -> 10 * newMap.euclidean(u, v));
 		newMap.fill();
@@ -189,7 +173,7 @@ public class PathFinderDemoApp {
 		}
 		map.set(cell, tile);
 		map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
-			if (tile == FREE) {
+			if (tile == BLANK) {
 				if (!map.adjacent(cell, neighbor)) {
 					map.addEdge(cell, neighbor);
 				}
@@ -204,7 +188,7 @@ public class PathFinderDemoApp {
 	public void resetScene() {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
-		map.vertices().forEach(cell -> changeTile(cell, FREE));
+		map.vertices().forEach(cell -> changeTile(cell, BLANK));
 		computePath();
 	}
 
