@@ -18,6 +18,7 @@ import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
@@ -218,6 +219,8 @@ public class PathFinderDemoApp {
 		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
 		window.log("  Length: %d", path.size() - 1);
 		window.log("  Cost: %.2f", pathFinder.getCost(target));
+		window.log("  Visited cells: %d",
+				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
 		window.log("");
 	}
 
