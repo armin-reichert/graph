@@ -15,17 +15,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
+import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -34,10 +30,10 @@ import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
+import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
@@ -58,7 +54,7 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		int gridSize = 30;
+		int gridSize = 20;
 		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
 		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
 	}
@@ -74,8 +70,9 @@ public class PathFinderDemoApp {
 
 	private GridGraph2D<Tile, Double> map;
 	private BreadthFirstSearch<Tile, Double> pathFinder;
-	private PathFinderAlgorithm selectedAlgorithm;
-	private Topology selectedTopology;
+	private PathFinderAlgorithm algorithm;
+	private Topology topology;
+	private int passageWidthPct;
 	private int source;
 	private int target;
 	private BitSet solution;
@@ -84,7 +81,7 @@ public class PathFinderDemoApp {
 	private int draggedCell;
 	private int popupCell;
 	private int cellSize;
-	private JFrame window;
+	private PathFinderUI window;
 	private GridCanvas canvas;
 	private JPopupMenu popupMenu;
 
@@ -113,31 +110,6 @@ public class PathFinderDemoApp {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			resetScene();
-			updatePath();
-		}
-	};
-
-	private Action actionSelectAlgorithm = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JComponent source = (JComponent) e.getSource();
-			selectedAlgorithm = (PathFinderAlgorithm) source.getClientProperty("algorithm");
-			System.out.println("Algorithm set to " + selectedAlgorithm);
-			newPathFinder();
-			updatePath();
-		}
-	};
-
-	private Action actionSelectTopology = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JComponent source = (JComponent) e.getSource();
-			selectedTopology = (Topology) source.getClientProperty("topology");
-			createMap(map.numCols(), map.numRows(), selectedTopology);
-			System.out.println("Topology set to " + selectedTopology);
-			newPathFinder();
 			updatePath();
 		}
 	};
@@ -181,11 +153,12 @@ public class PathFinderDemoApp {
 	};
 
 	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
-		selectedAlgorithm = PathFinderAlgorithm.AStar;
-		selectedTopology = Top8.get();
+		algorithm = PathFinderAlgorithm.AStar;
+		topology = Top8.get();
 		createMap(numCols, numRows, Top8.get());
 		map.fill();
 		cellSize = canvasSize / numCols;
+		passageWidthPct = 95;
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		popupCell = -1;
@@ -197,24 +170,42 @@ public class PathFinderDemoApp {
 		// GraphUtils.print(map, System.out);
 	}
 
+	public void setAlgorithm(PathFinderAlgorithm alg) {
+		algorithm = alg;
+		newPathFinder();
+		updatePath();
+	}
+
+	public PathFinderAlgorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setTopology(Topology topology) {
+		this.topology = topology;
+		createMap(map.numCols(), map.numRows(), topology);
+		newPathFinder();
+		updatePath();
+	}
+
+	public Topology getTopology() {
+		return topology;
+	}
+
 	private void createUI() {
 		canvas = new GridCanvas(map, cellSize);
 		canvas.pushRenderer(createRenderer());
 		canvas.requestFocus();
 		canvas.addMouseListener(mouseHandler);
 		canvas.addMouseMotionListener(mouseMotionHandler);
+		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		popupMenu = new JPopupMenu();
 		popupMenu.add(actionSetSource);
 		popupMenu.add(actionSetTarget);
 		popupMenu.addSeparator();
 		popupMenu.add(actionResetScene);
-		popupMenu.addSeparator();
-		addAlgorithmItems();
-		popupMenu.addSeparator();
-		addTopologyItems();
-		window = new JFrame("Pathfinder demo");
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setResizable(false);
+
+		window = new PathFinderUI();
+		window.setApp(this);
 		window.add(canvas, BorderLayout.CENTER);
 		window.pack();
 		window.setLocationRelativeTo(null);
@@ -222,9 +213,9 @@ public class PathFinderDemoApp {
 	}
 
 	private void createMap(int numCols, int numRows, Topology top) {
-		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.FREE, (u, v) -> 1.0,
+		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.FREE, (u, v) -> 10.0,
 				UndirectedEdge::new);
-		newMap.setDefaultEdgeLabel((u, v) -> newMap.euclidean(u, v));
+		newMap.setDefaultEdgeLabel((u, v) -> 10 * newMap.euclidean(u, v));
 		newMap.fill();
 		if (map != null) {
 			map.vertices().forEach(v -> {
@@ -247,29 +238,8 @@ public class PathFinderDemoApp {
 		map = newMap;
 	}
 
-	private void addTopologyItems() {
-		ButtonGroup bg = new ButtonGroup();
-		for (Topology topology : Arrays.asList(Top4.get(), Top8.get())) {
-			JRadioButtonMenuItem rb = new JRadioButtonMenuItem(actionSelectTopology);
-			rb.putClientProperty("topology", topology);
-			rb.setText(topology == Top4.get() ? "4 Neighbor Cells" : "8 Neighbor Cells");
-			rb.setSelected(topology == this.selectedTopology);
-			bg.add(popupMenu.add(rb));
-		}
-	}
-
-	private void addAlgorithmItems() {
-		ButtonGroup bg = new ButtonGroup();
-		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			JRadioButtonMenuItem rb = new JRadioButtonMenuItem(actionSelectAlgorithm);
-			rb.putClientProperty("algorithm", algorithm);
-			rb.setText(algorithm.name());
-			rb.setSelected(algorithm == this.selectedAlgorithm);
-			bg.add(popupMenu.add(rb));
-		}
-	}
-
 	private ConfigurableGridRenderer createRenderer() {
+		// ConfigurableGridRenderer r = new PearlsGridRenderer();
 		ConfigurableGridRenderer r = new WallPassageGridRenderer();
 		r.fnCellSize = () -> cellSize;
 		r.fnCellBgColor = cell -> {
@@ -306,9 +276,9 @@ public class PathFinderDemoApp {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial Narrow", Font.PLAIN, cellSize * 40 / 100);
+		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD, cellSize * 40 / 100);
 		r.fnMinFontSize = () -> 4;
-		r.fnPassageWidth = (u, v) -> cellSize - 1;
+		r.fnPassageWidth = (u, v) -> cellSize * passageWidthPct / 100;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
 		return r;
 	}
@@ -319,10 +289,10 @@ public class PathFinderDemoApp {
 		}
 		if (pathFinder instanceof AStarSearch) {
 			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pathFinder;
-			return String.format("%.2f", astar.getScore(cell));
+			return String.format("%.0f", astar.getScore(cell));
 		} else if (pathFinder instanceof BreadthFirstSearch) {
 			BreadthFirstSearch<Tile, Double> bfs = pathFinder;
-			return String.format("%.2f", bfs.getCost(cell));
+			return String.format("%.0f", bfs.getCost(cell));
 		}
 		return "";
 	}
@@ -344,12 +314,12 @@ public class PathFinderDemoApp {
 	}
 
 	private void newPathFinder() {
-		switch (selectedAlgorithm) {
+		switch (algorithm) {
 		case AStar:
-			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> map.euclidean(u, v));
+			pathFinder = new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
 			break;
 		case BFS:
-			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> map.euclidean(u, v));
+			pathFinder = new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
 			break;
 		case Dijkstra:
 			pathFinder = new DijkstraSearch<>(map, e -> e);
@@ -362,8 +332,7 @@ public class PathFinderDemoApp {
 		watch.start();
 		List<Integer> path = pathFinder.findPath(source, target);
 		watch.stop();
-		System.out
-				.println(String.format("Path finding (%s): %.4f seconds", selectedAlgorithm, watch.getSeconds()));
+		System.out.println(String.format("Path finding (%s): %.4f seconds", algorithm, watch.getSeconds()));
 		solution = new BitSet(map.numVertices());
 		path.forEach(solution::set);
 		System.out.println(String.format("Path length: %d", path.size() - 1));
