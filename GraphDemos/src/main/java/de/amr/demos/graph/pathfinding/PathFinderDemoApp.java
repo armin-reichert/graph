@@ -61,6 +61,47 @@ public class PathFinderDemoApp {
 		window.setVisible(true);
 	}
 
+	public void computePath() {
+		StopWatch watch = new StopWatch();
+		watch.start();
+		List<Integer> path = pathFinder.findPath(source, target);
+		watch.stop();
+		window.log("%s", algorithm);
+		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
+		window.log("  Length: %d", path.size() - 1);
+		window.log("  Cost: %.2f", pathFinder.getCost(target));
+		window.log("  Visited cells: %d",
+				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
+		window.log("");
+		solution.clear();
+		path.forEach(solution::set);
+	}
+
+	public void resetScene() {
+		source = map.cell(GridPosition.TOP_LEFT);
+		target = map.cell(GridPosition.BOTTOM_RIGHT);
+		map.vertices().forEach(cell -> changeTile(cell, BLANK));
+		computePath();
+	}
+
+	public void changeTile(int cell, Tile tile) {
+		if (cell == source || cell == target || map.get(cell) == tile) {
+			return;
+		}
+		map.set(cell, tile);
+		map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
+			if (tile == BLANK) {
+				if (!map.adjacent(cell, neighbor)) {
+					map.addEdge(cell, neighbor);
+				}
+			} else {
+				if (map.adjacent(cell, neighbor)) {
+					map.removeEdge(cell, neighbor);
+				}
+			}
+		});
+	}
+
 	private BreadthFirstSearch<Tile, Double> createPathFinder() {
 		switch (algorithm) {
 		case AStar:
@@ -99,6 +140,11 @@ public class PathFinderDemoApp {
 		return newMap;
 	}
 
+	public int cellAt(int x, int y) {
+		int gridX = min(x / cellSize, map.numCols() - 1), gridY = min(y / cellSize, map.numRows() - 1);
+		return map.cell(gridX, gridY);
+	}
+
 	public void setAlgorithm(PathFinderAlgorithm alg) {
 		algorithm = alg;
 		pathFinder = createPathFinder();
@@ -110,13 +156,12 @@ public class PathFinderDemoApp {
 	}
 
 	public void setTopology(Topology topology) {
-		if (this.topology == topology) {
-			return;
+		if (this.topology != topology) {
+			this.topology = topology;
+			map = createMap(map.numCols(), map.numRows(), topology);
+			pathFinder = createPathFinder();
+			computePath();
 		}
-		this.topology = topology;
-		map = createMap(map.numCols(), map.numRows(), topology);
-		pathFinder = createPathFinder();
-		computePath();
 	}
 
 	public Topology getTopology() {
@@ -157,51 +202,5 @@ public class PathFinderDemoApp {
 
 	public void setTarget(int target) {
 		this.target = target;
-	}
-
-	public void changeTile(int cell, Tile tile) {
-		if (cell == source || cell == target || map.get(cell) == tile) {
-			return;
-		}
-		map.set(cell, tile);
-		map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
-			if (tile == BLANK) {
-				if (!map.adjacent(cell, neighbor)) {
-					map.addEdge(cell, neighbor);
-				}
-			} else {
-				if (map.adjacent(cell, neighbor)) {
-					map.removeEdge(cell, neighbor);
-				}
-			}
-		});
-	}
-
-	public void resetScene() {
-		source = map.cell(GridPosition.TOP_LEFT);
-		target = map.cell(GridPosition.BOTTOM_RIGHT);
-		map.vertices().forEach(cell -> changeTile(cell, BLANK));
-		computePath();
-	}
-
-	public void computePath() {
-		StopWatch watch = new StopWatch();
-		watch.start();
-		List<Integer> path = pathFinder.findPath(source, target);
-		watch.stop();
-		window.log("%s", algorithm);
-		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
-		window.log("  Length: %d", path.size() - 1);
-		window.log("  Cost: %.2f", pathFinder.getCost(target));
-		window.log("  Visited cells: %d",
-				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
-		window.log("");
-		solution.clear();
-		path.forEach(solution::set);
-	}
-
-	public int cellAt(int x, int y) {
-		int gridX = min(x / cellSize, map.numCols() - 1), gridY = min(y / cellSize, map.numRows() - 1);
-		return map.cell(gridX, gridY);
 	}
 }

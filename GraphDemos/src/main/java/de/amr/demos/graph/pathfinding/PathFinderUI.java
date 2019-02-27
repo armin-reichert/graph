@@ -34,7 +34,6 @@ import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
-import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
 
 public class PathFinderUI extends JFrame {
@@ -43,6 +42,8 @@ public class PathFinderUI extends JFrame {
 
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
+	private JTextArea textLog;
+
 	private GridCanvas canvas;
 	private int draggedCell;
 	private int popupCell;
@@ -147,10 +148,6 @@ public class PathFinderUI extends JFrame {
 		popupMenu.add(actionSetTarget);
 		popupMenu.addSeparator();
 		popupMenu.add(actionResetScene);
-	}
-
-	public GridCanvas getCanvas() {
-		return canvas;
 	}
 
 	public void log(String line, Object... args) {
@@ -278,7 +275,6 @@ public class PathFinderUI extends JFrame {
 			canvas.drawGrid();
 		}
 	};
-	private JTextArea textLog;
 
 	private String cellText(int cell) {
 		if (app.getPathFinder() == null || app.getPathFinder().getState(cell) == TraversalState.UNVISITED) {
@@ -287,10 +283,8 @@ public class PathFinderUI extends JFrame {
 		if (app.getPathFinder() instanceof AStarSearch) {
 			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) app.getPathFinder();
 			return String.format("%.0f", astar.getScore(cell));
-		} else if (app.getPathFinder() instanceof BreadthFirstSearch) {
-			BreadthFirstSearch<Tile, Double> bfs = app.getPathFinder();
-			return String.format("%.0f", bfs.getCost(cell));
+		} else {
+			return String.format("%.0f", app.getPathFinder().getCost(cell));
 		}
-		return "";
 	}
 }
