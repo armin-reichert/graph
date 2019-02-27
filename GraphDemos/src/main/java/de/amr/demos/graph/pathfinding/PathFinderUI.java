@@ -1,4 +1,4 @@
-package de.amr.demos.grid.pathfinding;
+package de.amr.demos.graph.pathfinding;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

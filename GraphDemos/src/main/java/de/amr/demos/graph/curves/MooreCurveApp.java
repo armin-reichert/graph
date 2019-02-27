@@ -1,11 +1,11 @@
-package de.amr.demos.grid.curves;
+package de.amr.demos.graph.curves;
 
 import static de.amr.graph.grid.curves.CurveUtils.traverse;
 import static de.amr.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.grid.SwingGridSampleApp;
+import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.curves.MooreLCurve;
 
 /**

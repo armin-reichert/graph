@@ -1,4 +1,4 @@
-package de.amr.demos.grid.curves;
+package de.amr.demos.graph.curves;
 
 import java.awt.BasicStroke;
 import java.awt.Canvas;

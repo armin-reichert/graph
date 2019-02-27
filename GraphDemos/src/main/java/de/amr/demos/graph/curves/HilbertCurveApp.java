@@ -1,4 +1,4 @@
-package de.amr.demos.grid.curves;
+package de.amr.demos.graph.curves;
 
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import de.amr.demos.grid.SwingGridSampleApp;
+import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.curves.HilbertCurve;
 

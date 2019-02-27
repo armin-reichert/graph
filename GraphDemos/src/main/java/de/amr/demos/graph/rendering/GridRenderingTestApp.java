@@ -1,4 +1,4 @@
-package de.amr.demos.grid.rendering;
+package de.amr.demos.graph.rendering;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static java.lang.String.format;
@@ -6,7 +6,7 @@ import static java.lang.System.out;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.grid.SwingGridSampleApp;
+import de.amr.demos.graph.SwingGridSampleApp;
 
 public class GridRenderingTestApp extends SwingGridSampleApp {
 

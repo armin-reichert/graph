@@ -3,7 +3,7 @@
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.amr.graph</groupId>
+  <groupId>de.amr.demos.graph</groupId>
   <artifactId>GraphDemos</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>

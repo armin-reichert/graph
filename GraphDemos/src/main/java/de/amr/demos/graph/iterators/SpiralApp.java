@@ -1,11 +1,11 @@
-package de.amr.demos.grid.iterators;
+package de.amr.demos.graph.iterators;
 
 import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
-import de.amr.demos.grid.SwingGridSampleApp;
+import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.traversals.Spiral;
 
 public class SpiralApp extends SwingGridSampleApp {

@@ -1,4 +1,4 @@
-package de.amr.demos.grid;
+package de.amr.demos.graph;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;

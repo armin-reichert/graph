@@ -1,4 +1,4 @@
-package de.amr.demos.grid.pathfinding;
+package de.amr.demos.graph.pathfinding;
 
 public enum PathFinderAlgorithm {
 	BFS, Dijkstra, AStar;

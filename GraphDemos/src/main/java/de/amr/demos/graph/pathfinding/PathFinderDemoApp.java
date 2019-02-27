@@ -1,7 +1,7 @@
-package de.amr.demos.grid.pathfinding;
+package de.amr.demos.graph.pathfinding;
 
-import static de.amr.demos.grid.pathfinding.Tile.BLANK;
-import static de.amr.demos.grid.pathfinding.Tile.WALL;
+import static de.amr.demos.graph.pathfinding.Tile.BLANK;
+import static de.amr.demos.graph.pathfinding.Tile.WALL;
 import static java.lang.Math.min;
 
 import java.awt.EventQueue;

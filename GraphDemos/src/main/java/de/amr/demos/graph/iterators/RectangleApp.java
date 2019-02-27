@@ -1,8 +1,8 @@
-package de.amr.demos.grid.iterators;
+package de.amr.demos.graph.iterators;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 
-import de.amr.demos.grid.SwingGridSampleApp;
+import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.shapes.Rectangle;
 import de.amr.graph.grid.traversals.ExpandingRectangle;
 
