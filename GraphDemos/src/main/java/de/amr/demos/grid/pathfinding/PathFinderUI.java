@@ -22,11 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.grid.impl.Top4;
@@ -46,7 +43,6 @@ public class PathFinderUI extends JFrame {
 
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
-	private JSlider sliderPassageWidth;
 	private GridCanvas canvas;
 	private int draggedCell;
 	private int popupCell;
@@ -66,7 +62,6 @@ public class PathFinderUI extends JFrame {
 
 		comboAlgorithm.setSelectedItem(app.getAlgorithm());
 		comboTopology.setSelectedItem(app.getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
-		sliderPassageWidth.setValue(app.getPassageWidthPct());
 	}
 
 	public PathFinderUI() {
@@ -83,7 +78,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(300, 10));
 		settingsPanel.setMinimumSize(new Dimension(300, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][grow]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -131,28 +126,8 @@ public class PathFinderUI extends JFrame {
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
 		settingsPanel.add(comboStyle, "cell 1 2,growx");
 
-		JLabel lblPassageWidth = new JLabel("Passage Width");
-		settingsPanel.add(lblPassageWidth, "cell 0 3,alignx trailing");
-
-		sliderPassageWidth = new JSlider();
-		sliderPassageWidth.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if (app == null) {
-					return;
-				}
-				app.setPassageWidthPct(sliderPassageWidth.getValue());
-				redraw(true);
-			}
-		});
-		sliderPassageWidth.setMinorTickSpacing(10);
-		sliderPassageWidth.setMinimum(1);
-		sliderPassageWidth.setPaintTicks(true);
-		settingsPanel.add(sliderPassageWidth, "cell 1 3");
-
 		JScrollPane scrollPane = new JScrollPane();
-		settingsPanel.add(scrollPane, "cell 0 4 2 1,grow");
+		settingsPanel.add(scrollPane, "cell 0 3 2 1,grow");
 
 		textLog = new JTextArea();
 		textLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -226,8 +201,7 @@ public class PathFinderUI extends JFrame {
 		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD,
 				style == RenderingStyle.PEARLS ? app.getCellSize() * 30 / 100 : app.getCellSize() * 40 / 100);
 		r.fnMinFontSize = () -> 4;
-		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1
-				: app.getCellSize() * app.getPassageWidthPct() / 100;
+		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : app.getCellSize() - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
 		return r;
 	}
@@ -253,6 +227,9 @@ public class PathFinderUI extends JFrame {
 				redraw(false);
 			} else if (mouse.isPopupTrigger()) {
 				popupCell = app.cellAt(mouse.getX(), mouse.getY());
+				int cell = app.cellAt(mouse.getX(), mouse.getY());
+				actionSetSource.setEnabled(app.getMap().get(cell) == Tile.BLANK);
+				actionSetTarget.setEnabled(app.getMap().get(cell) == Tile.BLANK);
 				popupMenu.show(canvas, mouse.getX(), mouse.getY());
 			}
 		}

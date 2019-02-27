@@ -38,7 +38,6 @@ public class PathFinderDemoApp {
 	private BreadthFirstSearch<Tile, Double> pathFinder;
 	private PathFinderAlgorithm algorithm;
 	private Topology topology;
-	private int passageWidthPct;
 	private int cellSize;
 	private int source;
 	private int target;
@@ -50,7 +49,6 @@ public class PathFinderDemoApp {
 		algorithm = PathFinderAlgorithm.AStar;
 		topology = Top8.get();
 		cellSize = canvasSize / numCols;
-		passageWidthPct = 95;
 
 		map = createMap(numCols, numRows, topology);
 		source = map.cell(GridPosition.TOP_LEFT);
@@ -127,14 +125,6 @@ public class PathFinderDemoApp {
 
 	public Topology getTopology() {
 		return topology;
-	}
-
-	public void setPassageWidthPct(int passageWidthPct) {
-		this.passageWidthPct = passageWidthPct;
-	}
-
-	public int getPassageWidthPct() {
-		return passageWidthPct;
 	}
 
 	public BreadthFirstSearch<Tile, Double> getPathFinder() {
