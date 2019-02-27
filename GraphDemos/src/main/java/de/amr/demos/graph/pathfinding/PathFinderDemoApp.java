@@ -10,7 +10,6 @@ import java.util.BitSet;
 import java.util.List;
 
 import de.amr.graph.core.api.UndirectedEdge;
-import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
@@ -104,7 +103,6 @@ public class PathFinderDemoApp {
 		algorithm = alg;
 		pathFinder = createPathFinder();
 		computePath();
-		window.redraw(false);
 	}
 
 	public PathFinderAlgorithm getAlgorithm() {
@@ -119,8 +117,6 @@ public class PathFinderDemoApp {
 		map = createMap(map.numCols(), map.numRows(), topology);
 		pathFinder = createPathFinder();
 		computePath();
-		window.getCanvas().setGrid(map);
-		window.redraw(true);
 	}
 
 	public Topology getTopology() {
@@ -135,7 +131,7 @@ public class PathFinderDemoApp {
 		return solution;
 	}
 
-	public GridGraph2D<Tile, Double> getMap() {
+	public GridGraph<Tile, Double> getMap() {
 		return map;
 	}
 
@@ -192,8 +188,6 @@ public class PathFinderDemoApp {
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pathFinder.findPath(source, target);
-		solution.clear();
-		path.forEach(solution::set);
 		watch.stop();
 		window.log("%s", algorithm);
 		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
@@ -202,6 +196,8 @@ public class PathFinderDemoApp {
 		window.log("  Visited cells: %d",
 				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
 		window.log("");
+		solution.clear();
+		path.forEach(solution::set);
 	}
 
 	public int cellAt(int x, int y) {

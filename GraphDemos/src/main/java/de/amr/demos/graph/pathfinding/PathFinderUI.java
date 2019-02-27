@@ -89,6 +89,7 @@ public class PathFinderUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				app.setAlgorithm(comboAlgorithm.getItemAt(comboAlgorithm.getSelectedIndex()));
+				canvas.drawGrid();
 			}
 		});
 		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
@@ -107,6 +108,9 @@ public class PathFinderUI extends JFrame {
 				} else if ("8 Neighbors".equals(comboTopology.getSelectedItem())) {
 					app.setTopology(Top8.get());
 				}
+				canvas.setGrid(app.getMap());
+				canvas.clear();
+				canvas.drawGrid();
 			}
 		});
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
@@ -121,7 +125,8 @@ public class PathFinderUI extends JFrame {
 			style = (RenderingStyle) comboStyle.getSelectedItem();
 			canvas.popRenderer();
 			canvas.pushRenderer(createRenderer());
-			redraw(true);
+			canvas.clear();
+			canvas.drawGrid();
 		});
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
 		settingsPanel.add(comboStyle, "cell 1 2,growx");
@@ -146,13 +151,6 @@ public class PathFinderUI extends JFrame {
 
 	public GridCanvas getCanvas() {
 		return canvas;
-	}
-
-	public void redraw(boolean clear) {
-		if (clear) {
-			canvas.clear();
-		}
-		canvas.drawGrid();
 	}
 
 	public void log(String line, Object... args) {
@@ -214,7 +212,7 @@ public class PathFinderUI extends JFrame {
 				int cell = app.cellAt(mouse.getX(), mouse.getY());
 				app.changeTile(cell, app.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
 				app.computePath();
-				redraw(false);
+				canvas.drawGrid();
 			}
 		}
 
@@ -224,7 +222,7 @@ public class PathFinderUI extends JFrame {
 				// dragging ends
 				draggedCell = -1;
 				app.computePath();
-				redraw(false);
+				canvas.drawGrid();
 			} else if (mouse.isPopupTrigger()) {
 				popupCell = app.cellAt(mouse.getX(), mouse.getY());
 				int cell = app.cellAt(mouse.getX(), mouse.getY());
@@ -245,7 +243,7 @@ public class PathFinderUI extends JFrame {
 				draggedCell = cell;
 				app.changeTile(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
 				app.computePath();
-				redraw(false);
+				canvas.drawGrid();
 			}
 		}
 	};
@@ -256,7 +254,7 @@ public class PathFinderUI extends JFrame {
 			app.setSource(popupCell);
 			popupCell = -1;
 			app.computePath();
-			redraw(false);
+			canvas.drawGrid();
 		}
 	};
 
@@ -267,7 +265,7 @@ public class PathFinderUI extends JFrame {
 			app.setTarget(popupCell);
 			popupCell = -1;
 			app.computePath();
-			redraw(false);
+			canvas.drawGrid();
 		}
 	};
 
@@ -277,7 +275,7 @@ public class PathFinderUI extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			app.resetScene();
 			app.computePath();
-			redraw(true);
+			canvas.drawGrid();
 		}
 	};
 	private JTextArea textLog;
