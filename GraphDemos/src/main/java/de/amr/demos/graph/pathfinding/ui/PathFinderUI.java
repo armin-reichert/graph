@@ -70,6 +70,21 @@ public class PathFinderUI extends JFrame {
 		}
 	};
 
+	private Action actionChangeTopology = new AbstractAction() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if ("4 Neighbors".equals(comboTopology.getSelectedItem())) {
+				app.setTopology(Top4.get());
+			} else if ("8 Neighbors".equals(comboTopology.getSelectedItem())) {
+				app.setTopology(Top8.get());
+			}
+			canvas.setGrid(app.getMap());
+			canvas.clear();
+			canvas.drawGrid();
+		}
+	};
+
 	private Action actionResetScene = new AbstractAction("Reset Scene") {
 
 		@Override
@@ -184,20 +199,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.add(lblTopology, "flowy,cell 0 1,alignx trailing");
 
 		comboTopology = new JComboBox<>();
-		comboTopology.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if ("4 Neighbors".equals(comboTopology.getSelectedItem())) {
-					app.setTopology(Top4.get());
-				} else if ("8 Neighbors".equals(comboTopology.getSelectedItem())) {
-					app.setTopology(Top8.get());
-				}
-				canvas.setGrid(app.getMap());
-				canvas.clear();
-				canvas.drawGrid();
-			}
-		});
+		comboTopology.setAction(actionChangeTopology);
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
 		settingsPanel.add(comboTopology, "cell 1 1,growx");
 

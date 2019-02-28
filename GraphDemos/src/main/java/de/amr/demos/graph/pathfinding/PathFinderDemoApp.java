@@ -88,6 +88,7 @@ public class PathFinderDemoApp {
 			pathFinders.put(algorithm, createPathFinder(algorithm, map, target));
 		});
 		pathFinderTableModel.setPathFinders(pathFinders);
+		pathFinderTableModel.updateResults(map, source, target);
 		pathFinderTableModel.fireTableDataChanged();
 	}
 
