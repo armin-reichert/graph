@@ -6,10 +6,9 @@ import static de.amr.demos.graph.pathfinding.Tile.WALL;
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -84,20 +83,12 @@ public class PathFinderDemoApp {
 	}
 
 	private void updatePathFinders() {
-		pathFinders = new LinkedHashMap<>();
+		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		Arrays.stream(PathFinderAlgorithm.values()).forEach(algorithm -> {
 			pathFinders.put(algorithm, createPathFinder(algorithm, map, target));
 		});
-		pathFinderTableModel.setPathFinders(pathFinders.values().stream().collect(Collectors.toList()));
+		pathFinderTableModel.setPathFinders(pathFinders);
 		pathFinderTableModel.fireTableDataChanged();
-	}
-
-	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
-		return pathFinders.get(algorithm);
-	}
-
-	public TableModel getPathFinderTableModel() {
-		return pathFinderTableModel;
 	}
 
 	public List<Integer> runPathFinders() {
@@ -193,6 +184,14 @@ public class PathFinderDemoApp {
 			map = createMap(map.numCols(), map.numRows(), topology);
 			updatePathFinders();
 		}
+	}
+
+	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
+		return pathFinders.get(algorithm);
+	}
+
+	public TableModel getPathFinderTableModel() {
+		return pathFinderTableModel;
 	}
 
 	public BitSet getSolution() {

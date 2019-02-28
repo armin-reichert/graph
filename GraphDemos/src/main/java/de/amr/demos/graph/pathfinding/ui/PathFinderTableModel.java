@@ -1,8 +1,8 @@
 package de.amr.demos.graph.pathfinding.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -17,6 +17,7 @@ public class PathFinderTableModel extends AbstractTableModel {
 
 	private static class Result {
 
+		List<Integer> path;
 		float runningTimeMillis;
 		int pathLength;
 		double pathCost;
@@ -26,35 +27,35 @@ public class PathFinderTableModel extends AbstractTableModel {
 	private static final String[] columnTitles = { "Pathfinder", "Time [millis]", "Path length", "Path cost",
 			"Visited Cells" };
 
-	private List<BreadthFirstSearch<Tile, Double>> pathFinders;
-	private List<Result> results;
+	private Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
+	private Map<PathFinderAlgorithm, Result> results;
 
-	public void setPathFinders(List<BreadthFirstSearch<Tile, Double>> pathFinders) {
+	public void setPathFinders(Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders) {
 		this.pathFinders = pathFinders;
-		results = Collections.emptyList();
+		results = new EnumMap<>(PathFinderAlgorithm.class);
 	}
 
 	public void updateResults(GridGraph<Tile, Double> map, int source, int target) {
-		results = new ArrayList<>();
-		for (BreadthFirstSearch<Tile, Double> pathFinder : pathFinders) {
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			BreadthFirstSearch<Tile, Double> pathFinder = pathFinders.get(algorithm);
+			Result r = new Result();
 			StopWatch watch = new StopWatch();
 			watch.start();
-			List<Integer> path = pathFinder.findPath(source, target);
+			r.path = pathFinder.findPath(source, target);
 			watch.stop();
-			Result r = new Result();
-			r.pathLength = path.size() - 1;
+			r.pathLength = r.path.size() - 1;
 			r.pathCost = pathFinder.getCost(target);
 			r.runningTimeMillis = watch.getNanos() / 1_000_000;
 			r.numVisitedVertices = map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED)
 					.count();
-			results.add(r);
+			results.put(algorithm, r);
 		}
 		fireTableDataChanged();
 	}
 
 	@Override
 	public int getRowCount() {
-		return (int) pathFinders.size();
+		return pathFinders.size();
 	}
 
 	@Override
@@ -69,20 +70,19 @@ public class PathFinderTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (rowIndex < results.size()) {
-			Result result = results.get(rowIndex);
-			switch (columnIndex) {
-			case 0:
-				return PathFinderAlgorithm.values()[rowIndex].name();
-			case 1:
-				return String.format("%.2f", result.runningTimeMillis);
-			case 2:
-				return result.pathLength;
-			case 3:
-				return String.format("%.2f", result.pathCost);
-			case 4:
-				return result.numVisitedVertices;
-			}
+		PathFinderAlgorithm algorithm = PathFinderAlgorithm.values()[rowIndex];
+		Result result = results.get(algorithm);
+		switch (columnIndex) {
+		case 0:
+			return algorithm.name();
+		case 1:
+			return String.format("%.2f", result.runningTimeMillis);
+		case 2:
+			return result.pathLength;
+		case 3:
+			return String.format("%.2f", result.pathCost);
+		case 4:
+			return result.numVisitedVertices;
 		}
 		return null;
 	}

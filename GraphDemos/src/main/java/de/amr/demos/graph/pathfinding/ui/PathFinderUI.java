@@ -39,27 +39,24 @@ import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
-import de.amr.util.StopWatch;
 import net.miginfocom.swing.MigLayout;
 
 public class PathFinderUI extends JFrame {
 
-	private Action actionSetSource = new AbstractAction("Set Source Here") {
+	private Action actionSetSource = new AbstractAction("Search From Here") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setSource(popupCell);
-			popupCell = -1;
+			app.setSource(selectedCell);
 			updatePath();
 		}
 	};
 
-	private Action actionSetTarget = new AbstractAction("Set Target Here") {
+	private Action actionSetTarget = new AbstractAction("Search To Here") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setTarget(popupCell);
-			popupCell = -1;
+			app.setTarget(selectedCell);
 			updatePath();
 		}
 	};
@@ -96,11 +93,11 @@ public class PathFinderUI extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent mouse) {
 			if (draggedCell != -1) {
-				// dragging ends
+				// end dragging
 				draggedCell = -1;
 				updatePath();
 			} else if (mouse.isPopupTrigger()) {
-				popupCell = cellAt(mouse.getX(), mouse.getY());
+				selectedCell = cellAt(mouse.getX(), mouse.getY());
 				int cell = cellAt(mouse.getX(), mouse.getY());
 				actionSetSource.setEnabled(app.getMap().get(cell) == Tile.BLANK);
 				actionSetTarget.setEnabled(app.getMap().get(cell) == Tile.BLANK);
@@ -128,7 +125,7 @@ public class PathFinderUI extends JFrame {
 	private boolean costShown;
 	private int cellSize;
 	private int draggedCell;
-	private int popupCell;
+	private int selectedCell;
 	private GridCanvas canvas;
 
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
@@ -141,7 +138,7 @@ public class PathFinderUI extends JFrame {
 
 		this.app = app;
 
-		popupCell = -1;
+		selectedCell = -1;
 		draggedCell = -1;
 		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
 		cellSize = windowHeight / app.getMap().numCols();
@@ -173,7 +170,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][grow][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][grow]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -207,7 +204,7 @@ public class PathFinderUI extends JFrame {
 		JLabel lblStyle = new JLabel("Style");
 		settingsPanel.add(lblStyle, "cell 0 2,alignx trailing");
 
-		style = RenderingStyle.WALL_PASSAGES;
+		style = RenderingStyle.BLOCKS;
 		JComboBox<RenderingStyle> comboStyle = new JComboBox<>();
 		comboStyle.addActionListener(e -> {
 			style = (RenderingStyle) comboStyle.getSelectedItem();
@@ -236,7 +233,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.add(cbShowCost, "cell 1 3,alignx center,aligny bottom");
 
 		JScrollPane scrollPaneTable = new JScrollPane();
-		settingsPanel.add(scrollPaneTable, "cell 0 5 2 1,grow");
+		settingsPanel.add(scrollPaneTable, "cell 0 5 2 1,growx,aligny top");
 
 		tablePathfinders = new JTable();
 		scrollPaneTable.setViewportView(tablePathfinders);
@@ -248,15 +245,12 @@ public class PathFinderUI extends JFrame {
 	}
 
 	private void updatePath() {
-		StopWatch watch = new StopWatch();
-		watch.start();
 		app.runPathFinders();
-		watch.stop();
 		canvas.drawGrid();
 	}
 
 	private ConfigurableGridRenderer createRenderer() {
-		ConfigurableGridRenderer r = style == RenderingStyle.WALL_PASSAGES ? new WallPassageGridRenderer()
+		ConfigurableGridRenderer r = style == RenderingStyle.BLOCKS ? new WallPassageGridRenderer()
 				: new PearlsGridRenderer();
 		r.fnGridBgColor = () -> Color.LIGHT_GRAY;
 		r.fnCellSize = () -> cellSize;
@@ -293,7 +287,7 @@ public class PathFinderUI extends JFrame {
 
 		};
 		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD,
-				style == RenderingStyle.PEARLS ? cellSize * 30 / 100 : cellSize * 40 / 100);
+				style == RenderingStyle.PEARLS ? cellSize * 30 / 100 : cellSize * 50 / 100);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : cellSize - 1;
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;

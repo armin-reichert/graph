@@ -7,9 +7,9 @@ import de.amr.graph.pathfinder.impl.DijkstraSearch;
 
 public enum PathFinderAlgorithm {
 	AStar(AStarSearch.class),
-	BFS(BreadthFirstSearch.class),
 	Dijkstra(DijkstraSearch.class),
-	GreedyBestFirst(BestFirstSearch.class);
+	GreedyBestFirst(BestFirstSearch.class),
+	BFS(BreadthFirstSearch.class);
 
 	private final Class<?> implementation;
 
