@@ -279,10 +279,7 @@ public class PathFinderUI extends JFrame {
 		};
 		r.fnText = this::cellText;
 		r.fnTextColor = cell -> {
-			if (cell == app.getSource() || cell == app.getTarget()) {
-				return Color.WHITE;
-			}
-			if (app.getSolution().get(cell)) {
+			if (cell == app.getSource() || cell == app.getTarget() || app.getSolution().get(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;

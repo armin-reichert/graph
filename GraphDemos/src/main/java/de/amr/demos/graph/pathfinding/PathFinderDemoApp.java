@@ -65,11 +65,13 @@ public class PathFinderDemoApp {
 		map = createMap(gridSize, gridSize, Top8.get());
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
+		algorithm = PathFinderAlgorithm.AStar;
 		solutionCells = new BitSet(map.numVertices());
 		pathFinderTableModel = new PathFinderTableModel();
+		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		updatePathFinders();
-		algorithm = PathFinderAlgorithm.AStar;
 
+		// create UI
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
 		} catch (Exception e) {
@@ -83,7 +85,6 @@ public class PathFinderDemoApp {
 	}
 
 	private void updatePathFinders() {
-		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		Arrays.stream(PathFinderAlgorithm.values()).forEach(algorithm -> {
 			pathFinders.put(algorithm, createPathFinder(algorithm, map, target));
 		});
@@ -92,12 +93,11 @@ public class PathFinderDemoApp {
 		pathFinderTableModel.fireTableDataChanged();
 	}
 
-	public List<Integer> runPathFinders() {
+	public void runPathFinders() {
 		pathFinderTableModel.updateResults(map, source, target);
-		List<Integer> path = getSelectedPathFinder().findPath(source, target);
+		List<Integer> path = getSelectedPathFinder().buildPath(source, target);
 		solutionCells.clear();
 		path.forEach(solutionCells::set);
-		return path;
 	}
 
 	public void resetScene() {
