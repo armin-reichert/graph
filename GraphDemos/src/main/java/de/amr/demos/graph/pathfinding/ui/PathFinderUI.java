@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 
 import de.amr.demos.graph.pathfinding.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.PathFinderDemoApp;
@@ -136,12 +134,13 @@ public class PathFinderUI extends JFrame {
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tablePathfinders;
-	private JTextArea textLog;
 	private JPopupMenu popupMenu;
 
 	public PathFinderUI(PathFinderDemoApp app) {
 		this();
+
 		this.app = app;
+
 		popupCell = -1;
 		draggedCell = -1;
 		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
@@ -154,6 +153,8 @@ public class PathFinderUI extends JFrame {
 		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		canvas.requestFocus();
 		getContentPane().add(canvas, BorderLayout.CENTER);
+
+		tablePathfinders.setModel(app.getPathFinderTableModel());
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(actionSetSource);
@@ -169,8 +170,8 @@ public class PathFinderUI extends JFrame {
 		setTitle("Pathfinder Demo");
 
 		JPanel settingsPanel = new JPanel();
-		settingsPanel.setPreferredSize(new Dimension(300, 10));
-		settingsPanel.setMinimumSize(new Dimension(300, 10));
+		settingsPanel.setPreferredSize(new Dimension(500, 10));
+		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
 		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][grow][grow]"));
 
@@ -234,16 +235,11 @@ public class PathFinderUI extends JFrame {
 		cbShowCost.setSelected(costShown);
 		settingsPanel.add(cbShowCost, "cell 1 3,alignx center,aligny bottom");
 
-		JScrollPane scrollPane = new JScrollPane();
-		settingsPanel.add(scrollPane, "cell 0 4 2 1,grow");
-
-		textLog = new JTextArea();
-		textLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
-		textLog.setEditable(false);
-		scrollPane.setViewportView(textLog);
+		JScrollPane scrollPaneTable = new JScrollPane();
+		settingsPanel.add(scrollPaneTable, "cell 0 5 2 1,grow");
 
 		tablePathfinders = new JTable();
-		settingsPanel.add(tablePathfinders, "cell 0 5 2 1,grow");
+		scrollPaneTable.setViewportView(tablePathfinders);
 	}
 
 	public void initState() {
@@ -254,25 +250,9 @@ public class PathFinderUI extends JFrame {
 	private void updatePath() {
 		StopWatch watch = new StopWatch();
 		watch.start();
-		List<Integer> path = app.computePath();
+		app.runPathFinders();
 		watch.stop();
-		logPathFinderResult(path, watch.getNanos() / 1_000_000f);
 		canvas.drawGrid();
-	}
-
-	private void logPathFinderResult(List<Integer> path, float runningTimeMillis) {
-		log("%s", app.getAlgorithm());
-		log("  Time: %.2f ms", runningTimeMillis);
-		log("  Length: %d", path.size() - 1);
-		log("  Cost: %.2f", app.getSelectedPathFinder().getCost(app.getTarget()));
-		log("  Visited cells: %d", app.getMap().vertices()
-				.filter(v -> app.getSelectedPathFinder().getState(v) != TraversalState.UNVISITED).count());
-		log("");
-	}
-
-	private void log(String line, Object... args) {
-		textLog.append(String.format(line, args));
-		textLog.append("\n");
 	}
 
 	private ConfigurableGridRenderer createRenderer() {

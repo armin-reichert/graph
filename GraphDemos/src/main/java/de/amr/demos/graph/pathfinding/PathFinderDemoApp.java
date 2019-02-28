@@ -9,10 +9,13 @@ import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.table.TableModel;
 
+import de.amr.demos.graph.pathfinding.ui.PathFinderTableModel;
 import de.amr.demos.graph.pathfinding.ui.PathFinderUI;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
@@ -37,6 +40,7 @@ public class PathFinderDemoApp {
 
 	private GridGraph<Tile, Double> map;
 	private Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
+	private PathFinderTableModel pathFinderTableModel;
 	private PathFinderAlgorithm algorithm;
 	private int source;
 	private int target;
@@ -63,7 +67,8 @@ public class PathFinderDemoApp {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		solutionCells = new BitSet(map.numVertices());
-		createPathFinders();
+		pathFinderTableModel = new PathFinderTableModel();
+		updatePathFinders();
 		algorithm = PathFinderAlgorithm.AStar;
 
 		try {
@@ -78,18 +83,25 @@ public class PathFinderDemoApp {
 		window.setVisible(true);
 	}
 
-	private void createPathFinders() {
+	private void updatePathFinders() {
 		pathFinders = new LinkedHashMap<>();
 		Arrays.stream(PathFinderAlgorithm.values()).forEach(algorithm -> {
 			pathFinders.put(algorithm, createPathFinder(algorithm, map, target));
 		});
+		pathFinderTableModel.setPathFinders(pathFinders.values().stream().collect(Collectors.toList()));
+		pathFinderTableModel.fireTableDataChanged();
 	}
 
 	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
 		return pathFinders.get(algorithm);
 	}
 
-	public List<Integer> computePath() {
+	public TableModel getPathFinderTableModel() {
+		return pathFinderTableModel;
+	}
+
+	public List<Integer> runPathFinders() {
+		pathFinderTableModel.updateResults(map, source, target);
 		List<Integer> path = getSelectedPathFinder().findPath(source, target);
 		solutionCells.clear();
 		path.forEach(solutionCells::set);
@@ -156,7 +168,7 @@ public class PathFinderDemoApp {
 
 	public void setAlgorithm(PathFinderAlgorithm alg) {
 		algorithm = alg;
-		createPathFinders();
+		updatePathFinders();
 	}
 
 	public int getSource() {
@@ -173,13 +185,13 @@ public class PathFinderDemoApp {
 
 	public void setTarget(int target) {
 		this.target = target;
-		createPathFinders();
+		updatePathFinders();
 	}
 
 	public void setTopology(Topology topology) {
 		if (topology != map.getTopology()) {
 			map = createMap(map.numCols(), map.numRows(), topology);
-			createPathFinders();
+			updatePathFinders();
 		}
 	}
 
