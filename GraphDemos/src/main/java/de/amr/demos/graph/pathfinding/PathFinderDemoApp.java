@@ -9,6 +9,9 @@ import java.awt.Toolkit;
 import java.util.BitSet;
 import java.util.List;
 
+import javax.swing.UIManager;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
@@ -55,6 +58,11 @@ public class PathFinderDemoApp {
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		solution = new BitSet(map.numVertices());
 
+		try {
+			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		window = new PathFinderUI();
 		window.setApp(this);
 		window.pack();

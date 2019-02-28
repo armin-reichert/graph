@@ -16,6 +16,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
@@ -49,6 +48,7 @@ public class PathFinderUI extends JFrame {
 	private int popupCell;
 	private JPopupMenu popupMenu;
 	private RenderingStyle style;
+	private boolean costShown;
 
 	public void setApp(PathFinderDemoApp app) {
 		this.app = app;
@@ -66,11 +66,6 @@ public class PathFinderUI extends JFrame {
 	}
 
 	public PathFinderUI() {
-		try {
-			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pathfinder Demo");
@@ -79,7 +74,7 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(300, 10));
 		settingsPanel.setMinimumSize(new Dimension(300, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][grow]"));
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
@@ -132,8 +127,24 @@ public class PathFinderUI extends JFrame {
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
 		settingsPanel.add(comboStyle, "cell 1 2,growx");
 
+		JLabel lblShowCost = new JLabel("Show Cost");
+		settingsPanel.add(lblShowCost, "cell 0 3,alignx trailing");
+
+		costShown = false;
+		JCheckBox cbShowCost = new JCheckBox("");
+		cbShowCost.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				costShown = cbShowCost.isSelected();
+				canvas.drawGrid();
+			}
+		});
+		cbShowCost.setSelected(costShown);
+		settingsPanel.add(cbShowCost, "cell 1 3,alignx center,aligny bottom");
+
 		JScrollPane scrollPane = new JScrollPane();
-		settingsPanel.add(scrollPane, "cell 0 3 2 1,grow");
+		settingsPanel.add(scrollPane, "cell 0 4 2 1,grow");
 
 		textLog = new JTextArea();
 		textLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -158,24 +169,23 @@ public class PathFinderUI extends JFrame {
 	private ConfigurableGridRenderer createRenderer() {
 		ConfigurableGridRenderer r = style == RenderingStyle.WALL_PASSAGES ? new WallPassageGridRenderer()
 				: new PearlsGridRenderer();
+		r.fnGridBgColor = () -> Color.LIGHT_GRAY;
 		r.fnCellSize = () -> app.getCellSize();
 		r.fnCellBgColor = cell -> {
 			if (cell == app.getSource()) {
-				return Color.GREEN.darker();
-			}
-			if (cell == app.getTarget()) {
 				return Color.BLUE;
 			}
-			if (app.getSolution() != null && app.getSolution().get(cell)) {
+			if (cell == app.getTarget()) {
+				return Color.GREEN.darker();
+			}
+			if (app.getSolution().get(cell)) {
 				return Color.RED.brighter();
 			}
-			if (app.getPathFinder() != null) {
-				if (app.getPathFinder().getState(cell) == TraversalState.COMPLETED) {
-					return new Color(160, 160, 160);
-				}
-				if (app.getPathFinder().getState(cell) == TraversalState.VISITED) {
-					return new Color(220, 220, 220);
-				}
+			if (app.getPathFinder().getState(cell) == TraversalState.COMPLETED) {
+				return Color.ORANGE;
+			}
+			if (app.getPathFinder().getState(cell) == TraversalState.VISITED) {
+				return Color.YELLOW;
 			}
 			if (app.getMap().get(cell) == Tile.WALL) {
 				return new Color(139, 69, 19);
@@ -277,7 +287,10 @@ public class PathFinderUI extends JFrame {
 	};
 
 	private String cellText(int cell) {
-		if (app.getPathFinder() == null || app.getPathFinder().getState(cell) == TraversalState.UNVISITED) {
+		if (!costShown && cell != app.getTarget()) {
+			return "";
+		}
+		if (app.getPathFinder().getState(cell) == TraversalState.UNVISITED) {
 			return "";
 		}
 		if (app.getPathFinder() instanceof AStarSearch) {
