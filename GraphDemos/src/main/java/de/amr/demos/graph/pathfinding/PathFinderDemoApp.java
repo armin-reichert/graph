@@ -2,27 +2,27 @@ package de.amr.demos.graph.pathfinding;
 
 import static de.amr.demos.graph.pathfinding.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.Tile.WALL;
-import static java.lang.Math.min;
 
 import java.awt.EventQueue;
-import java.awt.Toolkit;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import de.amr.demos.graph.pathfinding.ui.PathFinderUI;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
-import de.amr.util.StopWatch;
 
 /**
  * Demo application for path finder algorithms.
@@ -32,65 +32,74 @@ import de.amr.util.StopWatch;
 public class PathFinderDemoApp {
 
 	public static void main(String[] args) {
-		int windowSize = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
-		int gridSize = 20;
-		EventQueue.invokeLater(() -> new PathFinderDemoApp(gridSize, gridSize, windowSize));
+		EventQueue.invokeLater(() -> new PathFinderDemoApp(25));
 	}
 
 	private GridGraph<Tile, Double> map;
-	private BreadthFirstSearch<Tile, Double> pathFinder;
+	private Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
 	private PathFinderAlgorithm algorithm;
-	private Topology topology;
-	private int cellSize;
 	private int source;
 	private int target;
-	private final BitSet solution;
+	private final BitSet solutionCells;
 
-	private PathFinderUI window;
+	private static BreadthFirstSearch<Tile, Double> createPathFinder(PathFinderAlgorithm algorithm,
+			GridGraph<Tile, Double> map, Integer target) {
+		switch (algorithm) {
+		case AStar:
+			return new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
+		case BFS:
+			return new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
+		case Dijkstra:
+			return new DijkstraSearch<>(map, e -> e);
+		case GreedyBestFirst:
+			return new BestFirstSearch<>(map, v -> 10 * map.euclidean(v, target),
+					(u, v) -> 10 * map.euclidean(u, v));
+		}
+		throw new IllegalArgumentException();
+	}
 
-	public PathFinderDemoApp(int numCols, int numRows, int canvasSize) {
-		algorithm = PathFinderAlgorithm.AStar;
-		topology = Top8.get();
-		cellSize = canvasSize / numCols;
-
-		map = createMap(numCols, numRows, topology);
+	public PathFinderDemoApp(int gridSize) {
+		map = createMap(gridSize, gridSize, Top8.get());
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
-		solution = new BitSet(map.numVertices());
+		solutionCells = new BitSet(map.numVertices());
+		createPathFinders();
+		algorithm = PathFinderAlgorithm.AStar;
 
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		window = new PathFinderUI();
-		window.setApp(this);
+		PathFinderUI window = new PathFinderUI(this);
+		window.initState();
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 	}
 
-	public void computePath() {
-		StopWatch watch = new StopWatch();
-		watch.start();
-		List<Integer> path = pathFinder.findPath(source, target);
-		watch.stop();
-		window.log("%s", algorithm);
-		window.log("  Time: %.2f ms", watch.getSeconds() * 1000);
-		window.log("  Length: %d", path.size() - 1);
-		window.log("  Cost: %.2f", pathFinder.getCost(target));
-		window.log("  Visited cells: %d",
-				map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED).count());
-		window.log("");
-		solution.clear();
-		path.forEach(solution::set);
+	private void createPathFinders() {
+		pathFinders = new LinkedHashMap<>();
+		Arrays.stream(PathFinderAlgorithm.values()).forEach(algorithm -> {
+			pathFinders.put(algorithm, createPathFinder(algorithm, map, target));
+		});
+	}
+
+	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
+		return pathFinders.get(algorithm);
+	}
+
+	public List<Integer> computePath() {
+		List<Integer> path = getSelectedPathFinder().findPath(source, target);
+		solutionCells.clear();
+		path.forEach(solutionCells::set);
+		return path;
 	}
 
 	public void resetScene() {
 		source = map.cell(GridPosition.TOP_LEFT);
 		target = map.cell(GridPosition.BOTTOM_RIGHT);
 		map.vertices().forEach(cell -> changeTile(cell, BLANK));
-		computePath();
 	}
 
 	public void changeTile(int cell, Tile tile) {
@@ -109,21 +118,6 @@ public class PathFinderDemoApp {
 				}
 			}
 		});
-	}
-
-	private BreadthFirstSearch<Tile, Double> createPathFinder() {
-		switch (algorithm) {
-		case AStar:
-			return new AStarSearch<>(map, e -> e, (u, v) -> 10 * map.euclidean(u, v));
-		case BFS:
-			return new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
-		case Dijkstra:
-			return new DijkstraSearch<>(map, e -> e);
-		case GreedyBestFirst:
-			return new BestFirstSearch<>(map, v -> 10 * map.euclidean(v, target),
-					(u, v) -> 10 * map.euclidean(u, v));
-		}
-		throw new IllegalArgumentException();
 	}
 
 	private GridGraph<Tile, Double> createMap(int numCols, int numRows, Topology top) {
@@ -152,52 +146,17 @@ public class PathFinderDemoApp {
 		return newMap;
 	}
 
-	public int cellAt(int x, int y) {
-		int gridX = min(x / cellSize, map.numCols() - 1), gridY = min(y / cellSize, map.numRows() - 1);
-		return map.cell(gridX, gridY);
-	}
-
-	public void setAlgorithm(PathFinderAlgorithm alg) {
-		algorithm = alg;
-		pathFinder = createPathFinder();
-		computePath();
+	public GridGraph<Tile, Double> getMap() {
+		return map;
 	}
 
 	public PathFinderAlgorithm getAlgorithm() {
 		return algorithm;
 	}
 
-	public void setTopology(Topology topology) {
-		if (this.topology != topology) {
-			this.topology = topology;
-			map = createMap(map.numCols(), map.numRows(), topology);
-			pathFinder = createPathFinder();
-			computePath();
-		}
-	}
-
-	public Topology getTopology() {
-		return topology;
-	}
-
-	public BreadthFirstSearch<Tile, Double> getPathFinder() {
-		return pathFinder;
-	}
-
-	public BitSet getSolution() {
-		return solution;
-	}
-
-	public GridGraph<Tile, Double> getMap() {
-		return map;
-	}
-
-	public int getCellSize() {
-		return cellSize;
-	}
-
-	public void setCellSize(int cellSize) {
-		this.cellSize = cellSize;
+	public void setAlgorithm(PathFinderAlgorithm alg) {
+		algorithm = alg;
+		createPathFinders();
 	}
 
 	public int getSource() {
@@ -214,5 +173,17 @@ public class PathFinderDemoApp {
 
 	public void setTarget(int target) {
 		this.target = target;
+		createPathFinders();
+	}
+
+	public void setTopology(Topology topology) {
+		if (topology != map.getTopology()) {
+			map = createMap(map.numCols(), map.numRows(), topology);
+			createPathFinders();
+		}
+	}
+
+	public BitSet getSolution() {
+		return solutionCells;
 	}
 }

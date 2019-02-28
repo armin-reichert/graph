@@ -1,4 +1,4 @@
-package de.amr.demos.graph.pathfinding;
+package de.amr.demos.graph.pathfinding.ui;
 
 public enum RenderingStyle {
 
