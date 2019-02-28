@@ -1,5 +1,6 @@
 package de.amr.graph.pathfinder.impl;
 
+import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
@@ -31,6 +32,23 @@ public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 */
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
 		super(graph);
+		frontier = new PQFrontier(fnVertexPriority);
+	}
+
+	/**
+	 * Creates a best-first traversal instance for the given graph and vertex cost function.
+	 * 
+	 * @param graph
+	 *                           a graph
+	 * @param fnVertexPriority
+	 *                           vertex priority function. Queue will always be sorted by increasing
+	 *                           priority.
+	 * @param fnEdgeCost
+	 *                           edge cost function
+	 */
+	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
+			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost);
 		frontier = new PQFrontier(fnVertexPriority);
 	}
 }

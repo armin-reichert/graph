@@ -16,6 +16,7 @@ import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
+import de.amr.graph.pathfinder.impl.BestFirstSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
 import de.amr.util.StopWatch;
@@ -110,6 +111,9 @@ public class PathFinderDemoApp {
 			return new BreadthFirstSearch<>(map, (u, v) -> 10 * map.euclidean(u, v));
 		case Dijkstra:
 			return new DijkstraSearch<>(map, e -> e);
+		case GreedyBestFirst:
+			return new BestFirstSearch<>(map, v -> 10 * map.euclidean(v, target),
+					(u, v) -> 10 * map.euclidean(u, v));
 		}
 		throw new IllegalArgumentException();
 	}
