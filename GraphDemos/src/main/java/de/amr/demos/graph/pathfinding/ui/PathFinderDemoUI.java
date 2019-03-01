@@ -145,7 +145,6 @@ public class PathFinderDemoUI extends JFrame {
 
 	// UI specific
 	private RenderingStyle style;
-	private boolean costShown;
 	private int cellSize;
 	private int draggedCell;
 	private int selectedCell;
@@ -156,6 +155,7 @@ public class PathFinderDemoUI extends JFrame {
 	private PathFinderTableModel pathFinderTableModel;
 	private JPopupMenu popupMenu;
 	private JSpinner spinnerMapSize;
+	private JCheckBox cbShowCost;
 
 	public PathFinderDemoUI(PathFinderDemoModel model, PathFinderDemoApp controller) {
 		this();
@@ -246,17 +246,14 @@ public class PathFinderDemoUI extends JFrame {
 		JLabel lblShowCost = new JLabel("Show Cost");
 		settingsPanel.add(lblShowCost, "cell 0 4,alignx trailing");
 
-		costShown = false;
-		JCheckBox cbShowCost = new JCheckBox("");
+		cbShowCost = new JCheckBox("");
 		cbShowCost.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				costShown = cbShowCost.isSelected();
 				canvas.drawGrid();
 			}
 		});
-		cbShowCost.setSelected(costShown);
 		settingsPanel.add(cbShowCost, "cell 1 4,alignx center,aligny bottom");
 
 		JScrollPane scrollPaneTable = new JScrollPane();
@@ -267,6 +264,7 @@ public class PathFinderDemoUI extends JFrame {
 	}
 
 	public void initState() {
+		spinnerMapSize.setValue(model.getMapSize());
 		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 	}
@@ -337,7 +335,7 @@ public class PathFinderDemoUI extends JFrame {
 	}
 
 	private String cellText(int cell) {
-		if (!costShown && cell != model.getTarget()) {
+		if (!cbShowCost.isSelected() && cell != model.getTarget()) {
 			return "";
 		}
 		if (model.getSelectedPathFinder().getState(cell) == TraversalState.UNVISITED) {
