@@ -10,6 +10,7 @@ import java.util.Map;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
@@ -25,15 +26,20 @@ public class PathFinderDemoModel {
 	private PathFinderAlgorithm selectedAlgorithm;
 	private int source;
 	private int target;
+	private int mapSize;
+	private Topology topology;
 
 	public PathFinderDemoModel() {
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
+		mapSize = 20;
+		topology = Top8.get();
+		newMap();
 	}
 
-	public void createMap(int numCols, int numRows, Topology top) {
-		GridGraph<Tile, Double> newMap = new GridGraph<>(numCols, numRows, top, v -> Tile.BLANK, (u, v) -> 10.0,
-				UndirectedEdge::new);
+	public void newMap() {
+		GridGraph<Tile, Double> newMap = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK,
+				(u, v) -> 10.0, UndirectedEdge::new);
 		newMap.setDefaultEdgeLabel((u, v) -> 10 * newMap.euclidean(u, v));
 		newMap.fill();
 		if (map != null) {
@@ -130,6 +136,13 @@ public class PathFinderDemoModel {
 		return map;
 	}
 
+	public void setMapSize(int size) {
+		if (size != map.numCols()) {
+			mapSize = size;
+			newMap();
+		}
+	}
+
 	public PathFinderAlgorithm getSelectedAlgorithm() {
 		return selectedAlgorithm;
 	}
@@ -160,6 +173,18 @@ public class PathFinderDemoModel {
 
 	public void setTarget(int target) {
 		this.target = target;
+	}
 
+	public Topology getTopology() {
+		return topology;
+	}
+
+	public void setTopology(Topology topology) {
+		if (topology != this.topology) {
+			this.topology = topology;
+			newMap();
+			newPathFinders();
+			runPathFinders();
+		}
 	}
 }

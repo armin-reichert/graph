@@ -297,7 +297,7 @@ public class PathFinderUI extends JFrame {
 			return Color.BLUE;
 
 		};
-		r.fnTextFont = () -> new Font("Arial Narrow", Font.BOLD,
+		r.fnTextFont = () -> new Font("Arial", Font.PLAIN,
 				style == RenderingStyle.PEARLS ? cellSize * 30 / 100 : cellSize * 50 / 100);
 		r.fnMinFontSize = () -> 4;
 		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : cellSize - 1;

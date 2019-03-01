@@ -23,19 +23,19 @@ import de.amr.graph.grid.impl.Top8;
 public class PathFinderDemoApp {
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> {
-			int gridSize = args.length > 0 ? Integer.parseInt(args[0]) : 25;
-			new PathFinderDemoApp(gridSize);
-		});
+		EventQueue.invokeLater(PathFinderDemoApp::new);
 	}
 
-	private final PathFinderDemoModel model = new PathFinderDemoModel();
+	private final PathFinderDemoModel model;
 	private final PathFinderUI view;
 
-	public PathFinderDemoApp(int gridSize) {
+	public PathFinderDemoApp() {
 
 		// Model
-		model.createMap(gridSize, gridSize, Top8.get());
+		model = new PathFinderDemoModel();
+		model.setMapSize(25);
+		model.setTopology(Top8.get());
+		model.newMap();
 		model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
 		model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
 		model.setSelectedAlgorithm(PathFinderAlgorithm.AStar);
@@ -56,13 +56,9 @@ public class PathFinderDemoApp {
 	}
 
 	public void setTopology(Topology topology) {
-		if (topology != model.getMap().getTopology()) {
-			model.createMap(model.getMap().numCols(), model.getMap().numRows(), topology);
-			model.newPathFinders();
-			model.runPathFinders();
-			view.updateCanvas();
-			view.updateUI();
-		}
+		model.setTopology(topology);
+		view.updateCanvas();
+		view.updateUI();
 	}
 
 	public void setSource(int source) {
@@ -96,7 +92,7 @@ public class PathFinderDemoApp {
 		model.runPathFinders();
 		view.updateUI();
 	}
-	
+
 	public void flipTileAt(int cell) {
 		model.changeTile(cell, model.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
 		model.runPathFinders();
