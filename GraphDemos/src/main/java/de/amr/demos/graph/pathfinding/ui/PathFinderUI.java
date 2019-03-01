@@ -30,7 +30,9 @@ import javax.swing.JTable;
 
 import de.amr.demos.graph.pathfinding.PathFinderDemoApp;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.Tile;
+import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -47,8 +49,7 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setSource(selectedCell);
-			updatePath();
+			controller.setSource(selectedCell);
 		}
 	};
 
@@ -56,8 +57,7 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setTarget(selectedCell);
-			updatePath();
+			controller.setTarget(selectedCell);
 		}
 	};
 
@@ -65,8 +65,7 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setSelectedAlgorithm(comboAlgorithm.getItemAt(comboAlgorithm.getSelectedIndex()));
-			updatePath();
+			controller.setSelectedAlgorithm(comboAlgorithm.getItemAt(comboAlgorithm.getSelectedIndex()));
 		}
 	};
 
@@ -74,14 +73,18 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if ("4 Neighbors".equals(comboTopology.getSelectedItem())) {
-				app.setTopology(Top4.get());
-			} else if ("8 Neighbors".equals(comboTopology.getSelectedItem())) {
-				app.setTopology(Top8.get());
+			Topology top;
+			switch ((String) comboTopology.getSelectedItem()) {
+			case "4 Neighbors":
+				top = Top4.get();
+				break;
+			case "8 Neighbors":
+				top = Top8.get();
+				break;
+			default:
+				throw new IllegalArgumentException();
 			}
-			canvas.setGrid(app.getMap());
-			canvas.clear();
-			updatePath();
+			controller.setTopology(top);
 		}
 	};
 
@@ -89,8 +92,7 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.resetScene();
-			updatePath();
+			controller.resetScene();
 		}
 	};
 
@@ -100,8 +102,7 @@ public class PathFinderUI extends JFrame {
 		public void mouseClicked(MouseEvent mouse) {
 			if (mouse.getButton() == MouseEvent.BUTTON1) {
 				int cell = cellAt(mouse.getX(), mouse.getY());
-				app.changeTile(cell, app.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
-				updatePath();
+				controller.flipTileAt(cell);
 			}
 		}
 
@@ -110,12 +111,13 @@ public class PathFinderUI extends JFrame {
 			if (draggedCell != -1) {
 				// end dragging
 				draggedCell = -1;
-				updatePath();
+				model.runPathFinders();
+				updateUI();
 			} else if (mouse.isPopupTrigger()) {
+				// open popup menu
 				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				int cell = cellAt(mouse.getX(), mouse.getY());
-				actionSetSource.setEnabled(app.getMap().get(cell) == Tile.BLANK);
-				actionSetTarget.setEnabled(app.getMap().get(cell) == Tile.BLANK);
+				actionSetSource.setEnabled(model.getMap().get(selectedCell) == Tile.BLANK);
+				actionSetTarget.setEnabled(model.getMap().get(selectedCell) == Tile.BLANK);
 				popupMenu.show(canvas, mouse.getX(), mouse.getY());
 			}
 		}
@@ -129,37 +131,39 @@ public class PathFinderUI extends JFrame {
 			if (cell != draggedCell) {
 				// drag enters new cell
 				draggedCell = cell;
-				app.changeTile(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
-				updatePath();
+				controller.setTileAt(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
 			}
 		}
 	};
 
-	private PathFinderDemoApp app;
+	private PathFinderDemoModel model;
+	private PathFinderDemoApp controller;
+
+	// UI specific
 	private RenderingStyle style;
 	private boolean costShown;
 	private int cellSize;
 	private int draggedCell;
 	private int selectedCell;
 	private GridCanvas canvas;
-
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tablePathfinders;
 	private PathFinderTableModel pathFinderTableModel;
 	private JPopupMenu popupMenu;
 
-	public PathFinderUI(PathFinderDemoApp app) {
+	public PathFinderUI(PathFinderDemoModel model, PathFinderDemoApp controller) {
 		this();
 
-		this.app = app;
+		this.model = model;
+		this.controller = controller;
 
 		selectedCell = -1;
 		draggedCell = -1;
 		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
-		cellSize = windowHeight / app.getMap().numCols();
+		cellSize = windowHeight / model.getMap().numCols();
 
-		canvas = new GridCanvas(app.getMap(), cellSize);
+		canvas = new GridCanvas(model.getMap(), cellSize);
 		canvas.pushRenderer(createRenderer());
 		canvas.addMouseListener(mouseHandler);
 		canvas.addMouseMotionListener(mouseMotionHandler);
@@ -167,7 +171,7 @@ public class PathFinderUI extends JFrame {
 		canvas.requestFocus();
 		getContentPane().add(canvas, BorderLayout.CENTER);
 
-		pathFinderTableModel = new PathFinderTableModel(app.getResults());
+		pathFinderTableModel = new PathFinderTableModel(model.getResults());
 		tablePathfinders.setModel(pathFinderTableModel);
 
 		popupMenu = new JPopupMenu();
@@ -244,14 +248,18 @@ public class PathFinderUI extends JFrame {
 	}
 
 	public void initState() {
-		comboAlgorithm.setSelectedItem(app.getSelectedAlgorithm());
-		comboTopology.setSelectedItem(app.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
+		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
+		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 	}
 
-	private void updatePath() {
-		app.runPathFinders();
+	public void updateUI() {
 		pathFinderTableModel.fireTableDataChanged();
 		canvas.drawGrid();
+	}
+
+	public void updateCanvas() {
+		canvas.clear();
+		canvas.setGrid(model.getMap());
 	}
 
 	private ConfigurableGridRenderer createRenderer() {
@@ -260,30 +268,30 @@ public class PathFinderUI extends JFrame {
 		r.fnGridBgColor = () -> Color.LIGHT_GRAY;
 		r.fnCellSize = () -> cellSize;
 		r.fnCellBgColor = cell -> {
-			if (cell == app.getSource()) {
+			if (cell == model.getSource()) {
 				return Color.BLUE;
 			}
-			if (cell == app.getTarget()) {
+			if (cell == model.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (app.getSelectedResult().solutionCells.get(cell)) {
+			if (model.getSelectedResult().solutionCells.get(cell)) {
 				return Color.RED.brighter();
 			}
-			if (app.getSelectedPathFinder().getState(cell) == TraversalState.COMPLETED) {
+			if (model.getSelectedPathFinder().getState(cell) == TraversalState.COMPLETED) {
 				return Color.ORANGE;
 			}
-			if (app.getSelectedPathFinder().getState(cell) == TraversalState.VISITED) {
+			if (model.getSelectedPathFinder().getState(cell) == TraversalState.VISITED) {
 				return Color.YELLOW;
 			}
-			if (app.getMap().get(cell) == Tile.WALL) {
+			if (model.getMap().get(cell) == Tile.WALL) {
 				return new Color(139, 69, 19);
 			}
 			return Color.WHITE;
 		};
 		r.fnText = this::cellText;
 		r.fnTextColor = cell -> {
-			if (cell == app.getSource() || cell == app.getTarget()
-					|| app.getSelectedResult().solutionCells.get(cell)) {
+			if (cell == model.getSource() || cell == model.getTarget()
+					|| model.getSelectedResult().solutionCells.get(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
@@ -298,23 +306,23 @@ public class PathFinderUI extends JFrame {
 	}
 
 	private int cellAt(int x, int y) {
-		int gridX = min(x / cellSize, app.getMap().numCols() - 1);
-		int gridY = min(y / cellSize, app.getMap().numRows() - 1);
-		return app.getMap().cell(gridX, gridY);
+		int gridX = min(x / cellSize, model.getMap().numCols() - 1);
+		int gridY = min(y / cellSize, model.getMap().numRows() - 1);
+		return model.getMap().cell(gridX, gridY);
 	}
 
 	private String cellText(int cell) {
-		if (!costShown && cell != app.getTarget()) {
+		if (!costShown && cell != model.getTarget()) {
 			return "";
 		}
-		if (app.getSelectedPathFinder().getState(cell) == TraversalState.UNVISITED) {
+		if (model.getSelectedPathFinder().getState(cell) == TraversalState.UNVISITED) {
 			return "";
 		}
-		if (app.getSelectedPathFinder() instanceof AStarSearch) {
-			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) app.getSelectedPathFinder();
+		if (model.getSelectedPathFinder() instanceof AStarSearch) {
+			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) model.getSelectedPathFinder();
 			return String.format("%.0f", astar.getScore(cell));
 		} else {
-			return String.format("%.0f", app.getSelectedPathFinder().getCost(cell));
+			return String.format("%.0f", model.getSelectedPathFinder().getCost(cell));
 		}
 	}
 }
