@@ -26,7 +26,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import de.amr.demos.graph.pathfinding.PathFinderDemoApp;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
@@ -43,7 +47,7 @@ import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import net.miginfocom.swing.MigLayout;
 
-public class PathFinderUI extends JFrame {
+public class PathFinderDemoUI extends JFrame {
 
 	private Action actionSetSource = new AbstractAction("Search From Here") {
 
@@ -151,8 +155,9 @@ public class PathFinderUI extends JFrame {
 	private JTable tablePathfinders;
 	private PathFinderTableModel pathFinderTableModel;
 	private JPopupMenu popupMenu;
+	private JSpinner spinnerMapSize;
 
-	public PathFinderUI(PathFinderDemoModel model, PathFinderDemoApp controller) {
+	public PathFinderDemoUI(PathFinderDemoModel model, PathFinderDemoApp controller) {
 		this();
 
 		this.model = model;
@@ -181,7 +186,7 @@ public class PathFinderUI extends JFrame {
 		popupMenu.add(actionResetScene);
 	}
 
-	public PathFinderUI() {
+	public PathFinderDemoUI() {
 
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -191,26 +196,40 @@ public class PathFinderUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][][grow]"));
 
-		JLabel lblAlgorithm = new JLabel("Algorithm");
-		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
+		JLabel lblGridSize = new JLabel("Map Size");
+		settingsPanel.add(lblGridSize, "cell 0 0,alignx trailing");
+
+		spinnerMapSize = new JSpinner();
+		spinnerMapSize.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				controller.setMapSize((int) spinnerMapSize.getValue());
+			}
+		});
+		spinnerMapSize.setModel(new SpinnerNumberModel(20, 2, 80, 2));
+		settingsPanel.add(spinnerMapSize, "cell 1 0");
+
+		JLabel lblAlgorithm = new JLabel("Path Finder");
+		settingsPanel.add(lblAlgorithm, "cell 0 1,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
 		comboAlgorithm.setAction(actionChangeAlgorithm);
 		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
-		settingsPanel.add(comboAlgorithm, "cell 1 0,growx");
+		settingsPanel.add(comboAlgorithm, "cell 1 1,growx");
 
-		JLabel lblTopology = new JLabel("Topology");
-		settingsPanel.add(lblTopology, "flowy,cell 0 1,alignx trailing");
+		JLabel lblTopology = new JLabel("Grid Topology");
+		settingsPanel.add(lblTopology, "flowy,cell 0 2,alignx trailing");
 
 		comboTopology = new JComboBox<>();
 		comboTopology.setAction(actionChangeTopology);
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
-		settingsPanel.add(comboTopology, "cell 1 1,growx");
+		settingsPanel.add(comboTopology, "cell 1 2,growx");
 
-		JLabel lblStyle = new JLabel("Style");
-		settingsPanel.add(lblStyle, "cell 0 2,alignx trailing");
+		JLabel lblStyle = new JLabel("Display Style");
+		settingsPanel.add(lblStyle, "cell 0 3,alignx trailing");
 
 		style = RenderingStyle.BLOCKS;
 		JComboBox<RenderingStyle> comboStyle = new JComboBox<>();
@@ -222,10 +241,10 @@ public class PathFinderUI extends JFrame {
 			canvas.drawGrid();
 		});
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
-		settingsPanel.add(comboStyle, "cell 1 2,growx");
+		settingsPanel.add(comboStyle, "cell 1 3,growx");
 
 		JLabel lblShowCost = new JLabel("Show Cost");
-		settingsPanel.add(lblShowCost, "cell 0 3,alignx trailing");
+		settingsPanel.add(lblShowCost, "cell 0 4,alignx trailing");
 
 		costShown = false;
 		JCheckBox cbShowCost = new JCheckBox("");
@@ -238,10 +257,10 @@ public class PathFinderUI extends JFrame {
 			}
 		});
 		cbShowCost.setSelected(costShown);
-		settingsPanel.add(cbShowCost, "cell 1 3,alignx center,aligny bottom");
+		settingsPanel.add(cbShowCost, "cell 1 4,alignx center,aligny bottom");
 
 		JScrollPane scrollPaneTable = new JScrollPane();
-		settingsPanel.add(scrollPaneTable, "cell 0 5 2 1,growx,aligny top");
+		settingsPanel.add(scrollPaneTable, "cell 0 6 2 1,growx,aligny top");
 
 		tablePathfinders = new JTable();
 		scrollPaneTable.setViewportView(tablePathfinders);
@@ -258,8 +277,14 @@ public class PathFinderUI extends JFrame {
 	}
 
 	public void updateCanvas() {
-		canvas.clear();
 		canvas.setGrid(model.getMap());
+		int newCellSize = getContentPane().getHeight() / model.getMapSize();
+		if (newCellSize > 0) {
+			cellSize = newCellSize;
+		}
+		canvas.setCellSize(cellSize);
+		canvas.clear();
+		canvas.drawGrid();
 	}
 
 	private ConfigurableGridRenderer createRenderer() {

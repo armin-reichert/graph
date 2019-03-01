@@ -39,9 +39,9 @@ public class PathFinderDemoModel {
 
 	public void newMap() {
 		GridGraph<Tile, Double> newMap = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK,
-				(u, v) -> 10.0, UndirectedEdge::new);
-		newMap.setDefaultEdgeLabel((u, v) -> 10 * newMap.euclidean(u, v));
+				this::distance, UndirectedEdge::new);
 		newMap.fill();
+		// maybe copy walls from old map
 		if (map != null) {
 			map.vertices().forEach(v -> {
 				newMap.set(v, map.get(v));
@@ -61,6 +61,12 @@ public class PathFinderDemoModel {
 			});
 		}
 		map = newMap;
+	}
+
+	public void resizeMap(int size) {
+		mapSize = size;
+		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
+		map.fill();
 	}
 
 	public void changeTile(int cell, Tile tile) {
@@ -141,6 +147,10 @@ public class PathFinderDemoModel {
 			mapSize = size;
 			newMap();
 		}
+	}
+	
+	public int getMapSize() {
+		return mapSize;
 	}
 
 	public PathFinderAlgorithm getSelectedAlgorithm() {

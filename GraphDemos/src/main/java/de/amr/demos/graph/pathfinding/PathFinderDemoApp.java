@@ -10,7 +10,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.Tile;
-import de.amr.demos.graph.pathfinding.ui.PathFinderUI;
+import de.amr.demos.graph.pathfinding.ui.PathFinderDemoUI;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.Top8;
@@ -27,7 +27,7 @@ public class PathFinderDemoApp {
 	}
 
 	private final PathFinderDemoModel model;
-	private final PathFinderUI view;
+	private final PathFinderDemoUI view;
 
 	public PathFinderDemoApp() {
 
@@ -48,11 +48,21 @@ public class PathFinderDemoApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		view = new PathFinderUI(model, this);
+		view = new PathFinderDemoUI(model, this);
 		view.initState();
 		view.pack();
 		view.setLocationRelativeTo(null);
 		view.setVisible(true);
+	}
+	
+	public void setMapSize(int size) {
+			model.resizeMap(size);
+			model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
+			model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
+			model.newPathFinders();
+			model.runPathFinders();
+			view.updateCanvas();
+			view.updateUI();
 	}
 
 	public void setTopology(Topology topology) {
