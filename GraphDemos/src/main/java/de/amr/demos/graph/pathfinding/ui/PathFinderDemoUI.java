@@ -279,8 +279,8 @@ public class PathFinderDemoUI extends JFrame {
 		int newCellSize = getContentPane().getHeight() / model.getMapSize();
 		if (newCellSize > 0) {
 			cellSize = newCellSize;
+			canvas.setCellSize(cellSize);
 		}
-		canvas.setCellSize(cellSize);
 		canvas.clear();
 		canvas.drawGrid();
 	}

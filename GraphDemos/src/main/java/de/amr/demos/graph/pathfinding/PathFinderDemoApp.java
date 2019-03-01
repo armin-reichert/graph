@@ -1,6 +1,9 @@
 package de.amr.demos.graph.pathfinding;
 
 import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
+import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
+import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
+import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 
 import java.awt.EventQueue;
 
@@ -54,15 +57,15 @@ public class PathFinderDemoApp {
 		view.setLocationRelativeTo(null);
 		view.setVisible(true);
 	}
-	
+
 	public void setMapSize(int size) {
-			model.resizeMap(size);
-			model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
-			model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
-			model.newPathFinders();
-			model.runPathFinders();
-			view.updateCanvas();
-			view.updateUI();
+		model.resizeMap(size);
+		model.setSource(model.getMap().cell(TOP_LEFT));
+		model.setTarget(model.getMap().cell(BOTTOM_RIGHT));
+		model.newPathFinders();
+		model.runPathFinders();
+		view.updateCanvas();
+		view.updateUI();
 	}
 
 	public void setTopology(Topology topology) {
@@ -90,8 +93,8 @@ public class PathFinderDemoApp {
 	}
 
 	public void resetScene() {
-		model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
-		model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
+		model.setSource(model.getMap().cell(TOP_LEFT));
+		model.setTarget(model.getMap().cell(BOTTOM_RIGHT));
 		model.getMap().vertices().forEach(cell -> model.changeTile(cell, BLANK));
 		model.runPathFinders();
 		view.updateUI();
@@ -104,8 +107,6 @@ public class PathFinderDemoApp {
 	}
 
 	public void flipTileAt(int cell) {
-		model.changeTile(cell, model.getMap().get(cell) == Tile.WALL ? Tile.BLANK : Tile.WALL);
-		model.runPathFinders();
-		view.updateUI();
+		setTileAt(cell, model.getMap().get(cell) == WALL ? BLANK : WALL);
 	}
 }

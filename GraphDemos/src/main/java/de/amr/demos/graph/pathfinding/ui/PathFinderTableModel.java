@@ -41,6 +41,23 @@ public class PathFinderTableModel extends AbstractTableModel {
 	}
 
 	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		switch (columnIndex) {
+		case 0:
+			return String.class;
+		case 1:
+			return Float.class;
+		case 2:
+			return Integer.class;
+		case 3:
+			return Double.class;
+		case 4:
+			return Integer.class;
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		PathFinderAlgorithm algorithm = PathFinderAlgorithm.values()[rowIndex];
 		Result result = results.get(algorithm);
@@ -48,11 +65,11 @@ public class PathFinderTableModel extends AbstractTableModel {
 		case 0:
 			return algorithm.name();
 		case 1:
-			return String.format("%.2f", result.runningTimeMillis);
+			return result.runningTimeMillis;
 		case 2:
 			return result.pathLength;
 		case 3:
-			return String.format("%.2f", result.pathCost);
+			return result.pathCost;
 		case 4:
 			return result.numVisitedVertices;
 		}
