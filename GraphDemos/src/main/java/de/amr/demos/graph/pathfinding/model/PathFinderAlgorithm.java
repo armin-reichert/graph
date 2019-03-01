@@ -1,4 +1,4 @@
-package de.amr.demos.graph.pathfinding;
+package de.amr.demos.graph.pathfinding.model;
 
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;

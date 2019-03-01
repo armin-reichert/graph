@@ -28,9 +28,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import de.amr.demos.graph.pathfinding.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.PathFinderDemoApp;
-import de.amr.demos.graph.pathfinding.Tile;
+import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -65,7 +65,7 @@ public class PathFinderUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			app.setAlgorithm(comboAlgorithm.getItemAt(comboAlgorithm.getSelectedIndex()));
+			app.setSelectedAlgorithm(comboAlgorithm.getItemAt(comboAlgorithm.getSelectedIndex()));
 			updatePath();
 		}
 	};
@@ -81,7 +81,7 @@ public class PathFinderUI extends JFrame {
 			}
 			canvas.setGrid(app.getMap());
 			canvas.clear();
-			canvas.drawGrid();
+			updatePath();
 		}
 	};
 
@@ -146,6 +146,7 @@ public class PathFinderUI extends JFrame {
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tablePathfinders;
+	private PathFinderTableModel pathFinderTableModel;
 	private JPopupMenu popupMenu;
 
 	public PathFinderUI(PathFinderDemoApp app) {
@@ -166,7 +167,8 @@ public class PathFinderUI extends JFrame {
 		canvas.requestFocus();
 		getContentPane().add(canvas, BorderLayout.CENTER);
 
-		tablePathfinders.setModel(app.getPathFinderTableModel());
+		pathFinderTableModel = new PathFinderTableModel(app.getResults());
+		tablePathfinders.setModel(pathFinderTableModel);
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(actionSetSource);
@@ -242,12 +244,13 @@ public class PathFinderUI extends JFrame {
 	}
 
 	public void initState() {
-		comboAlgorithm.setSelectedItem(app.getAlgorithm());
+		comboAlgorithm.setSelectedItem(app.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(app.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 	}
 
 	private void updatePath() {
 		app.runPathFinders();
+		pathFinderTableModel.fireTableDataChanged();
 		canvas.drawGrid();
 	}
 
@@ -263,7 +266,7 @@ public class PathFinderUI extends JFrame {
 			if (cell == app.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (app.getSolution().get(cell)) {
+			if (app.getSelectedResult().solutionCells.get(cell)) {
 				return Color.RED.brighter();
 			}
 			if (app.getSelectedPathFinder().getState(cell) == TraversalState.COMPLETED) {
@@ -279,7 +282,8 @@ public class PathFinderUI extends JFrame {
 		};
 		r.fnText = this::cellText;
 		r.fnTextColor = cell -> {
-			if (cell == app.getSource() || cell == app.getTarget() || app.getSolution().get(cell)) {
+			if (cell == app.getSource() || cell == app.getTarget()
+					|| app.getSelectedResult().solutionCells.get(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
