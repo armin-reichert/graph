@@ -20,4 +20,18 @@ public enum PathFinderAlgorithm {
 	public Class<?> getImplementation() {
 		return implementation;
 	}
+
+	@Override
+	public String toString() {
+		switch (this) {
+		case AStar:
+			return "A* Search";
+		case GreedyBestFirst:
+			return "Greedy Best-First Search";
+		case BFS:
+			return "Breadth-First Search";
+		default:
+			return super.toString();
+		}
+	}
 }

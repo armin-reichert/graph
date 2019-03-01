@@ -63,7 +63,7 @@ public class PathFinderTableModel extends AbstractTableModel {
 		Result result = results.get(algorithm);
 		switch (columnIndex) {
 		case 0:
-			return algorithm.name();
+			return algorithm;
 		case 1:
 			return result.runningTimeMillis;
 		case 2:
