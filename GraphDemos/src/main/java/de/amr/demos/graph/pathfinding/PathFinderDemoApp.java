@@ -35,7 +35,10 @@ import de.amr.util.StopWatch;
 public class PathFinderDemoApp {
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> new PathFinderDemoApp(25));
+		EventQueue.invokeLater(() -> {
+			int gridSize = args.length > 0 ? Integer.parseInt(args[0]) : 25;
+			new PathFinderDemoApp(gridSize);
+		});
 	}
 
 	private GridGraph<Tile, Double> map;
