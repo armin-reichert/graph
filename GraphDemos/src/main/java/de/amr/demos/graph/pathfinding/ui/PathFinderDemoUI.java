@@ -267,6 +267,7 @@ public class PathFinderDemoUI extends JFrame {
 		spinnerMapSize.setValue(model.getMapSize());
 		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
+		tablePathfinders.getColumnModel().getColumn(0).setPreferredWidth(150);
 	}
 
 	public void updateUI() {
