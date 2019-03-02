@@ -151,43 +151,13 @@ public class PathFinderDemoUI extends JFrame {
 	private GridCanvas canvas;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
-	private JTable tablePathfinders;
-	private PathFinderTableModel pathFinderTableModel;
+	private JTable tableResults;
+	private PathFinderTableModel tableModelResults;
 	private JPopupMenu popupMenu;
 	private JSpinner spinnerMapSize;
 	private JCheckBox cbShowCost;
 
-	public PathFinderDemoUI(PathFinderDemoModel model, PathFinderDemoApp controller) {
-		this();
-
-		this.model = model;
-		this.controller = controller;
-
-		selectedCell = -1;
-		draggedCell = -1;
-		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
-		cellSize = windowHeight / model.getMap().numCols();
-
-		canvas = new GridCanvas(model.getMap(), cellSize);
-		canvas.pushRenderer(createRenderer());
-		canvas.addMouseListener(mouseHandler);
-		canvas.addMouseMotionListener(mouseMotionHandler);
-		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-		canvas.requestFocus();
-		getContentPane().add(canvas, BorderLayout.CENTER);
-
-		pathFinderTableModel = new PathFinderTableModel(model.getResults());
-		tablePathfinders.setModel(pathFinderTableModel);
-
-		popupMenu = new JPopupMenu();
-		popupMenu.add(actionSetSource);
-		popupMenu.add(actionSetTarget);
-		popupMenu.addSeparator();
-		popupMenu.add(actionResetScene);
-	}
-
 	public PathFinderDemoUI() {
-
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pathfinder Demo");
@@ -254,24 +224,52 @@ public class PathFinderDemoUI extends JFrame {
 				canvas.drawGrid();
 			}
 		});
-		settingsPanel.add(cbShowCost, "cell 1 3,alignx center,aligny bottom");
+		settingsPanel.add(cbShowCost, "cell 1 3,alignx left,aligny bottom");
 
-		JScrollPane scrollPaneTable = new JScrollPane();
-		settingsPanel.add(scrollPaneTable, "cell 0 5 2 1,growx,aligny top");
+		JScrollPane scrollPaneTableResults = new JScrollPane();
+		settingsPanel.add(scrollPaneTableResults, "cell 0 5 2 1,growx,aligny top");
 
-		tablePathfinders = new JTable();
-		scrollPaneTable.setViewportView(tablePathfinders);
+		tableResults = new JTable();
+		tableResults.setShowVerticalLines(false);
+		scrollPaneTableResults.setViewportView(tableResults);
+
+		popupMenu = new JPopupMenu();
+		popupMenu.add(actionSetSource);
+		popupMenu.add(actionSetTarget);
+		popupMenu.addSeparator();
+		popupMenu.add(actionResetScene);
 	}
 
-	public void initState() {
+	public void setModel(PathFinderDemoModel model) {
+		this.model = model;
+		selectedCell = -1;
+		draggedCell = -1;
+		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
+		cellSize = windowHeight / model.getMap().numCols();
+
+		canvas = new GridCanvas(model.getMap(), cellSize);
+		canvas.pushRenderer(createRenderer());
+		canvas.addMouseListener(mouseHandler);
+		canvas.addMouseMotionListener(mouseMotionHandler);
+		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+		canvas.requestFocus();
+		getContentPane().add(canvas, BorderLayout.CENTER);
+
+		tableModelResults = new PathFinderTableModel(model.getResults());
+		tableResults.setModel(tableModelResults);
 		spinnerMapSize.setValue(model.getMapSize());
 		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
-		tablePathfinders.getColumnModel().getColumn(0).setPreferredWidth(150);
+		tableResults.getColumnModel().getColumn(0).setPreferredWidth(150);
+	}
+
+	public void setController(PathFinderDemoApp controller) {
+		this.controller = controller;
 	}
 
 	public void updateUI() {
-		pathFinderTableModel.fireTableDataChanged();
+		tableModelResults.fireTableDataChanged();
+		canvas.clear();
 		canvas.drawGrid();
 	}
 

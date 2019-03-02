@@ -34,7 +34,6 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp() {
 
-		// Model
 		model = new PathFinderDemoModel();
 		model.setMapSize(25);
 		model.setTopology(Top8.get());
@@ -45,14 +44,15 @@ public class PathFinderDemoApp {
 		model.newPathFinders();
 		model.runPathFinders();
 
-		// View
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		view = new PathFinderDemoUI(model, this);
-		view.initState();
+		view = new PathFinderDemoUI();
+		view.setController(this);
+		view.setModel(model);
+
 		view.pack();
 		view.setLocationRelativeTo(null);
 		view.setVisible(true);
