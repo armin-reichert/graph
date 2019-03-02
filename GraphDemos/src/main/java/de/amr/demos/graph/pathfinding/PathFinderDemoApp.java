@@ -35,8 +35,8 @@ public class PathFinderDemoApp {
 	public PathFinderDemoApp() {
 
 		model = new PathFinderDemoModel();
-		model.setMapSize(25);
 		model.setTopology(Top8.get());
+		model.setMapSize(10);
 		model.newMap();
 		model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
 		model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));

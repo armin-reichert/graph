@@ -34,7 +34,6 @@ public class PathFinderDemoModel {
 		results = new EnumMap<>(PathFinderAlgorithm.class);
 		mapSize = 20;
 		topology = Top8.get();
-		newMap();
 	}
 
 	public void newMap() {
@@ -143,10 +142,7 @@ public class PathFinderDemoModel {
 	}
 
 	public void setMapSize(int size) {
-		if (size != map.numCols()) {
-			mapSize = size;
-			newMap();
-		}
+		mapSize = size;
 	}
 	
 	public int getMapSize() {

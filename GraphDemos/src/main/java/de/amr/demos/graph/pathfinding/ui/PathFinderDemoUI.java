@@ -1,9 +1,13 @@
 package de.amr.demos.graph.pathfinding.ui;
 
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
+import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
+import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.lang.Math.min;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -18,6 +22,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -43,7 +48,6 @@ import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import net.miginfocom.swing.MigLayout;
 
@@ -97,6 +101,23 @@ public class PathFinderDemoUI extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			controller.resetScene();
+		}
+	};
+
+	private Action actionTogglePathFinding = new AbstractAction("Path Finding") {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			actionChangeAlgorithm.setEnabled(isPathFindingEnabled());
+			cbShowCost.setEnabled(isPathFindingEnabled());
+			tableResults.setVisible(isPathFindingEnabled());
+			if (isPathFindingEnabled()) {
+				model.runPathFinders();
+				updateUI();
+			} else {
+				canvas.clear();
+				canvas.drawGrid();
+			}
 		}
 	};
 
@@ -156,6 +177,7 @@ public class PathFinderDemoUI extends JFrame {
 	private JPopupMenu popupMenu;
 	private JSpinner spinnerMapSize;
 	private JCheckBox cbShowCost;
+	private JCheckBox cbPathFinding;
 
 	public PathFinderDemoUI() {
 		setResizable(false);
@@ -166,10 +188,18 @@ public class PathFinderDemoUI extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.EAST);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][grow]"));
+		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][][][][grow]"));
 
-		JLabel lblGridSize = new JLabel("Map Size");
-		settingsPanel.add(lblGridSize, "cell 0 4,alignx trailing");
+		Component verticalStrut = Box.createVerticalStrut(20);
+		settingsPanel.add(verticalStrut, "cell 0 4");
+
+		cbPathFinding = new JCheckBox("Path Finding");
+		cbPathFinding.setAction(actionTogglePathFinding);
+		cbPathFinding.setFont(new Font("SansSerif", Font.BOLD, 14));
+		settingsPanel.add(cbPathFinding, "cell 0 5");
+
+		JLabel lblGridSize = new JLabel("Rows/Cols");
+		settingsPanel.add(lblGridSize, "cell 0 1,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
 		spinnerMapSize.addChangeListener(new ChangeListener() {
@@ -179,27 +209,31 @@ public class PathFinderDemoUI extends JFrame {
 				controller.setMapSize((int) spinnerMapSize.getValue());
 			}
 		});
-		spinnerMapSize.setModel(new SpinnerNumberModel(20, 2, 80, 2));
-		settingsPanel.add(spinnerMapSize, "cell 1 4");
+		spinnerMapSize.setModel(new SpinnerNumberModel(20, 2, 80, 1));
+		settingsPanel.add(spinnerMapSize, "cell 1 1");
 
-		JLabel lblAlgorithm = new JLabel("Path Finder");
-		settingsPanel.add(lblAlgorithm, "cell 0 0,alignx trailing");
+		JLabel lblAlgorithm = new JLabel("Displayed Algorithm");
+		settingsPanel.add(lblAlgorithm, "cell 0 6,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
 		comboAlgorithm.setAction(actionChangeAlgorithm);
 		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
-		settingsPanel.add(comboAlgorithm, "cell 1 0,growx");
+		settingsPanel.add(comboAlgorithm, "cell 1 6,growx");
+
+		JLabel lblMap = new JLabel("Map");
+		lblMap.setFont(new Font("SansSerif", Font.BOLD, 14));
+		settingsPanel.add(lblMap, "cell 0 0");
 
 		JLabel lblTopology = new JLabel("Topology");
-		settingsPanel.add(lblTopology, "flowy,cell 0 1,alignx trailing");
+		settingsPanel.add(lblTopology, "flowy,cell 0 2,alignx trailing");
 
 		comboTopology = new JComboBox<>();
 		comboTopology.setAction(actionChangeTopology);
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
-		settingsPanel.add(comboTopology, "cell 1 1,growx");
+		settingsPanel.add(comboTopology, "cell 1 2,growx");
 
 		JLabel lblStyle = new JLabel("Display Style");
-		settingsPanel.add(lblStyle, "cell 0 2,alignx trailing");
+		settingsPanel.add(lblStyle, "cell 0 3,alignx trailing");
 
 		style = RenderingStyle.BLOCKS;
 		JComboBox<RenderingStyle> comboStyle = new JComboBox<>();
@@ -211,10 +245,10 @@ public class PathFinderDemoUI extends JFrame {
 			canvas.drawGrid();
 		});
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
-		settingsPanel.add(comboStyle, "cell 1 2,growx");
+		settingsPanel.add(comboStyle, "cell 1 3,growx");
 
 		JLabel lblShowCost = new JLabel("Show Cost");
-		settingsPanel.add(lblShowCost, "cell 0 3,alignx trailing");
+		settingsPanel.add(lblShowCost, "cell 0 7,alignx trailing");
 
 		cbShowCost = new JCheckBox("");
 		cbShowCost.addActionListener(new ActionListener() {
@@ -224,12 +258,13 @@ public class PathFinderDemoUI extends JFrame {
 				canvas.drawGrid();
 			}
 		});
-		settingsPanel.add(cbShowCost, "cell 1 3,alignx left,aligny bottom");
+		settingsPanel.add(cbShowCost, "cell 1 7,alignx left,aligny bottom");
 
 		JScrollPane scrollPaneTableResults = new JScrollPane();
-		settingsPanel.add(scrollPaneTableResults, "cell 0 5 2 1,growx,aligny top");
+		settingsPanel.add(scrollPaneTableResults, "cell 0 8 2 1,growx,aligny top");
 
 		tableResults = new JTable();
+		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
 
@@ -261,6 +296,10 @@ public class PathFinderDemoUI extends JFrame {
 		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(150);
+
+		actionChangeAlgorithm.setEnabled(isPathFindingEnabled());
+		cbShowCost.setEnabled(isPathFindingEnabled());
+		tableResults.setVisible(isPathFindingEnabled());
 	}
 
 	public void setController(PathFinderDemoApp controller) {
@@ -284,29 +323,35 @@ public class PathFinderDemoUI extends JFrame {
 		canvas.drawGrid();
 	}
 
+	private boolean isPathFindingEnabled() {
+		return cbPathFinding.isSelected();
+	}
+
 	private ConfigurableGridRenderer createRenderer() {
 		ConfigurableGridRenderer r = style == RenderingStyle.BLOCKS ? new WallPassageGridRenderer()
 				: new PearlsGridRenderer();
 		r.fnGridBgColor = () -> Color.LIGHT_GRAY;
 		r.fnCellSize = () -> cellSize;
 		r.fnCellBgColor = cell -> {
+			if (model.getMap().get(cell) == Tile.WALL) {
+				return new Color(139, 69, 19);
+			}
 			if (cell == model.getSource()) {
 				return Color.BLUE;
 			}
 			if (cell == model.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (model.getSelectedResult().solutionCells.get(cell)) {
-				return Color.RED.brighter();
-			}
-			if (model.getSelectedPathFinder().getState(cell) == TraversalState.COMPLETED) {
-				return Color.ORANGE;
-			}
-			if (model.getSelectedPathFinder().getState(cell) == TraversalState.VISITED) {
-				return Color.YELLOW;
-			}
-			if (model.getMap().get(cell) == Tile.WALL) {
-				return new Color(139, 69, 19);
+			if (isPathFindingEnabled()) {
+				if (model.getSelectedResult().solutionCells.get(cell)) {
+					return Color.RED.brighter();
+				}
+				if (model.getSelectedPathFinder().getState(cell) == COMPLETED) {
+					return Color.ORANGE;
+				}
+				if (model.getSelectedPathFinder().getState(cell) == VISITED) {
+					return Color.YELLOW;
+				}
 			}
 			return Color.WHITE;
 		};
@@ -334,10 +379,10 @@ public class PathFinderDemoUI extends JFrame {
 	}
 
 	private String cellText(int cell) {
-		if (!cbShowCost.isSelected() && cell != model.getTarget()) {
+		if (!isPathFindingEnabled() || !cbShowCost.isSelected() && cell != model.getTarget()) {
 			return "";
 		}
-		if (model.getSelectedPathFinder().getState(cell) == TraversalState.UNVISITED) {
+		if (model.getSelectedPathFinder().getState(cell) == UNVISITED) {
 			return "";
 		}
 		if (model.getSelectedPathFinder() instanceof AStarSearch) {
