@@ -25,7 +25,6 @@ public class GridCanvas extends JComponent {
 	protected final Deque<GridRenderer> rendererStack = new ArrayDeque<>();
 	protected GridGraph2D<?, ?> grid;
 	protected BufferedImage buffer;
-	protected Graphics2D g2;
 
 	public GridCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		if (grid == null) {
@@ -52,7 +51,7 @@ public class GridCanvas extends JComponent {
 	}
 
 	public Graphics2D getDrawGraphics() {
-		return g2;
+		return buffer.createGraphics();
 	}
 
 	@Override
@@ -67,24 +66,34 @@ public class GridCanvas extends JComponent {
 	}
 
 	public void fill(Color bgColor) {
-		g2.setColor(bgColor);
-		g2.fillRect(0, 0, getWidth(), getHeight());
+		Graphics2D g = getDrawGraphics();
+		g.setColor(bgColor);
+		g.fillRect(0, 0, getWidth(), getHeight());
 		repaint();
 	}
 
 	public void drawGridCell(int cell) {
-		getRenderer().ifPresent(r -> r.drawCell(g2, grid, cell));
-		repaint();
+		getRenderer().ifPresent(r -> {
+			Graphics2D g = getDrawGraphics();
+			r.drawCell(g, grid, cell);
+			repaint();
+		});
 	}
 
 	public void drawGridPassage(int either, int other, boolean visible) {
-		getRenderer().ifPresent(r -> r.drawPassage(g2, grid, either, other, visible));
-		repaint();
+		getRenderer().ifPresent(r -> {
+			Graphics2D g = getDrawGraphics();
+			r.drawPassage(g, grid, either, other, visible);
+			repaint();
+		});
 	}
 
 	public void drawGrid() {
-		getRenderer().ifPresent(r -> r.drawGrid(g2, grid));
-		repaint();
+		getRenderer().ifPresent(r -> {
+			Graphics2D g = getDrawGraphics();
+			r.drawGrid(g, grid);
+			repaint();
+		});
 	}
 
 	protected void resizeTo(int cellSize) {
@@ -93,7 +102,6 @@ public class GridCanvas extends JComponent {
 		setPreferredSize(new Dimension(width, height));
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
-		g2 = buffer.createGraphics();
 	}
 
 	public void setCellSize(int cellSize) {
@@ -110,9 +118,9 @@ public class GridCanvas extends JComponent {
 			if (oldRenderer.getModel().getCellSize() != newRenderer.getModel().getCellSize()) {
 				resizeTo(newRenderer.getModel().getCellSize());
 			}
+			repaint();
 		});
 		rendererStack.push(newRenderer);
-		repaint();
 	}
 
 	public GridRenderer popRenderer() {
@@ -124,8 +132,8 @@ public class GridCanvas extends JComponent {
 			if (oldRenderer.getModel().getCellSize() != newRenderer.getModel().getCellSize()) {
 				resizeTo(newRenderer.getModel().getCellSize());
 			}
+			repaint();
 		});
-		repaint();
 		return oldRenderer;
 	}
 }
