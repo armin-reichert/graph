@@ -32,11 +32,12 @@ public class PathFinderDemoModel {
 	public PathFinderDemoModel() {
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
-		mapSize = 20;
+		mapSize = 10;
 		topology = Top8.get();
+		newMap();
 	}
 
-	public void newMap() {
+	private void newMap() {
 		GridGraph<Tile, Double> oldMap = map;
 		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
 		if (oldMap == null) {
@@ -149,7 +150,10 @@ public class PathFinderDemoModel {
 	}
 
 	public void setMapSize(int size) {
-		mapSize = size;
+		if (mapSize != size) {
+			mapSize = size;
+			newMap();
+		}
 	}
 
 	public int getMapSize() {
