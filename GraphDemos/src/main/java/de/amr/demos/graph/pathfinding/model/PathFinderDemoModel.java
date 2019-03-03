@@ -23,7 +23,6 @@ public class PathFinderDemoModel {
 	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
 	private final Map<PathFinderAlgorithm, Result> results;
 	private GridGraph<Tile, Double> map;
-	private PathFinderAlgorithm selectedAlgorithm;
 	private int source;
 	private int target;
 	private int mapSize;
@@ -42,28 +41,28 @@ public class PathFinderDemoModel {
 		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
 		if (oldMap == null) {
 			map.fill();
-		} else {
-			for (int row = 0; row < map.numRows(); ++row) {
-				for (int col = 0; col < map.numCols(); ++col) {
-					if (!oldMap.isValidRow(row) || !oldMap.isValidCol(col)) {
-						continue;
-					}
-					int cell = map.cell(col, row);
-					Tile tile = oldMap.get(oldMap.cell(col, row));
-					map.set(cell, tile);
-					if (tile == WALL) {
-						map.neighbors(cell).forEach(neighbor -> {
-							if (map.adjacent(cell, neighbor)) {
-								map.removeEdge(cell, neighbor);
-							}
-						});
-					} else {
-						map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
-							if (!map.adjacent(cell, neighbor)) {
-								map.addEdge(cell, neighbor);
-							}
-						});
-					}
+			return;
+		}
+		for (int row = 0; row < map.numRows(); ++row) {
+			for (int col = 0; col < map.numCols(); ++col) {
+				if (!oldMap.isValidRow(row) || !oldMap.isValidCol(col)) {
+					continue;
+				}
+				int cell = map.cell(col, row);
+				Tile tile = oldMap.get(oldMap.cell(col, row));
+				map.set(cell, tile);
+				if (tile == WALL) {
+					map.neighbors(cell).forEach(neighbor -> {
+						if (map.adjacent(cell, neighbor)) {
+							map.removeEdge(cell, neighbor);
+						}
+					});
+				} else {
+					map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
+						if (!map.adjacent(cell, neighbor)) {
+							map.addEdge(cell, neighbor);
+						}
+					});
 				}
 			}
 		}
@@ -158,22 +157,6 @@ public class PathFinderDemoModel {
 
 	public int getMapSize() {
 		return mapSize;
-	}
-
-	public PathFinderAlgorithm getSelectedAlgorithm() {
-		return selectedAlgorithm;
-	}
-
-	public void setSelectedAlgorithm(PathFinderAlgorithm selectedAlgorithm) {
-		this.selectedAlgorithm = selectedAlgorithm;
-	}
-
-	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
-		return pathFinders.get(selectedAlgorithm);
-	}
-
-	public Result getSelectedResult() {
-		return results.get(selectedAlgorithm);
 	}
 
 	public int getSource() {

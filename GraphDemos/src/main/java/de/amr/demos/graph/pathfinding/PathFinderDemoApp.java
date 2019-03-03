@@ -12,11 +12,13 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
+import de.amr.demos.graph.pathfinding.model.Result;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.demos.graph.pathfinding.ui.PathFinderDemoUI;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
  * Demo application for path finder algorithms.
@@ -31,6 +33,7 @@ public class PathFinderDemoApp {
 
 	private final PathFinderDemoModel model;
 	private final PathFinderDemoUI view;
+	private PathFinderAlgorithm selectedAlgorithm;
 
 	public PathFinderDemoApp() {
 
@@ -39,9 +42,10 @@ public class PathFinderDemoApp {
 		model.setMapSize(10);
 		model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
 		model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
-		model.setSelectedAlgorithm(PathFinderAlgorithm.AStar);
 		model.newPathFinders();
 		model.runPathFinders();
+
+		selectedAlgorithm = PathFinderAlgorithm.AStar;
 
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
@@ -86,7 +90,7 @@ public class PathFinderDemoApp {
 	}
 
 	public void setSelectedAlgorithm(PathFinderAlgorithm algorithm) {
-		model.setSelectedAlgorithm(algorithm);
+		selectedAlgorithm = algorithm;
 		model.runPathFinders();
 		view.updateUI();
 	}
@@ -107,5 +111,17 @@ public class PathFinderDemoApp {
 
 	public void flipTileAt(int cell) {
 		setTileAt(cell, model.getMap().get(cell) == WALL ? BLANK : WALL);
+	}
+
+	public PathFinderAlgorithm getSelectedAlgorithm() {
+		return selectedAlgorithm;
+	}
+
+	public BreadthFirstSearch<Tile, Double> getSelectedPathFinder() {
+		return model.getPathFinders().get(selectedAlgorithm);
+	}
+
+	public Result getSelectedResult() {
+		return model.getResults().get(selectedAlgorithm);
 	}
 }

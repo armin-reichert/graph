@@ -294,7 +294,7 @@ public class PathFinderDemoUI extends JFrame {
 		tableModelResults = new PathFinderTableModel(model.getResults());
 		tableResults.setModel(tableModelResults);
 		spinnerMapSize.setValue(model.getMapSize());
-		comboAlgorithm.setSelectedItem(model.getSelectedAlgorithm());
+		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(150);
 
@@ -344,13 +344,13 @@ public class PathFinderDemoUI extends JFrame {
 				return Color.GREEN.darker();
 			}
 			if (isPathFindingEnabled()) {
-				if (model.getSelectedResult().solutionCells.get(cell)) {
+				if (controller.getSelectedResult().solutionCells.get(cell)) {
 					return Color.RED.brighter();
 				}
-				if (model.getSelectedPathFinder().getState(cell) == COMPLETED) {
+				if (controller.getSelectedPathFinder().getState(cell) == COMPLETED) {
 					return Color.ORANGE;
 				}
-				if (model.getSelectedPathFinder().getState(cell) == VISITED) {
+				if (controller.getSelectedPathFinder().getState(cell) == VISITED) {
 					return Color.YELLOW;
 				}
 			}
@@ -359,7 +359,7 @@ public class PathFinderDemoUI extends JFrame {
 		r.fnText = this::cellText;
 		r.fnTextColor = cell -> {
 			if (cell == model.getSource() || cell == model.getTarget()
-					|| model.getSelectedResult().solutionCells.get(cell)) {
+					|| controller.getSelectedResult().solutionCells.get(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
@@ -383,14 +383,14 @@ public class PathFinderDemoUI extends JFrame {
 		if (!isPathFindingEnabled() || !cbShowCost.isSelected() && cell != model.getTarget()) {
 			return "";
 		}
-		if (model.getSelectedPathFinder().getState(cell) == UNVISITED) {
+		if (controller.getSelectedPathFinder().getState(cell) == UNVISITED) {
 			return "";
 		}
-		if (model.getSelectedPathFinder() instanceof AStarSearch) {
-			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) model.getSelectedPathFinder();
+		if (controller.getSelectedPathFinder() instanceof AStarSearch) {
+			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) controller.getSelectedPathFinder();
 			return String.format("%.0f", astar.getScore(cell));
 		} else {
-			return String.format("%.0f", model.getSelectedPathFinder().getCost(cell));
+			return String.format("%.0f", controller.getSelectedPathFinder().getCost(cell));
 		}
 	}
 }
