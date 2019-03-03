@@ -188,14 +188,13 @@ public class PathFinderDemoUI extends JFrame {
 	private JCheckBox cbPathFinding;
 
 	public PathFinderDemoUI() {
-		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Pathfinder Demo");
 
 		JPanel settingsPanel = new JPanel();
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
-		getContentPane().add(settingsPanel, BorderLayout.EAST);
+		getContentPane().add(settingsPanel, BorderLayout.CENTER);
 		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][][][][grow]"));
 
 		Component verticalStrut = Box.createVerticalStrut(20);
@@ -290,7 +289,7 @@ public class PathFinderDemoUI extends JFrame {
 		canvas.addMouseMotionListener(mouseMotionHandler);
 		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		canvas.requestFocus();
-		getContentPane().add(canvas, BorderLayout.CENTER);
+		getContentPane().add(canvas, BorderLayout.WEST);
 
 		tableModelResults = new PathFinderTableModel(model.getResults());
 		tableResults.setModel(tableModelResults);

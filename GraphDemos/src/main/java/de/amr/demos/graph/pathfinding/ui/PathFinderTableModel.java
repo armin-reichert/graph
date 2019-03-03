@@ -9,13 +9,14 @@ import de.amr.demos.graph.pathfinding.model.Result;
 
 public class PathFinderTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_HEADERS = {
+	private static final Object[][] COLUMNS = {
 		//@formatter:off
-		"Pathfinder", 
-		"Time [millis]", 
-		"Path length", 
-		"Path cost",
-		"Visited Cells" 
+			{ "Pathfinder", String.class }, 
+			{ "Time [ms]", Float.class }, 
+			{ "Path length", Integer.class }, 
+			{ "Path cost", Double.class },
+			{ "Loss (%)", Double.class },
+			{ "Visited Cells", Integer.class } 
 		//@formatter:on
 	};
 
@@ -32,29 +33,17 @@ public class PathFinderTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return COLUMN_HEADERS.length;
+		return COLUMNS.length;
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return COLUMN_HEADERS[column];
+		return (String) COLUMNS[column][0];
 	}
 
 	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		switch (columnIndex) {
-		case 0:
-			return String.class;
-		case 1:
-			return Float.class;
-		case 2:
-			return Integer.class;
-		case 3:
-			return Double.class;
-		case 4:
-			return Integer.class;
-		}
-		throw new IllegalArgumentException();
+	public Class<?> getColumnClass(int column) {
+		return (Class<?>) COLUMNS[column][1];
 	}
 
 	@Override
@@ -71,6 +60,9 @@ public class PathFinderTableModel extends AbstractTableModel {
 		case 3:
 			return result.pathCost;
 		case 4:
+			double optimalCost = results.get(PathFinderAlgorithm.AStar).pathCost;
+			return 100 * (result.pathCost - optimalCost) / optimalCost;
+		case 5:
 			return result.numVisitedVertices;
 		}
 		throw new IllegalArgumentException();
