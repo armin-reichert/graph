@@ -51,6 +51,11 @@ import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * UI for path finder demo app.
+ * 
+ * @author Armin Reichert
+ */
 public class PathFinderDemoUI extends JFrame {
 
 	private Action actionSetSource = new AbstractAction("Search From Here") {

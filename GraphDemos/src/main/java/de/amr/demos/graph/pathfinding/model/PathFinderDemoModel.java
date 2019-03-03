@@ -18,6 +18,11 @@ import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
 import de.amr.util.StopWatch;
 
+/**
+ * Model for path finder demo app.
+ * 
+ * @author Armin Reichert
+ */
 public class PathFinderDemoModel {
 
 	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
