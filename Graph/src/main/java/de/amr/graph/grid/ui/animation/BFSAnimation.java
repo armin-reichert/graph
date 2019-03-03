@@ -94,6 +94,12 @@ public class BFSAnimation extends AbstractAnimation {
 	private BFSAnimation() {
 		pathColor = Color.RED;
 	}
+	
+	//TODO
+	public void setMapRenderer(ConfigurableGridRenderer mapRenderer) {
+		this.mapRenderer = mapRenderer;
+	}
+	
 
 	/**
 	 * Runs an animation of a BFS from the given source vertex to the given target vertex. Cells are

@@ -45,7 +45,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	/**
 	 * Initializes the search such that {@link #exploreGraph(int, int)} starts in a clean state.
 	 */
-	protected void init() {
+	public void init() {
 		parentMap.clear();
 		stateMap.clear();
 		frontier.clear();
@@ -202,10 +202,12 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	// Observer related stuff
 
 	public void addObserver(GraphSearchObserver observer) {
+		Objects.nonNull(observer);
 		observers.add(observer);
 	}
 
 	public void removeObserver(GraphSearchObserver observer) {
+		Objects.nonNull(observer);
 		observers.remove(observer);
 	}
 

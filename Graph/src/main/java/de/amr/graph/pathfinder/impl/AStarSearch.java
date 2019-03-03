@@ -63,7 +63,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		super.init();
 		score.clear();
 	}

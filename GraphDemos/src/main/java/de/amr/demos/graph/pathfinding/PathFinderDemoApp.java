@@ -43,7 +43,6 @@ public class PathFinderDemoApp {
 		model.setSource(model.getMap().cell(GridPosition.TOP_LEFT));
 		model.setTarget(model.getMap().cell(GridPosition.BOTTOM_RIGHT));
 		model.newPathFinders();
-		model.runPathFinders();
 
 		selectedAlgorithm = PathFinderAlgorithm.AStar;
 

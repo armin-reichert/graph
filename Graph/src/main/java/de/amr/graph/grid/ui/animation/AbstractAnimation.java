@@ -6,7 +6,7 @@ public abstract class AbstractAnimation {
 
 	private IntSupplier fnDelay = () -> 0;
 
-	protected void setFnDelay(IntSupplier fnDelay) {
+	public void setFnDelay(IntSupplier fnDelay) {
 		this.fnDelay = fnDelay;
 	}
 

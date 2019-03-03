@@ -42,7 +42,7 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		super.init();
 		cost.clear();
 		maxCost = -1;
