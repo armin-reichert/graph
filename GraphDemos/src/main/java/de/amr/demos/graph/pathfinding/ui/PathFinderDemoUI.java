@@ -121,6 +121,14 @@ public class PathFinderDemoUI extends JFrame {
 		}
 	};
 
+	private ChangeListener handleMapSizeChange = new ChangeListener() {
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			controller.setMapSize((int) spinnerMapSize.getValue());
+		}
+	};
+
 	private MouseListener mouseHandler = new MouseAdapter() {
 
 		@Override
@@ -202,13 +210,7 @@ public class PathFinderDemoUI extends JFrame {
 		settingsPanel.add(lblGridSize, "cell 0 1,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
-		spinnerMapSize.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				controller.setMapSize((int) spinnerMapSize.getValue());
-			}
-		});
+		spinnerMapSize.addChangeListener(handleMapSizeChange);
 		spinnerMapSize.setModel(new SpinnerNumberModel(20, 2, 80, 1));
 		settingsPanel.add(spinnerMapSize, "cell 1 1");
 

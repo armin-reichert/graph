@@ -33,7 +33,7 @@ public class EmptyGridTest {
 		assertEquals(grid.numRows(), 0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridAccessException() {
 		grid.cell(0, 0);
 	}
@@ -43,17 +43,17 @@ public class EmptyGridTest {
 		assertTrue(grid.edges().count() == 0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridEdgeAccess() {
 		grid.edge(0, 1);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridEdgeAdd() {
 		grid.addEdge(0, 1);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridVertexDegree() {
 		grid.degree(0);
 	}

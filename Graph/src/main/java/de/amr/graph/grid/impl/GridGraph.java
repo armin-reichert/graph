@@ -102,13 +102,13 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	protected void checkCell(int cell) {
 		if (cell < 0 || cell >= numCells) {
-			throw new IllegalArgumentException("Invalid cell: " + cell);
+			throw new IndexOutOfBoundsException("Invalid cell index: " + cell);
 		}
 	}
 
 	protected void checkDir(int dir) {
 		if (dir < 0 || dir >= top.dirCount()) {
-			throw new IllegalArgumentException("Invalid direction: " + dir);
+			throw new IndexOutOfBoundsException("Invalid direction: " + dir);
 		}
 	}
 
@@ -286,10 +286,10 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public int cell(int col, int row) {
 		if (!isValidCol(col)) {
-			throw new IllegalArgumentException(String.format("Invalid col: %d", col));
+			throw new IndexOutOfBoundsException(String.format("Invalid col: %d", col));
 		}
 		if (!isValidRow(row)) {
-			throw new IllegalArgumentException(String.format("Invalid row: %d", row));
+			throw new IndexOutOfBoundsException(String.format("Invalid row: %d", row));
 		}
 		return index(col, row);
 	}

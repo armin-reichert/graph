@@ -37,35 +37,42 @@ public class PathFinderDemoModel {
 	}
 
 	public void newMap() {
-		GridGraph<Tile, Double> newMap = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK,
-				this::distance, UndirectedEdge::new);
-		newMap.fill();
-		// maybe copy walls from old map
-		if (map != null) {
-			map.vertices().forEach(v -> {
-				newMap.set(v, map.get(v));
-				if (map.get(v) == Tile.WALL) {
-					newMap.neighbors(v).forEach(neighbor -> {
-						if (newMap.adjacent(v, neighbor)) {
-							newMap.removeEdge(v, neighbor);
-						}
-					});
-				} else {
-					newMap.neighbors(v).filter(neighbor -> newMap.get(neighbor) != Tile.WALL).forEach(neighbor -> {
-						if (!newMap.adjacent(v, neighbor)) {
-							newMap.addEdge(v, neighbor);
-						}
-					});
+		GridGraph<Tile, Double> oldMap = map;
+		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
+		if (oldMap == null) {
+			map.fill();
+		} else {
+			for (int row = 0; row < map.numRows(); ++row) {
+				for (int col = 0; col < map.numCols(); ++col) {
+					if (!oldMap.isValidRow(row) || !oldMap.isValidCol(col)) {
+						continue;
+					}
+					int cell = map.cell(col, row);
+					Tile tile = oldMap.get(oldMap.cell(col, row));
+					map.set(cell, tile);
+					if (tile == WALL) {
+						map.neighbors(cell).forEach(neighbor -> {
+							if (map.adjacent(cell, neighbor)) {
+								map.removeEdge(cell, neighbor);
+							}
+						});
+					} else {
+						map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
+							if (!map.adjacent(cell, neighbor)) {
+								map.addEdge(cell, neighbor);
+							}
+						});
+					}
 				}
-			});
+			}
 		}
-		map = newMap;
 	}
 
 	public void resizeMap(int size) {
-		mapSize = size;
-		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
-		map.fill();
+		if (size != mapSize) {
+			mapSize = size;
+			newMap();
+		}
 	}
 
 	public void changeTile(int cell, Tile tile) {
@@ -144,7 +151,7 @@ public class PathFinderDemoModel {
 	public void setMapSize(int size) {
 		mapSize = size;
 	}
-	
+
 	public int getMapSize() {
 		return mapSize;
 	}
