@@ -1,4 +1,4 @@
-package de.amr.demos.graph.curves;
+package de.amr.demos.graph.sfc;
 
 import java.awt.BasicStroke;
 import java.awt.Canvas;

@@ -1,4 +1,4 @@
-package de.amr.demos.graph.curves;
+package de.amr.demos.graph.sfc;
 
 import static de.amr.graph.grid.api.GridPosition.TOP_RIGHT;
 import static de.amr.graph.grid.curves.CurveUtils.traverse;
