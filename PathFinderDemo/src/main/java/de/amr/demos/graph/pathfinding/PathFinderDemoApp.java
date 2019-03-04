@@ -25,22 +25,21 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp() {
 
-		model = new PathFinderDemoModel(11, Top8.get());
-		view = new PathFinderDemoView();
-		controller = new PathFinderDemoController(model);
-		controller.setView(view);
-
-		model.setSource(model.getMap().cell(2, 5));
-		model.setTarget(model.getMap().cell(8, 5));
+		model = new PathFinderDemoModel(19, Top8.get());
+		model.setSource(model.getMap().cell(2, 9));
+		model.setTarget(model.getMap().cell(16, 9));
 		model.newPathFinders();
 
+		controller = new PathFinderDemoController(model);
+
+		view = new PathFinderDemoView();
+
+		controller.setView(view);
 		controller.setSelectedAlgorithm(PathFinderAlgorithm.Dijkstra);
 
-		// initialize view
 		view.init(model, controller);
 		view.updateUI();
 
-		// display view
 		view.pack();
 		view.setLocationRelativeTo(null);
 		view.setVisible(true);

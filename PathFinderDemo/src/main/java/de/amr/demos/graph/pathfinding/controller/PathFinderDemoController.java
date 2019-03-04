@@ -46,7 +46,7 @@ public class PathFinderDemoController {
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		}
-		view.updateCanvas();
+		view.updateUIAndResetCanvas();
 		view.updateUI();
 	}
 
@@ -55,7 +55,7 @@ public class PathFinderDemoController {
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		}
-		view.updateCanvas();
+		view.updateUIAndResetCanvas();
 		view.updateUI();
 	}
 

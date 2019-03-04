@@ -207,7 +207,7 @@ public class PathFinderDemoView extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			style = (RenderingStyle) comboStyle.getSelectedItem();
 			canvas.popRenderer();
-			canvas.pushRenderer(createRenderer());
+			canvas.pushRenderer(createMapRenderer());
 			canvas.clear();
 			canvas.drawGrid();
 		}
@@ -413,37 +413,40 @@ public class PathFinderDemoView extends JFrame {
 
 		selectedCell = -1;
 		draggedCell = -1;
-		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
-		cellSize = windowHeight / model.getMap().numCols();
 
+		// canvas
+		int windowHeight = Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100;
+		cellSize = windowHeight / model.getMapSize();
 		canvas = new GridCanvas(model.getMap(), cellSize);
-		canvas.pushRenderer(createRenderer());
+		canvas.pushRenderer(createMapRenderer());
 		canvas.addMouseListener(mouseHandler);
 		canvas.addMouseMotionListener(mouseMotionHandler);
 		canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		canvas.requestFocus();
 		getContentPane().add(canvas, BorderLayout.WEST);
 
+		// path finder results table
 		tableModelResults = new PathFinderTableModel(model.getResults());
 		tableResults.setModel(tableModelResults);
-		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 80, 1));
-		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
-		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
+		tableResults.setVisible(controller.isAutoRunPathFinders());
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
+
+		// controls for different settings
+
+		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 80, 1));
+		spinnerMapSize.addChangeListener(onMapSizeChange);
+
+		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
+		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
+		comboTopology.setAction(actionChangeTopology);
+
+		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
+		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
+		comboAlgorithm.setAction(actionChangeAlgorithm);
 
 		animation = new Animation();
 		animation.setFnDelay(sliderDelay::getValue);
 		sliderDelay.setValue(5);
-
-		spinnerMapSize.addChangeListener(onMapSizeChange);
-
-		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
-		comboAlgorithm.setAction(actionChangeAlgorithm);
-
-		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
-		comboTopology.setAction(actionChangeTopology);
-
-		tableResults.setVisible(controller.isAutoRunPathFinders());
 
 		cbAutoRunPathFinder.setSelected(controller.isAutoRunPathFinders());
 		cbAutoRunPathFinder.setAction(actionTogglePathFinding);
@@ -462,18 +465,23 @@ public class PathFinderDemoView extends JFrame {
 		}
 	}
 
-	public void updateCanvas() {
-		canvas.setGrid(model.getMap());
-		int newCellSize = getContentPane().getHeight() / model.getMapSize();
-		if (newCellSize > 0) {
-			cellSize = newCellSize;
-			canvas.setCellSize(cellSize);
+	public void updateUIAndResetCanvas() {
+		if (tableModelResults != null) {
+			tableModelResults.fireTableDataChanged();
 		}
-		canvas.clear();
-		canvas.drawGrid();
+		if (canvas != null) {
+			canvas.setGrid(model.getMap());
+			int newCellSize = getContentPane().getHeight() / model.getMapSize();
+			if (newCellSize > 0) {
+				cellSize = newCellSize;
+				canvas.setCellSize(cellSize);
+			}
+			canvas.clear();
+			canvas.drawGrid();
+		}
 	}
 
-	private ConfigurableGridRenderer createRenderer() {
+	private ConfigurableGridRenderer createMapRenderer() {
 		ConfigurableGridRenderer r = style == RenderingStyle.BLOCKS ? new WallPassageGridRenderer()
 				: new PearlsGridRenderer();
 		r.fnGridBgColor = () -> Color.LIGHT_GRAY;
@@ -488,7 +496,7 @@ public class PathFinderDemoView extends JFrame {
 			if (cell == model.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (isPartOfSolution(cell)) {
+			if (isCellPartOfSolution(cell)) {
 				return Color.RED.brighter();
 			}
 			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
@@ -519,7 +527,7 @@ public class PathFinderDemoView extends JFrame {
 			return cost == Double.MAX_VALUE ? "" : String.format("%.0f", cost);
 		};
 		r.fnTextColor = cell -> {
-			if (cell == model.getSource() || cell == model.getTarget() || isPartOfSolution(cell)) {
+			if (cell == model.getSource() || cell == model.getTarget() || isCellPartOfSolution(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
@@ -533,7 +541,7 @@ public class PathFinderDemoView extends JFrame {
 		return r;
 	}
 
-	private boolean isPartOfSolution(int cell) {
+	private boolean isCellPartOfSolution(int cell) {
 		PathFinderResult result = model.getResults().get(controller.getSelectedAlgorithm());
 		return result != null && result.solutionCells.get(cell);
 	}
