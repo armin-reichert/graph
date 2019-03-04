@@ -58,6 +58,7 @@ import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JSlider;
 
 /**
  * UI for path finder demo app.
@@ -293,6 +294,7 @@ public class PathFinderDemoView extends JFrame {
 	private JPanel settingsPanel;
 	private JCheckBox cbAutoRunPathFinder;
 	private JComboBox<RenderingStyle> comboStyle;
+	private JSlider sliderDelay;
 
 	public PathFinderDemoView() {
 
@@ -309,7 +311,8 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.CENTER);
-		settingsPanel.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][][][][][][grow]"));
+		settingsPanel.setLayout(
+				new MigLayout("", "[grow,trailing][5px:n:5px,fill][grow]", "[][][][][][][][][][][][grow]"));
 
 		Component verticalStrut = Box.createVerticalStrut(20);
 		settingsPanel.add(verticalStrut, "cell 0 4");
@@ -322,10 +325,10 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.add(lblGridSize, "cell 0 1,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
-		settingsPanel.add(spinnerMapSize, "cell 1 1");
+		settingsPanel.add(spinnerMapSize, "cell 2 1");
 
 		JPanel panel = new JPanel();
-		settingsPanel.add(panel, "flowx,cell 0 7 2 1,growx");
+		settingsPanel.add(panel, "flowx,cell 2 7,growx");
 
 		JButton btnRun = new JButton("Run");
 		panel.add(btnRun);
@@ -335,14 +338,24 @@ public class PathFinderDemoView extends JFrame {
 		panel.add(btnNewButton);
 		btnNewButton.setAction(actionClear);
 
-		cbAutoRunPathFinder = new JCheckBox("Run automatically");
-		settingsPanel.add(cbAutoRunPathFinder, "cell 1 8,alignx leading,aligny center");
+		JLabel lblDelay = new JLabel("Delay [ms]");
+		settingsPanel.add(lblDelay, "cell 0 8,alignx trailing,aligny top");
+
+		sliderDelay = new JSlider();
+		sliderDelay.setMinorTickSpacing(5);
+		sliderDelay.setPaintTicks(true);
+		sliderDelay.setPaintLabels(true);
+		sliderDelay.setMajorTickSpacing(10);
+		settingsPanel.add(sliderDelay, "cell 2 8,growx");
+
+		cbAutoRunPathFinder = new JCheckBox("Run Automatically");
+		settingsPanel.add(cbAutoRunPathFinder, "cell 2 9,alignx leading,aligny center");
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
 		settingsPanel.add(lblAlgorithm, "cell 0 6,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
-		settingsPanel.add(comboAlgorithm, "cell 1 6,growx");
+		settingsPanel.add(comboAlgorithm, "cell 2 6,growx");
 
 		JLabel lblMap = new JLabel("Map");
 		lblMap.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -352,7 +365,7 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.add(lblTopology, "flowy,cell 0 2,alignx trailing");
 
 		comboTopology = new JComboBox<>();
-		settingsPanel.add(comboTopology, "cell 1 2,growx");
+		settingsPanel.add(comboTopology, "cell 2 2,growx");
 
 		JLabel lblStyle = new JLabel("Display Style");
 		settingsPanel.add(lblStyle, "cell 0 3,alignx trailing");
@@ -361,14 +374,14 @@ public class PathFinderDemoView extends JFrame {
 		comboStyle = new JComboBox<>();
 		comboStyle.setAction(actionChangeStyle);
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
-		settingsPanel.add(comboStyle, "cell 1 3,growx");
+		settingsPanel.add(comboStyle, "cell 2 3,growx");
 
 		cbShowCost = new JCheckBox("Show Cost");
 		cbShowCost.setAction(actionShowCost);
-		settingsPanel.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
+		settingsPanel.add(cbShowCost, "cell 2 10,alignx leading,aligny bottom");
 
 		JScrollPane scrollPaneTableResults = new JScrollPane();
-		settingsPanel.add(scrollPaneTableResults, "cell 0 10 2 1,growx,aligny top");
+		settingsPanel.add(scrollPaneTableResults, "cell 0 11 3 1,growx,aligny top");
 
 		tableResults = new JTable();
 		tableResults.setEnabled(false);
@@ -408,20 +421,21 @@ public class PathFinderDemoView extends JFrame {
 
 	public void setController(PathFinderDemoController controller) {
 		this.controller = controller;
-		
+
 		animation = new Animation();
-		animation.setFnDelay(() -> 5);
-		
+		animation.setFnDelay(sliderDelay::getValue);
+		sliderDelay.setValue(5);
+
 		spinnerMapSize.addChangeListener(onMapSizeChange);
 
 		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
 		comboAlgorithm.setAction(actionChangeAlgorithm);
-		
+
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 		comboTopology.setAction(actionChangeTopology);
-		
+
 		tableResults.setVisible(controller.isAutoRunPathFinders());
-		
+
 		cbAutoRunPathFinder.setSelected(controller.isAutoRunPathFinders());
 		cbAutoRunPathFinder.setAction(actionTogglePathFinding);
 
