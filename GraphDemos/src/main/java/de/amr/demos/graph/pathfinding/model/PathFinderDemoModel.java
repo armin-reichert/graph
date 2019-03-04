@@ -76,7 +76,19 @@ public class PathFinderDemoModel {
 	public void resizeMap(int size) {
 		if (size != mapSize) {
 			mapSize = size;
+			int sourceCol = map.col(source), sourceRow = map.row(source);
+			int targetCol = map.col(target), targetRow = map.row(target);
 			newMap();
+			if (!map.isValidCol(sourceCol) || !map.isValidRow(sourceRow)) {
+				source = 0;
+			} else {
+				source = map.cell(sourceCol, sourceRow);
+			}
+			if (!map.isValidCol(targetCol) || !map.isValidRow(targetRow)) {
+				target = map.numVertices() - 1;
+			} else {
+				target = map.cell(targetCol, targetRow);
+			}
 		}
 	}
 
@@ -120,6 +132,7 @@ public class PathFinderDemoModel {
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			pathFinders.put(algorithm, createPathFinder(algorithm));
 		}
+		results.clear();
 	}
 
 	public void runPathFinders() {
@@ -147,6 +160,10 @@ public class PathFinderDemoModel {
 
 	public Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> getPathFinders() {
 		return pathFinders;
+	}
+
+	public BreadthFirstSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
+		return pathFinders.get(algorithm);
 	}
 
 	public Map<PathFinderAlgorithm, Result> getResults() {
@@ -193,7 +210,6 @@ public class PathFinderDemoModel {
 			this.topology = topology;
 			newMap();
 			newPathFinders();
-			runPathFinders();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package de.amr.demos.graph.pathfinding.ui;
+package de.amr.demos.graph.pathfinding.view;
 
 import java.util.Map;
 
@@ -11,12 +11,12 @@ public class PathFinderTableModel extends AbstractTableModel {
 
 	private static final Object[][] COLUMNS = {
 		//@formatter:off
-			{ "Pathfinder", String.class }, 
+			{ "Algorithm", String.class }, 
 			{ "Time [ms]", Float.class }, 
 			{ "Path length", Integer.class }, 
 			{ "Path cost", Double.class },
 			{ "Loss (%)", Double.class },
-			{ "Visited Cells", Integer.class } 
+			{ "Visited", Integer.class } 
 		//@formatter:on
 	};
 
