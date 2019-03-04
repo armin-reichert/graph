@@ -111,7 +111,7 @@ public class BFSAnimation extends AbstractAnimation {
 			// 1. explore graph to measure distances of all vertices reachable from source
 			BreadthFirstSearch<?, ?> distMeasurer = new BreadthFirstSearch<>(canvas.getGrid());
 			distMeasurer.exploreGraph(source);
-			mapRenderer = createMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
+			mapRenderer = deriveMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
 			canvas.pushRenderer(mapRenderer);
 
 			// 2. traverse graph with events enabled
@@ -140,10 +140,10 @@ public class BFSAnimation extends AbstractAnimation {
 				return;
 			}
 			if (mapRenderer != null) {
-				canvas.pushRenderer(createPathRenderer(mapRenderer, path, bfs::getCost));
+				canvas.pushRenderer(derivePathRenderer(mapRenderer, path, bfs::getCost));
 			} else if (canvasRenderer instanceof ConfigurableGridRenderer) {
 				canvas
-						.pushRenderer(createPathRenderer((ConfigurableGridRenderer) canvasRenderer, path, bfs::getCost));
+						.pushRenderer(derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, bfs::getCost));
 			} else {
 				throw new IllegalStateException();
 			}
@@ -152,7 +152,7 @@ public class BFSAnimation extends AbstractAnimation {
 		});
 	}
 
-	private ConfigurableGridRenderer createMapRenderer(GridRenderer base, ToDoubleFunction<Integer> distance,
+	private ConfigurableGridRenderer deriveMapRenderer(GridRenderer base, ToDoubleFunction<Integer> distance,
 			double maxDistance) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
@@ -167,7 +167,7 @@ public class BFSAnimation extends AbstractAnimation {
 		return r;
 	}
 
-	private ConfigurableGridRenderer createPathRenderer(ConfigurableGridRenderer base, List<Integer> path,
+	private ConfigurableGridRenderer derivePathRenderer(ConfigurableGridRenderer base, List<Integer> path,
 			ToDoubleFunction<Integer> distance) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);
