@@ -57,6 +57,7 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
@@ -77,6 +78,11 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void vertexRemovedFromFrontier(int v) {
+			delayed(() -> canvas.drawGridCell(v));
+		}
+		
+		@Override
+		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			delayed(() -> canvas.drawGridCell(v));
 		}
 

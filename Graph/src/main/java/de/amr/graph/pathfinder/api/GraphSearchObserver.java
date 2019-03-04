@@ -11,5 +11,7 @@ public interface GraphSearchObserver {
 
 	void vertexRemovedFromFrontier(int vertex);
 
+	void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState);
+
 	void edgeTraversed(int either, int other);
 }

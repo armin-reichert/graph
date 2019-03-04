@@ -72,6 +72,10 @@ public class DFSAnimation extends AbstractAnimation {
 		public void vertexRemovedFromFrontier(int vertex) {
 			delayed(() -> drawPath(vertex));
 		}
+
+		@Override
+		public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
+		}
 	};
 
 	private DFSAnimation() {

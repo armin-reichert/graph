@@ -110,7 +110,9 @@ public class PathFinderDemoController {
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		} else {
-			model.getResults().get(getSelectedAlgorithm()).clear();
+			if (model.getResults().get(getSelectedAlgorithm()) != null) {
+				model.getResults().get(getSelectedAlgorithm()).clear();
+			}
 			model.getPathFinder(getSelectedAlgorithm()).init();
 		}
 		view.updateUI();

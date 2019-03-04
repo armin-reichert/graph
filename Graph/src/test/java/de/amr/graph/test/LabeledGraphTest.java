@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.amr.graph.core.impl.UGraph;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
 public class LabeledGraphTest {
@@ -35,6 +36,10 @@ public class LabeledGraphTest {
 
 		@Override
 		public void vertexRemovedFromFrontier(int vertex) {
+		}
+
+		@Override
+		public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
 		}
 
 		public String getVertexTrace() {

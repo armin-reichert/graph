@@ -1,5 +1,6 @@
 package de.amr.graph.pathfinder.impl;
 
+import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
@@ -73,13 +74,13 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 */
 	public void exploreGraph(int source, int target) {
 		init();
-		setState(source, TraversalState.COMPLETED);
+		setState(source, VISITED);
 		setParent(source, -1);
 		frontier.add(source);
 		fireVertexAddedToFrontier(source);
 		while (!frontier.isEmpty()) {
 			int current = frontier.next();
-			setState(current, TraversalState.COMPLETED);
+			setState(current, COMPLETED);
 			fireVertexRemovedFromFrontier(current);
 			if (current == target) {
 				return;
@@ -157,7 +158,9 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 *                   new vertex state
 	 */
 	protected void setState(int v, TraversalState newState) {
+		TraversalState oldState = getState(v);
 		stateMap.put(v, newState);
+		fireVertexStateChanged(v, oldState, newState);
 	}
 
 	/**
@@ -224,5 +227,11 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 
 	protected void fireVertexRemovedFromFrontier(int vertex) {
 		observers.forEach(observer -> observer.vertexAddedToFrontier(vertex));
+	}
+
+	protected void fireVertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
+		if (oldState != newState) {
+			observers.forEach(observer -> observer.vertexStateChanged(vertex, oldState, newState));
+		}
 	}
 }
