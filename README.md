@@ -18,9 +18,9 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 There is a demo application included where you can add/remove walls in a grid and run different pathfinding algorithms:
 
-![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/pathfinder.png)
+![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/PathFinderDemo/doc/pathfinder.png)
 
-![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/astar.png)
+![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/PathFinderDemo/doc/astar.png)
 
 
 Additional sample apps show graph based implementations of space filling curves (Hilbert, Peano, Moore curves).

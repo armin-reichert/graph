@@ -18,20 +18,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>de.amr.demos.graph.pathfinding.PathFinderDemoApp</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
-
 		</plugins>
 	</build>
 	<dependencies>
@@ -39,11 +25,6 @@
 			<groupId>de.amr.graph</groupId>
 			<artifactId>Graph</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout-swing</artifactId>
-			<version>5.2</version>
 		</dependency>
 	</dependencies>
 </project>
