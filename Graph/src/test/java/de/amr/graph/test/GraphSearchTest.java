@@ -55,7 +55,7 @@ public class GraphSearchTest {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
 		search.exploreGraph(0);
-		assertEquals(TraversalState.VISITED, search.getState(0));
+		assertEquals(TraversalState.COMPLETED, search.getState(0));
 		g.vertices().filter(v -> v != 0).forEach(v -> {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
@@ -72,7 +72,7 @@ public class GraphSearchTest {
 		});
 		search.exploreGraph(0);
 		g.vertices().forEach(v -> {
-			assertEquals(TraversalState.VISITED, search.getState(v));
+			assertEquals(TraversalState.COMPLETED, search.getState(v));
 		});
 	}
 
@@ -85,7 +85,7 @@ public class GraphSearchTest {
 		});
 		search.exploreGraph(0);
 		g.vertices().filter(v -> v != 4).forEach(v -> {
-			assertEquals(TraversalState.VISITED, search.getState(v));
+			assertEquals(TraversalState.COMPLETED, search.getState(v));
 		});
 	}
 

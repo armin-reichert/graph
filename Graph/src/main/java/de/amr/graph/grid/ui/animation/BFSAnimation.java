@@ -15,7 +15,6 @@ import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
@@ -78,12 +77,8 @@ public class BFSAnimation extends AbstractAnimation {
 		}
 
 		@Override
-		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-			delayed(() -> canvas.drawGridCell(v));
-		}
-
-		@Override
 		public void vertexAddedToFrontier(int vertex) {
+			delayed(() -> canvas.drawGridCell(vertex));
 		}
 
 		@Override

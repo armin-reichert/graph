@@ -31,8 +31,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -54,13 +57,9 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JSlider;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
 
 /**
  * UI for path finder demo app.
@@ -70,11 +69,6 @@ import javax.swing.ScrollPaneConstants;
 public class PathFinderDemoView extends JFrame {
 
 	private class Animation extends AbstractAnimation implements GraphSearchObserver {
-
-		@Override
-		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-			delayed(() -> canvas.drawGridCell(v));
-		}
 
 		@Override
 		public void vertexAddedToFrontier(int v) {

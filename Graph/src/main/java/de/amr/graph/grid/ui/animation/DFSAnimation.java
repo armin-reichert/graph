@@ -64,10 +64,6 @@ public class DFSAnimation extends AbstractAnimation {
 		}
 
 		@Override
-		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-		}
-
-		@Override
 		public void vertexAddedToFrontier(int vertex) {
 			delayed(() -> drawPath(vertex));
 		}

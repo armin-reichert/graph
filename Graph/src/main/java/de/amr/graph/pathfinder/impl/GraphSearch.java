@@ -73,12 +73,13 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 */
 	public void exploreGraph(int source, int target) {
 		init();
-		setState(source, VISITED);
+		setState(source, TraversalState.COMPLETED);
 		setParent(source, -1);
 		frontier.add(source);
 		fireVertexAddedToFrontier(source);
 		while (!frontier.isEmpty()) {
 			int current = frontier.next();
+			setState(current, TraversalState.COMPLETED);
 			fireVertexRemovedFromFrontier(current);
 			if (current == target) {
 				return;
@@ -156,9 +157,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	 *                   new vertex state
 	 */
 	protected void setState(int v, TraversalState newState) {
-		TraversalState oldState = getState(v);
 		stateMap.put(v, newState);
-		fireVertexStateChanged(v, oldState, newState);
 	}
 
 	/**
@@ -217,10 +216,6 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 
 	protected void fireEdgeTraversed(int either, int other) {
 		observers.forEach(observer -> observer.edgeTraversed(either, other));
-	}
-
-	protected void fireVertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-		observers.forEach(observer -> observer.vertexStateChanged(v, oldState, newState));
 	}
 
 	protected void fireVertexAddedToFrontier(int vertex) {

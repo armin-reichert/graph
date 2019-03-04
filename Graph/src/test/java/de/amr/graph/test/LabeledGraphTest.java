@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import de.amr.graph.core.impl.UGraph;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
 public class LabeledGraphTest {
@@ -26,16 +25,12 @@ public class LabeledGraphTest {
 		}
 
 		@Override
-		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-			trace.add(v);
-		}
-
-		@Override
 		public void edgeTraversed(int either, int other) {
 		}
 
 		@Override
 		public void vertexAddedToFrontier(int vertex) {
+			trace.add(vertex);
 		}
 
 		@Override
