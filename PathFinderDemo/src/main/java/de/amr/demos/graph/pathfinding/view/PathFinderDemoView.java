@@ -59,6 +59,8 @@ import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JSlider;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * UI for path finder demo app.
@@ -314,7 +316,7 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.CENTER);
 		settingsPanel.setLayout(
-				new MigLayout("", "[grow,trailing][5px:n:5px,fill][grow]", "[][][][][][][][][][][][grow]"));
+				new MigLayout("", "[grow,trailing][5px:n:5px,fill][grow]", "[][][][][][][][][][][][grow][grow]"));
 
 		Component verticalStrut = Box.createVerticalStrut(20);
 		settingsPanel.add(verticalStrut, "cell 0 4");
@@ -384,12 +386,20 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.add(cbShowCost, "cell 2 10,alignx leading,aligny bottom");
 
 		JScrollPane scrollPaneTableResults = new JScrollPane();
+		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		settingsPanel.add(scrollPaneTableResults, "cell 0 11 3 1,growx,aligny top");
 
 		tableResults = new JTable();
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
+		
+		JTextPane textLegend = new JTextPane();
+		textLegend.setEditable(false);
+		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		textLegend.setContentType("text/html");
+		textLegend.setText("<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
+		settingsPanel.add(textLegend, "cell 0 12 3 1,grow");
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(actionSetSource);
@@ -494,16 +504,19 @@ public class PathFinderDemoView extends JFrame {
 			if (!cbShowCost.isSelected()) {
 				return "";
 			}
+			if (model.getMap().get(cell) == Tile.WALL) {
+				return "";
+			}
 			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
 			if (pf.getState(cell) == UNVISITED) {
 				return "";
 			}
+			double cost = pf.getCost(cell);
 			if (pf instanceof AStarSearch) {
 				AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
-				return String.format("%.0f", astar.getScore(cell));
-			} else {
-				return String.format("%.0f", pf.getCost(cell));
+				cost = astar.getScore(cell);
 			}
+			return cost == Double.MAX_VALUE ? "" : String.format("%.0f", cost);
 		};
 		r.fnTextColor = cell -> {
 			if (cell == model.getSource() || cell == model.getTarget() || isPartOfSolution(cell)) {

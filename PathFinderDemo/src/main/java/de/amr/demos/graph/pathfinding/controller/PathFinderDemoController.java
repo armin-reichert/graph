@@ -2,8 +2,6 @@ package de.amr.demos.graph.pathfinding.controller;
 
 import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
-import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
-import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
@@ -93,8 +91,6 @@ public class PathFinderDemoController {
 	}
 
 	public void resetScene() {
-		model.setSource(model.getMap().cell(TOP_LEFT));
-		model.setTarget(model.getMap().cell(BOTTOM_RIGHT));
 		model.getMap().vertices().forEach(cell -> model.changeTile(cell, BLANK));
 		if (autoRunPathFinders) {
 			model.runPathFinders();
