@@ -25,7 +25,7 @@ There is a demo application included where you can add/remove walls in a grid an
 
 Additional sample apps show graph based implementations of space filling curves (Hilbert, Peano, Moore curves).
 
-![Hilbert curve](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/hilbert.png)
+![Hilbert curve](https://github.com/armin-reichert/graph/blob/master/SpaceFillingCurves/doc/hilbert.png)
 
 This library and path finding is also used by my [Pac-Man game](https://github.com/armin-reichert/pacman) implementation
 to verify its reusability.
