@@ -4,7 +4,7 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 
-public class Result {
+public class PathFinderResult {
 
 	public List<Integer> path;
 	public BitSet solutionCells;
@@ -12,6 +12,11 @@ public class Result {
 	public int pathLength;
 	public double pathCost;
 	public long numVisitedVertices;
+	
+	
+	public PathFinderResult() {
+		clear();
+	}
 	
 	public void clear() {
 		path = Collections.emptyList();

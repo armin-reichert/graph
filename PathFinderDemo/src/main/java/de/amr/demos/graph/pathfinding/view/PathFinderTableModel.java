@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.Result;
+import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 
 public class PathFinderTableModel extends AbstractTableModel {
 
@@ -20,9 +20,9 @@ public class PathFinderTableModel extends AbstractTableModel {
 		//@formatter:on
 	};
 
-	private Map<PathFinderAlgorithm, Result> results;
+	private Map<PathFinderAlgorithm, PathFinderResult> results;
 
-	public PathFinderTableModel(Map<PathFinderAlgorithm, Result> results) {
+	public PathFinderTableModel(Map<PathFinderAlgorithm, PathFinderResult> results) {
 		this.results = results;
 	}
 
@@ -49,7 +49,7 @@ public class PathFinderTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		PathFinderAlgorithm algorithm = PathFinderAlgorithm.values()[rowIndex];
-		Result result = results.get(algorithm);
+		PathFinderResult result = results.get(algorithm);
 		switch (columnIndex) {
 		case 0:
 			return algorithm;

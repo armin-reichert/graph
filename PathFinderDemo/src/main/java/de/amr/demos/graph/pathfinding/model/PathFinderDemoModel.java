@@ -26,22 +26,24 @@ import de.amr.util.StopWatch;
 public class PathFinderDemoModel {
 
 	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
-	private final Map<PathFinderAlgorithm, Result> results;
+	private final Map<PathFinderAlgorithm, PathFinderResult> results;
 	private GridGraph<Tile, Double> map;
+	private int mapSize;
 	private int source;
 	private int target;
-	private int mapSize;
-	private Topology topology;
 
 	public PathFinderDemoModel() {
-		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
-		results = new EnumMap<>(PathFinderAlgorithm.class);
-		mapSize = 10;
-		topology = Top8.get();
-		newMap();
+		this(10, Top8.get());
 	}
 
-	private void newMap() {
+	public PathFinderDemoModel(int mapSize, Topology topology) {
+		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
+		results = new EnumMap<>(PathFinderAlgorithm.class);
+		this.mapSize = 10;
+		newMap(topology);
+	}
+
+	private void newMap(Topology topology) {
 		GridGraph<Tile, Double> oldMap = map;
 		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
 		if (oldMap == null) {
@@ -78,7 +80,7 @@ public class PathFinderDemoModel {
 			mapSize = size;
 			int sourceCol = map.col(source), sourceRow = map.row(source);
 			int targetCol = map.col(target), targetRow = map.row(target);
-			newMap();
+			newMap(map.getTopology());
 			if (!map.isValidCol(sourceCol) || !map.isValidRow(sourceRow)) {
 				source = 0;
 			} else {
@@ -143,7 +145,7 @@ public class PathFinderDemoModel {
 
 	public void runPathFinder(PathFinderAlgorithm algorithm) {
 		BreadthFirstSearch<Tile, Double> pathFinder = pathFinders.get(algorithm);
-		Result r = new Result();
+		PathFinderResult r = new PathFinderResult();
 		StopWatch watch = new StopWatch();
 		watch.start();
 		r.path = pathFinder.findPath(source, target);
@@ -166,7 +168,7 @@ public class PathFinderDemoModel {
 		return pathFinders.get(algorithm);
 	}
 
-	public Map<PathFinderAlgorithm, Result> getResults() {
+	public Map<PathFinderAlgorithm, PathFinderResult> getResults() {
 		return results;
 	}
 
@@ -177,7 +179,7 @@ public class PathFinderDemoModel {
 	public void setMapSize(int size) {
 		if (mapSize != size) {
 			mapSize = size;
-			newMap();
+			newMap(map.getTopology());
 		}
 	}
 
@@ -202,13 +204,12 @@ public class PathFinderDemoModel {
 	}
 
 	public Topology getTopology() {
-		return topology;
+		return map.getTopology();
 	}
 
 	public void setTopology(Topology topology) {
-		if (topology != this.topology) {
-			this.topology = topology;
-			newMap();
+		if (topology != map.getTopology()) {
+			newMap(topology);
 			newPathFinders();
 		}
 	}

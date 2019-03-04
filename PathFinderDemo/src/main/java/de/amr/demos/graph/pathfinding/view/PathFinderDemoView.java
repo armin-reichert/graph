@@ -43,7 +43,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
-import de.amr.demos.graph.pathfinding.model.Result;
+import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.Top4;
@@ -519,7 +519,7 @@ public class PathFinderDemoView extends JFrame {
 	}
 
 	private boolean isPartOfSolution(int cell) {
-		Result result = model.getResults().get(controller.getSelectedAlgorithm());
+		PathFinderResult result = model.getResults().get(controller.getSelectedAlgorithm());
 		return result != null && result.solutionCells.get(cell);
 	}
 
