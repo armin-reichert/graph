@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -42,6 +41,7 @@ import javax.swing.event.ChangeListener;
 import de.amr.demos.graph.pathfinding.PathFinderDemoApp;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
+import de.amr.demos.graph.pathfinding.model.Result;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.Top4;
@@ -94,7 +94,7 @@ public class PathFinderDemoUI extends JFrame {
 		protected Void doInBackground() throws Exception {
 			controller.getSelectedPathFinder().addObserver(animation);
 			animation.running = true;
-			controller.getSelectedPathFinder().exploreGraph(model.getSource(), model.getTarget());
+			model.runPathFinder(controller.getSelectedAlgorithm());
 			return null;
 		}
 
@@ -115,10 +115,11 @@ public class PathFinderDemoUI extends JFrame {
 		}
 	};
 
-	private Action actionClearCanvas = new AbstractAction("Clear Canvas") {
+	private Action actionClear = new AbstractAction("Clear") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			controller.getSelectedResult().ifPresent(Result::clear);
 			canvas.clear();
 			canvas.drawGrid();
 		}
@@ -179,10 +180,12 @@ public class PathFinderDemoUI extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			actionRunAnimatedPathfinder.setEnabled(!isAutoRunPathFindingEnabled());
-			actionClearCanvas.setEnabled(!isAutoRunPathFindingEnabled());
-			tableResults.setVisible(isAutoRunPathFindingEnabled());
-			if (isAutoRunPathFindingEnabled()) {
+			boolean checked = cbAutoRunPathFinder.isSelected();
+			controller.setAutoRunPathFinders(checked);
+			actionRunAnimatedPathfinder.setEnabled(!checked);
+			actionClear.setEnabled(!checked);
+			tableResults.setVisible(checked);
+			if (checked) {
 				model.runPathFinders();
 				updateUI();
 			} else {
@@ -200,6 +203,15 @@ public class PathFinderDemoUI extends JFrame {
 			style = (RenderingStyle) comboStyle.getSelectedItem();
 			canvas.popRenderer();
 			canvas.pushRenderer(createRenderer());
+			canvas.clear();
+			canvas.drawGrid();
+		}
+	};
+
+	private Action actionShowCost = new AbstractAction("Show Cost") {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			canvas.clear();
 			canvas.drawGrid();
 		}
@@ -228,7 +240,9 @@ public class PathFinderDemoUI extends JFrame {
 			if (draggedCell != -1) {
 				// end dragging
 				draggedCell = -1;
-				model.runPathFinders();
+				if (controller.isAutoRunPathFinders()) {
+					model.runPathFinders();
+				}
 				updateUI();
 			} else if (mouse.isPopupTrigger()) {
 				// open popup menu
@@ -298,7 +312,6 @@ public class PathFinderDemoUI extends JFrame {
 
 		spinnerMapSize = new JSpinner();
 		spinnerMapSize.addChangeListener(handleMapSizeChange);
-		spinnerMapSize.setModel(new SpinnerNumberModel(20, 2, 80, 1));
 		settingsPanel.add(spinnerMapSize, "cell 1 1");
 
 		JPanel panel = new JPanel();
@@ -308,9 +321,9 @@ public class PathFinderDemoUI extends JFrame {
 		panel.add(btnRun);
 		btnRun.setAction(actionRunAnimatedPathfinder);
 
-		JButton btnNewButton = new JButton("");
+		JButton btnNewButton = new JButton();
 		panel.add(btnNewButton);
-		btnNewButton.setAction(actionClearCanvas);
+		btnNewButton.setAction(actionClear);
 
 		cbAutoRunPathFinder = new JCheckBox("Run automatically");
 		cbAutoRunPathFinder.setAction(actionTogglePathFinding);
@@ -320,8 +333,6 @@ public class PathFinderDemoUI extends JFrame {
 		settingsPanel.add(lblAlgorithm, "cell 0 6,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
-		comboAlgorithm.setAction(actionChangeAlgorithm);
-		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
 		settingsPanel.add(comboAlgorithm, "cell 1 6,growx");
 
 		JLabel lblMap = new JLabel("Map");
@@ -346,13 +357,7 @@ public class PathFinderDemoUI extends JFrame {
 		settingsPanel.add(comboStyle, "cell 1 3,growx");
 
 		cbShowCost = new JCheckBox("Show Cost");
-		cbShowCost.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				canvas.drawGrid();
-			}
-		});
+		cbShowCost.setAction(actionShowCost);
 		settingsPanel.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
 
 		JScrollPane scrollPaneTableResults = new JScrollPane();
@@ -391,18 +396,24 @@ public class PathFinderDemoUI extends JFrame {
 
 		tableModelResults = new PathFinderTableModel(model.getResults());
 		tableResults.setModel(tableModelResults);
-		spinnerMapSize.setValue(model.getMapSize());
-		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
+		tableResults.setVisible(controller.isAutoRunPathFinders());
+
+		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 80, 1));
+
+		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
+		comboAlgorithm.setAction(actionChangeAlgorithm);
+
 		comboTopology.setSelectedItem(model.getMap().getTopology() == Top4.get() ? "4 Neighbors" : "8 Neighbors");
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(150);
 
-		actionRunAnimatedPathfinder.setEnabled(!isAutoRunPathFindingEnabled());
-		actionClearCanvas.setEnabled(!isAutoRunPathFindingEnabled());
-		tableResults.setVisible(isAutoRunPathFindingEnabled());
+		actionRunAnimatedPathfinder.setEnabled(!controller.isAutoRunPathFinders());
+		actionClear.setEnabled(!controller.isAutoRunPathFinders());
 	}
 
 	public void setController(PathFinderDemoApp controller) {
 		this.controller = controller;
+		cbAutoRunPathFinder.setSelected(controller.isAutoRunPathFinders());
+		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
 	}
 
 	public void updateUI() {
@@ -422,10 +433,6 @@ public class PathFinderDemoUI extends JFrame {
 		canvas.drawGrid();
 	}
 
-	private boolean isAutoRunPathFindingEnabled() {
-		return cbAutoRunPathFinder.isSelected();
-	}
-
 	private ConfigurableGridRenderer createRenderer() {
 		ConfigurableGridRenderer r = style == RenderingStyle.BLOCKS ? new WallPassageGridRenderer()
 				: new PearlsGridRenderer();
@@ -441,8 +448,8 @@ public class PathFinderDemoUI extends JFrame {
 			if (cell == model.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (cbShowCost.isSelected() || isAutoRunPathFindingEnabled() || animation.running) {
-				if (controller.getSelectedResult().solutionCells.get(cell)) {
+			if (controller.getSelectedResult().isPresent() || animation.running) {
+				if (isPartOfSolution(cell)) {
 					return Color.RED.brighter();
 				}
 				if (controller.getSelectedPathFinder().getState(cell) == COMPLETED) {
@@ -454,10 +461,22 @@ public class PathFinderDemoUI extends JFrame {
 			}
 			return Color.WHITE;
 		};
-		r.fnText = this::cellText;
+		r.fnText = cell -> {
+			if (!cbShowCost.isSelected()) {
+				return "";
+			}
+			if (controller.getSelectedPathFinder().getState(cell) == UNVISITED) {
+				return "";
+			}
+			if (controller.getSelectedPathFinder() instanceof AStarSearch) {
+				AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) controller.getSelectedPathFinder();
+				return String.format("%.0f", astar.getScore(cell));
+			} else {
+				return String.format("%.0f", controller.getSelectedPathFinder().getCost(cell));
+			}
+		};
 		r.fnTextColor = cell -> {
-			if (cell == model.getSource() || cell == model.getTarget()
-					|| controller.getSelectedResult().solutionCells.get(cell)) {
+			if (cell == model.getSource() || cell == model.getTarget() || isPartOfSolution(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
@@ -471,24 +490,14 @@ public class PathFinderDemoUI extends JFrame {
 		return r;
 	}
 
+	private boolean isPartOfSolution(int cell) {
+		return controller.getSelectedResult().isPresent()
+				&& controller.getSelectedResult().get().solutionCells.get(cell);
+	}
+
 	private int cellAt(int x, int y) {
 		int gridX = min(x / cellSize, model.getMap().numCols() - 1);
 		int gridY = min(y / cellSize, model.getMap().numRows() - 1);
 		return model.getMap().cell(gridX, gridY);
-	}
-
-	private String cellText(int cell) {
-		if (!cbShowCost.isSelected()) {
-			return "";
-		}
-		if (controller.getSelectedPathFinder().getState(cell) == UNVISITED) {
-			return "";
-		}
-		if (controller.getSelectedPathFinder() instanceof AStarSearch) {
-			AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) controller.getSelectedPathFinder();
-			return String.format("%.0f", astar.getScore(cell));
-		} else {
-			return String.format("%.0f", controller.getSelectedPathFinder().getCost(cell));
-		}
 	}
 }

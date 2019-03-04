@@ -124,21 +124,25 @@ public class PathFinderDemoModel {
 
 	public void runPathFinders() {
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			BreadthFirstSearch<Tile, Double> pathFinder = pathFinders.get(algorithm);
-			Result r = new Result();
-			StopWatch watch = new StopWatch();
-			watch.start();
-			r.path = pathFinder.findPath(source, target);
-			watch.stop();
-			r.solutionCells = new BitSet(map.numVertices());
-			r.path.forEach(r.solutionCells::set);
-			r.pathLength = r.path.size() - 1;
-			r.pathCost = pathFinder.getCost(target);
-			r.runningTimeMillis = watch.getNanos() / 1_000_000;
-			r.numVisitedVertices = map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED)
-					.count();
-			results.put(algorithm, r);
+			runPathFinder(algorithm);
 		}
+	}
+
+	public void runPathFinder(PathFinderAlgorithm algorithm) {
+		BreadthFirstSearch<Tile, Double> pathFinder = pathFinders.get(algorithm);
+		Result r = new Result();
+		StopWatch watch = new StopWatch();
+		watch.start();
+		r.path = pathFinder.findPath(source, target);
+		watch.stop();
+		r.solutionCells = new BitSet(map.numVertices());
+		r.path.forEach(r.solutionCells::set);
+		r.pathLength = r.path.size() - 1;
+		r.pathCost = pathFinder.getCost(target);
+		r.runningTimeMillis = watch.getNanos() / 1_000_000;
+		r.numVisitedVertices = map.vertices().filter(v -> pathFinder.getState(v) != TraversalState.UNVISITED)
+				.count();
+		results.put(algorithm, r);
 	}
 
 	public Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> getPathFinders() {

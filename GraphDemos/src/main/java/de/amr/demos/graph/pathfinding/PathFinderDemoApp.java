@@ -6,6 +6,7 @@ import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 
 import java.awt.EventQueue;
+import java.util.Optional;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -34,6 +35,7 @@ public class PathFinderDemoApp {
 	private final PathFinderDemoModel model;
 	private final PathFinderDemoUI view;
 	private PathFinderAlgorithm selectedAlgorithm;
+	private boolean autoRunPathFinders;
 
 	public PathFinderDemoApp() {
 
@@ -45,6 +47,7 @@ public class PathFinderDemoApp {
 		model.newPathFinders();
 
 		selectedAlgorithm = PathFinderAlgorithm.AStar;
+		autoRunPathFinders = false;
 
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
@@ -60,12 +63,22 @@ public class PathFinderDemoApp {
 		view.setVisible(true);
 	}
 
+	public boolean isAutoRunPathFinders() {
+		return autoRunPathFinders;
+	}
+
+	public void setAutoRunPathFinders(boolean autoRunPathFinders) {
+		this.autoRunPathFinders = autoRunPathFinders;
+	}
+
 	public void setMapSize(int size) {
 		model.resizeMap(size);
 		model.setSource(model.getMap().cell(TOP_LEFT));
 		model.setTarget(model.getMap().cell(BOTTOM_RIGHT));
 		model.newPathFinders();
-		model.runPathFinders();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		}
 		view.updateCanvas();
 		view.updateUI();
 	}
@@ -78,33 +91,43 @@ public class PathFinderDemoApp {
 
 	public void setSource(int source) {
 		model.setSource(source);
-		model.runPathFinders();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		}
 		view.updateUI();
 	}
 
 	public void setTarget(int target) {
 		model.setTarget(target);
-		model.runPathFinders();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		}
 		view.updateUI();
 	}
 
 	public void setSelectedAlgorithm(PathFinderAlgorithm algorithm) {
 		selectedAlgorithm = algorithm;
-		model.runPathFinders();
-		view.updateUI();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+			view.updateUI();
+		}
 	}
 
 	public void resetScene() {
 		model.setSource(model.getMap().cell(TOP_LEFT));
 		model.setTarget(model.getMap().cell(BOTTOM_RIGHT));
 		model.getMap().vertices().forEach(cell -> model.changeTile(cell, BLANK));
-		model.runPathFinders();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		}
 		view.updateUI();
 	}
 
 	public void setTileAt(int cell, Tile tile) {
 		model.changeTile(cell, tile);
-		model.runPathFinders();
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		}
 		view.updateUI();
 	}
 
@@ -120,7 +143,7 @@ public class PathFinderDemoApp {
 		return model.getPathFinders().get(selectedAlgorithm);
 	}
 
-	public Result getSelectedResult() {
-		return model.getResults().get(selectedAlgorithm);
+	public Optional<Result> getSelectedResult() {
+		return Optional.ofNullable(model.getResults().get(selectedAlgorithm));
 	}
 }
