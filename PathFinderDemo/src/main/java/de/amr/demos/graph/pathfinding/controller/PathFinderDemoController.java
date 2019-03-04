@@ -102,6 +102,9 @@ public class PathFinderDemoController {
 		model.changeTile(cell, tile);
 		if (autoRunPathFinders) {
 			model.runPathFinders();
+		} else {
+			model.getResults().get(getSelectedAlgorithm()).clear();
+			model.getPathFinder(getSelectedAlgorithm()).init();
 		}
 		view.updateUI();
 	}
