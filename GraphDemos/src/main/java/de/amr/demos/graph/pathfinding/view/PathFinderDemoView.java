@@ -342,7 +342,8 @@ public class PathFinderDemoView extends JFrame {
 		settingsPanel.add(lblDelay, "cell 0 8,alignx trailing,aligny top");
 
 		sliderDelay = new JSlider();
-		sliderDelay.setMinorTickSpacing(5);
+		sliderDelay.setMaximum(50);
+		sliderDelay.setMinorTickSpacing(2);
 		sliderDelay.setPaintTicks(true);
 		sliderDelay.setPaintLabels(true);
 		sliderDelay.setMajorTickSpacing(10);
