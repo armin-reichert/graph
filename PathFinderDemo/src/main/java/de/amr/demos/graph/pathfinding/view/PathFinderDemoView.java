@@ -88,7 +88,11 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void edgeTraversed(int either, int other) {
-			delayed(() -> canvas.drawGridPassage(either, other, true));
+			delayed(() -> {
+				canvas.drawGridPassage(either, other, true);
+				canvas.drawGridCell(either);
+				canvas.drawGridCell(other);
+			});
 		}
 	}
 
