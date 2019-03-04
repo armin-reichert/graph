@@ -3,6 +3,7 @@ package de.amr.demos.graph.pathfinding;
 import java.awt.EventQueue;
 
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
+import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.view.PathFinderDemoView;
 import de.amr.graph.grid.impl.Top8;
@@ -26,21 +27,20 @@ public class PathFinderDemoApp {
 
 		model = new PathFinderDemoModel(11, Top8.get());
 		view = new PathFinderDemoView();
-		controller = new PathFinderDemoController();
+		controller = new PathFinderDemoController(model);
+		controller.setView(view);
 
-		// initialize model
 		model.setSource(model.getMap().cell(2, 5));
 		model.setTarget(model.getMap().cell(8, 5));
 		model.newPathFinders();
 
-		// set associations
-		controller.setModel(model);
-		view.setModel(model);
-		view.setController(controller);
-		controller.setView(view);
+		controller.setSelectedAlgorithm(PathFinderAlgorithm.Dijkstra);
 
-		// display initial view
+		// initialize view
+		view.init(model, controller);
 		view.updateUI();
+
+		// display view
 		view.pack();
 		view.setLocationRelativeTo(null);
 		view.setVisible(true);

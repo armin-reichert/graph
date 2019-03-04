@@ -391,12 +391,13 @@ public class PathFinderDemoView extends JFrame {
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
-		
+
 		JTextPane textLegend = new JTextPane();
 		textLegend.setEditable(false);
 		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		textLegend.setContentType("text/html");
-		textLegend.setText("<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
+		textLegend.setText(
+				"<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
 		settingsPanel.add(textLegend, "cell 0 12 3 1,grow");
 
 		popupMenu = new JPopupMenu();
@@ -406,8 +407,9 @@ public class PathFinderDemoView extends JFrame {
 		popupMenu.add(actionResetScene);
 	}
 
-	public void setModel(PathFinderDemoModel model) {
+	public void init(PathFinderDemoModel model, PathFinderDemoController controller) {
 		this.model = model;
+		this.controller = controller;
 
 		selectedCell = -1;
 		draggedCell = -1;
@@ -428,10 +430,6 @@ public class PathFinderDemoView extends JFrame {
 		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
-	}
-
-	public void setController(PathFinderDemoController controller) {
-		this.controller = controller;
 
 		animation = new Animation();
 		animation.setFnDelay(sliderDelay::getValue);
@@ -455,9 +453,13 @@ public class PathFinderDemoView extends JFrame {
 	}
 
 	public void updateUI() {
-		tableModelResults.fireTableDataChanged();
-		canvas.clear();
-		canvas.drawGrid();
+		if (tableModelResults != null) {
+			tableModelResults.fireTableDataChanged();
+		}
+		if (canvas != null) {
+			canvas.clear();
+			canvas.drawGrid();
+		}
 	}
 
 	public void updateCanvas() {

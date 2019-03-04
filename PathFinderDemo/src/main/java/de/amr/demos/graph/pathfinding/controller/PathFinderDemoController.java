@@ -16,19 +16,16 @@ import de.amr.graph.grid.api.Topology;
  */
 public class PathFinderDemoController {
 
-	private PathFinderDemoModel model;
+	private final PathFinderDemoModel model;
 	private PathFinderDemoView view;
 
 	private PathFinderAlgorithm selectedAlgorithm;
 	private boolean autoRunPathFinders;
 
-	public PathFinderDemoController() {
+	public PathFinderDemoController(PathFinderDemoModel model) {
+		this.model = model;
 		selectedAlgorithm = PathFinderAlgorithm.AStar;
 		autoRunPathFinders = false;
-	}
-
-	public void setModel(PathFinderDemoModel model) {
-		this.model = model;
 	}
 
 	public void setView(PathFinderDemoView view) {
@@ -64,6 +61,10 @@ public class PathFinderDemoController {
 
 	public void setSource(int source) {
 		model.setSource(source);
+		if (model.getResults().get(selectedAlgorithm) != null) {
+			model.getResults().get(selectedAlgorithm).clear();
+		}
+		model.getPathFinder(selectedAlgorithm).init();
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		}
@@ -72,6 +73,10 @@ public class PathFinderDemoController {
 
 	public void setTarget(int target) {
 		model.setTarget(target);
+		if (model.getResults().get(selectedAlgorithm) != null) {
+			model.getResults().get(selectedAlgorithm).clear();
+		}
+		model.getPathFinder(selectedAlgorithm).init();
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		}
@@ -80,14 +85,16 @@ public class PathFinderDemoController {
 
 	public void setSelectedAlgorithm(PathFinderAlgorithm algorithm) {
 		selectedAlgorithm = algorithm;
-		if (model.getResults().get(getSelectedAlgorithm()) != null) {
-			model.getResults().get(getSelectedAlgorithm()).clear();
+		if (model.getResults().get(selectedAlgorithm) != null) {
+			model.getResults().get(selectedAlgorithm).clear();
 		}
-		model.getPathFinder(getSelectedAlgorithm()).init();
+		model.getPathFinder(selectedAlgorithm).init();
 		if (autoRunPathFinders) {
 			model.runPathFinders();
 		}
-		view.updateUI();
+		if (view != null) {
+			view.updateUI();
+		}
 	}
 
 	public void resetScene() {
