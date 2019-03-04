@@ -234,7 +234,7 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void mouseClicked(MouseEvent mouse) {
-			if (mouse.getButton() == MouseEvent.BUTTON1) {
+			if (mouse.getButton() == MouseEvent.BUTTON1 && mouse.isShiftDown()) {
 				int cell = cellAt(mouse.getX(), mouse.getY());
 				controller.flipTileAt(cell);
 			}
@@ -267,7 +267,9 @@ public class PathFinderDemoView extends JFrame {
 			if (cell != draggedCell) {
 				// drag enters new cell
 				draggedCell = cell;
-				controller.setTileAt(cell, mouse.isShiftDown() ? Tile.BLANK : Tile.WALL);
+				if (mouse.isShiftDown()) {
+					controller.flipTileAt(cell);
+				}
 			}
 		}
 	};
