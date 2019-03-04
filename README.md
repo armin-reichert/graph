@@ -4,7 +4,7 @@ This library has been written as the foundation of my [maze generation library](
 
 <img width="640" src="https://github.com/armin-reichert/mazes/blob/master/MazeDemos/images/gen/maze_80x60_WilsonUSTRecursiveCrosses.gif"/>
 
-The library contains an efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). I tried to achieve "text book quality" in the code, for example:
+The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). I tried to achieve "text book quality" in the code, for example:
 
 ```java
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
@@ -16,7 +16,9 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 }
 ```
 
-There is a demo application included where you can add/remove walls into a grid and run different pathfinding algorithms:
+There is a demo application included where you can add/remove walls in a grid and run different pathfinding algorithms:
+
+![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/pathfinder.png)
 
 ![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/GraphDemos/doc/astar.png)
 
