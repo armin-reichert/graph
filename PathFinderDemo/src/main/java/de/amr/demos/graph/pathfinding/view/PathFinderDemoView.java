@@ -329,8 +329,8 @@ public class PathFinderDemoView extends JFrame {
 		lblPathFinding.setFont(new Font("SansSerif", Font.BOLD, 14));
 		settingsPanel.add(lblPathFinding, "cell 0 5");
 
-		JLabel lblGridSize = new JLabel("Rows/Cols");
-		settingsPanel.add(lblGridSize, "cell 0 1,alignx trailing");
+		JLabel lblMapSize = new JLabel("Rows/Cols");
+		settingsPanel.add(lblMapSize, "cell 0 1,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
 		settingsPanel.add(spinnerMapSize, "cell 2 1");
@@ -439,7 +439,7 @@ public class PathFinderDemoView extends JFrame {
 
 		// controls for different settings
 
-		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 80, 1));
+		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 100, 1));
 		spinnerMapSize.addChangeListener(onMapSizeChange);
 
 		comboTopology.setModel(new DefaultComboBoxModel<>(new String[] { "4 Neighbors", "8 Neighbors" }));
