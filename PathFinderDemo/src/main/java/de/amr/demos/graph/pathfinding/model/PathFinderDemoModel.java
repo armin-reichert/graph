@@ -28,7 +28,6 @@ public class PathFinderDemoModel {
 	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
 	private final Map<PathFinderAlgorithm, PathFinderResult> results;
 	private GridGraph<Tile, Double> map;
-	private int mapSize;
 	private int source;
 	private int target;
 
@@ -39,11 +38,10 @@ public class PathFinderDemoModel {
 	public PathFinderDemoModel(int mapSize, Topology topology) {
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
-		this.mapSize = 10;
-		newMap(topology);
+		newMap(mapSize, topology);
 	}
 
-	private void newMap(Topology topology) {
+	private void newMap(int mapSize, Topology topology) {
 		GridGraph<Tile, Double> oldMap = map;
 		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
 		if (oldMap == null) {
@@ -76,11 +74,10 @@ public class PathFinderDemoModel {
 	}
 
 	public void resizeMap(int size) {
-		if (size != mapSize) {
-			mapSize = size;
+		if (size != map.numRows()) {
 			int sourceCol = map.col(source), sourceRow = map.row(source);
 			int targetCol = map.col(target), targetRow = map.row(target);
-			newMap(map.getTopology());
+			newMap(size, map.getTopology());
 			if (!map.isValidCol(sourceCol) || !map.isValidRow(sourceRow)) {
 				source = 0;
 			} else {
@@ -176,15 +173,14 @@ public class PathFinderDemoModel {
 		return map;
 	}
 
-	public void setMapSize(int size) {
-		if (mapSize != size) {
-			mapSize = size;
-			newMap(map.getTopology());
+	public void setMapSize(int mapSize) {
+		if (mapSize != map.numRows()) {
+			newMap(mapSize, map.getTopology());
 		}
 	}
 
 	public int getMapSize() {
-		return mapSize;
+		return map.numRows(); // square map
 	}
 
 	public int getSource() {
@@ -209,7 +205,7 @@ public class PathFinderDemoModel {
 
 	public void setTopology(Topology topology) {
 		if (topology != map.getTopology()) {
-			newMap(topology);
+			newMap(map.numRows(), topology);
 			newPathFinders();
 		}
 	}

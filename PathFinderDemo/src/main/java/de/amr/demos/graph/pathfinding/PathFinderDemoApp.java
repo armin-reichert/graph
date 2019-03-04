@@ -24,13 +24,11 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp() {
 
-		model = new PathFinderDemoModel();
+		model = new PathFinderDemoModel(11, Top8.get());
 		view = new PathFinderDemoView();
 		controller = new PathFinderDemoController();
 
 		// initialize model
-		model.setTopology(Top8.get());
-		model.setMapSize(11);
 		model.setSource(model.getMap().cell(2, 5));
 		model.setTarget(model.getMap().cell(8, 5));
 		model.newPathFinders();
