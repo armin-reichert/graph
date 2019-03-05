@@ -10,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
 import de.amr.graph.grid.api.GridGraph2D;
@@ -32,6 +33,7 @@ public class GridCanvas extends JComponent {
 		}
 		this.grid = grid;
 		setDoubleBuffered(false);
+		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		resizeTo(cellSize);
 	}
 
@@ -98,10 +100,13 @@ public class GridCanvas extends JComponent {
 
 	protected void resizeTo(int cellSize) {
 		int width = grid.numCols() * cellSize, height = grid.numRows() * cellSize;
-		setSize(new Dimension(width, height));
-		setPreferredSize(new Dimension(width, height));
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
+		Dimension dimension = new Dimension(width, height);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setPreferredSize(dimension);
+		setSize(dimension);
 	}
 
 	public void setCellSize(int cellSize) {

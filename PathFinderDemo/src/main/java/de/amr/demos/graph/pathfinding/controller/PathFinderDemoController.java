@@ -73,13 +73,13 @@ public class PathFinderDemoController {
 	public void resizeMap(int size) {
 		model.resizeMap(size);
 		maybeRunPathFinder();
-		view.updateCanvas();
+		view.updateCanvasAndUI();
 	}
 
 	public void setTopology(Topology topology) {
 		model.setTopology(topology);
 		maybeRunPathFinder();
-		view.updateCanvas();
+		view.updateCanvasAndUI();
 	}
 
 	public void setSource(int source) {
