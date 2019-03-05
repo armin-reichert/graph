@@ -60,6 +60,14 @@ class MapCanvas extends GridCanvas {
 		}
 	}
 
+	public class ContextMenu extends JPopupMenu {
+		
+		public void show(int x, int y) {
+			super.show(MapCanvas.this, x, y);
+		}
+
+	}
+
 	private MouseListener mouseHandler = new MouseAdapter() {
 
 		@Override
@@ -81,11 +89,11 @@ class MapCanvas extends GridCanvas {
 			} else if (mouse.isPopupTrigger()) {
 				// open popup menu
 				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				//TODO
-//				boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-//				actionSetSource.setEnabled(blank);
-//				actionSetTarget.setEnabled(blank);
-				popupMenu.show(MapCanvas.this, mouse.getX(), mouse.getY());
+				// TODO
+				// boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
+				// actionSetSource.setEnabled(blank);
+				// actionSetTarget.setEnabled(blank);
+				contextMenu.show(mouse.getX(), mouse.getY());
 			}
 		}
 	};
@@ -112,7 +120,7 @@ class MapCanvas extends GridCanvas {
 	private Animation animation;
 	private int draggedCell;
 	private int selectedCell;
-	private JPopupMenu popupMenu;
+	private ContextMenu contextMenu;
 
 	public MapCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		super(grid, cellSize);
@@ -124,11 +132,11 @@ class MapCanvas extends GridCanvas {
 		draggedCell = -1;
 		addMouseListener(mouseHandler);
 		addMouseMotionListener(mouseMotionHandler);
-		popupMenu = new JPopupMenu();
+		contextMenu = new ContextMenu();
 	}
-	
-	public JPopupMenu getPopupMenu() {
-		return popupMenu;
+
+	public ContextMenu getContextMenu() {
+		return contextMenu;
 	}
 
 	public Animation getAnimation() {

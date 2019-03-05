@@ -159,8 +159,7 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			style = comboStyle.getItemAt(comboStyle.getSelectedIndex());
-			canvas.setStyle(style);
+			canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		}
 	};
 
@@ -184,7 +183,6 @@ public class PathFinderDemoView extends JFrame {
 	private PathFinderDemoController controller;
 
 	// UI specific
-	private RenderingStyle style;
 	private int cellSize;
 	private MapCanvas canvas;
 	private int initialHeight;
@@ -287,7 +285,6 @@ public class PathFinderDemoView extends JFrame {
 		JLabel lblStyle = new JLabel("Display Style");
 		panelActions.add(lblStyle, "cell 0 4,alignx trailing");
 
-		style = RenderingStyle.BLOCKS;
 		comboStyle = new JComboBox<>();
 		comboStyle.setAction(actionSelectMapStyle);
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
@@ -325,15 +322,15 @@ public class PathFinderDemoView extends JFrame {
 		canvas = new MapCanvas(model.getMap(), cellSize);
 		canvas.setModel(model);
 		canvas.setController(controller);
-		canvas.setStyle(style);
+		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		canvas.setShowCost(cbShowCost.isSelected());
 		canvas.requestFocus();
 		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
 
-		canvas.getPopupMenu().add(actionSetSource);
-		canvas.getPopupMenu().add(actionSetTarget);
-		canvas.getPopupMenu().addSeparator();
-		canvas.getPopupMenu().add(actionResetScene);
+		canvas.getContextMenu().add(actionSetSource);
+		canvas.getContextMenu().add(actionSetTarget);
+		canvas.getContextMenu().addSeparator();
+		canvas.getContextMenu().add(actionResetScene);
 
 		panelMap.add(canvas, BorderLayout.CENTER);
 		initialHeight = canvas.getHeight();
@@ -383,5 +380,4 @@ public class PathFinderDemoView extends JFrame {
 		}
 		updateUI();
 	}
-
 }
