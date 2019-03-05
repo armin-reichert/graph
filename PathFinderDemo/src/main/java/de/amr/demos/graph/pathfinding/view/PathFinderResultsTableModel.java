@@ -1,13 +1,12 @@
 package de.amr.demos.graph.pathfinding.view;
 
-import java.util.Map;
-
 import javax.swing.table.AbstractTableModel;
 
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 
-public class PathFinderTableModel extends AbstractTableModel {
+public class PathFinderResultsTableModel extends AbstractTableModel {
 
 	private static final Object[][] COLUMNS = {
 		//@formatter:off
@@ -20,15 +19,15 @@ public class PathFinderTableModel extends AbstractTableModel {
 		//@formatter:on
 	};
 
-	private Map<PathFinderAlgorithm, PathFinderResult> results;
+	private final PathFinderDemoModel model;
 
-	public PathFinderTableModel(Map<PathFinderAlgorithm, PathFinderResult> results) {
-		this.results = results;
+	public PathFinderResultsTableModel(PathFinderDemoModel model) {
+		this.model = model;
 	}
 
 	@Override
 	public int getRowCount() {
-		return results.size();
+		return model.numPathFinders();
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class PathFinderTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		PathFinderAlgorithm algorithm = PathFinderAlgorithm.values()[rowIndex];
-		PathFinderResult result = results.get(algorithm);
+		PathFinderResult result = model.getResult(algorithm);
 		switch (columnIndex) {
 		case 0:
 			return algorithm;
@@ -60,7 +59,7 @@ public class PathFinderTableModel extends AbstractTableModel {
 		case 3:
 			return result.pathCost;
 		case 4:
-			double optimalCost = results.get(PathFinderAlgorithm.AStar).pathCost;
+			double optimalCost = model.getResult(PathFinderAlgorithm.AStar).pathCost;
 			return 100 * (result.pathCost - optimalCost) / optimalCost;
 		case 5:
 			return result.numVisitedVertices;

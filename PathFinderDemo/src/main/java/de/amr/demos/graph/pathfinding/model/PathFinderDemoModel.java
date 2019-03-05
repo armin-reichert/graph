@@ -38,7 +38,11 @@ public class PathFinderDemoModel {
 	public PathFinderDemoModel(int mapSize, Topology topology) {
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			results.put(algorithm, new PathFinderResult());
+		}
 		newMap(mapSize, topology);
+		newPathFinders();
 	}
 
 	private void newMap(int mapSize, Topology topology) {
@@ -75,24 +79,24 @@ public class PathFinderDemoModel {
 
 	public void resizeMap(int size) {
 		if (size != map.numRows()) {
-			int sourceCol = map.col(source), sourceRow = map.row(source);
-			int targetCol = map.col(target), targetRow = map.row(target);
+			int oldSourceCol = map.col(source), oldSourceRow = map.row(source);
+			int oldTargetCol = map.col(target), oldTargetRow = map.row(target);
 			newMap(size, map.getTopology());
-			if (!map.isValidCol(sourceCol) || !map.isValidRow(sourceRow)) {
+			if (map.isValidCol(oldSourceCol) && map.isValidRow(oldSourceRow)) {
+				source = map.cell(oldSourceCol, oldSourceRow);
+			} else {
 				source = 0;
-			} else {
-				source = map.cell(sourceCol, sourceRow);
 			}
-			if (!map.isValidCol(targetCol) || !map.isValidRow(targetRow)) {
-				target = map.numVertices() - 1;
+			if (map.isValidCol(oldTargetCol) && map.isValidRow(oldTargetRow)) {
+				target = map.cell(oldTargetCol, oldTargetRow);
 			} else {
-				target = map.cell(targetCol, targetRow);
+				target = map.numVertices() - 1;
 			}
 		}
 	}
 
-	public void changeTile(int cell, Tile tile) {
-		if (cell == source || cell == target || map.get(cell) == tile) {
+	public void setTile(int cell, Tile tile) {
+		if (map.get(cell) == tile) {
 			return;
 		}
 		map.set(cell, tile);
@@ -124,17 +128,21 @@ public class PathFinderDemoModel {
 		case GreedyBestFirst:
 			return new BestFirstSearch<>(map, v -> distance(v, target), this::distance);
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
 	}
 
-	public void newPathFinders() {
+	public void newPathFinder(PathFinderAlgorithm algorithm) {
+		pathFinders.put(algorithm, createPathFinder(algorithm));
+	}
+	
+	private void newPathFinders() {
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			pathFinders.put(algorithm, createPathFinder(algorithm));
 		}
-		results.clear();
 	}
 
 	public void runPathFinders() {
+		newPathFinders();
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			runPathFinder(algorithm);
 		}
@@ -156,17 +164,22 @@ public class PathFinderDemoModel {
 				.count();
 		results.put(algorithm, r);
 	}
-
-	public Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> getPathFinders() {
-		return pathFinders;
+	
+	public PathFinderResult getResult(PathFinderAlgorithm algorithm) {
+		return results.get(algorithm);
+	}
+	
+	public void clearResult(PathFinderAlgorithm algorithm) {
+		results.get(algorithm).clear();
+		getPathFinder(algorithm).init();
+	}
+	
+	public int numPathFinders() {
+		return pathFinders.size();
 	}
 
 	public BreadthFirstSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
 		return pathFinders.get(algorithm);
-	}
-
-	public Map<PathFinderAlgorithm, PathFinderResult> getResults() {
-		return results;
 	}
 
 	public GridGraph<Tile, Double> getMap() {
@@ -206,7 +219,6 @@ public class PathFinderDemoModel {
 	public void setTopology(Topology topology) {
 		if (topology != map.getTopology()) {
 			newMap(map.numRows(), topology);
-			newPathFinders();
 		}
 	}
 }

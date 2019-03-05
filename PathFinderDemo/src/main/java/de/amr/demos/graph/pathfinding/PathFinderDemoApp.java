@@ -25,17 +25,16 @@ public class PathFinderDemoApp {
 
 	public PathFinderDemoApp() {
 
-		model = new PathFinderDemoModel(19, Top8.get());
-		model.setSource(model.getMap().cell(2, 9));
-		model.setTarget(model.getMap().cell(16, 9));
-		model.newPathFinders();
-
-		controller = new PathFinderDemoController(model);
+		int n = 23;
+		model = new PathFinderDemoModel(n, Top8.get());
+		model.setSource(model.getMap().cell(n / 4, n / 2));
+		model.setTarget(model.getMap().cell(n * 3 / 4, n / 2));
 
 		view = new PathFinderDemoView();
 
+		controller = new PathFinderDemoController(model);
 		controller.setView(view);
-		controller.setSelectedAlgorithm(PathFinderAlgorithm.Dijkstra);
+		controller.selectAlgorithm(PathFinderAlgorithm.Dijkstra);
 
 		view.init(model, controller);
 		view.updateUI();

@@ -28,6 +28,36 @@ public class PathFinderDemoController {
 		autoRunPathFinders = false;
 	}
 
+	private void maybeRunPathFinder() {
+		if (autoRunPathFinders) {
+			model.runPathFinders();
+		} else {
+			model.clearResult(selectedAlgorithm);
+		}
+		if (view != null) {
+			view.updateUI();
+		}
+	}
+
+	public void runPathFinders() {
+		model.runPathFinders();
+		view.updateUI();
+	}
+
+	public void resetScene() {
+		model.getMap().vertices().forEach(cell -> model.setTile(cell, BLANK));
+		maybeRunPathFinder();
+	}
+
+	public void selectAlgorithm(PathFinderAlgorithm algorithm) {
+		selectedAlgorithm = algorithm;
+		maybeRunPathFinder();
+	}
+
+	public PathFinderAlgorithm getSelectedAlgorithm() {
+		return selectedAlgorithm;
+	}
+
 	public void setView(PathFinderDemoView view) {
 		this.view = view;
 	}
@@ -40,89 +70,38 @@ public class PathFinderDemoController {
 		this.autoRunPathFinders = autoRunPathFinders;
 	}
 
-	public void setMapSize(int size) {
+	public void resizeMap(int size) {
 		model.resizeMap(size);
-		model.newPathFinders();
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		view.updateUIAndResetCanvas();
-		view.updateUI();
+		maybeRunPathFinder();
+		view.updateCanvas();
 	}
 
 	public void setTopology(Topology topology) {
 		model.setTopology(topology);
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		view.updateUIAndResetCanvas();
-		view.updateUI();
+		maybeRunPathFinder();
+		view.updateCanvas();
 	}
 
 	public void setSource(int source) {
 		model.setSource(source);
-		if (model.getResults().get(selectedAlgorithm) != null) {
-			model.getResults().get(selectedAlgorithm).clear();
-		}
-		model.getPathFinder(selectedAlgorithm).init();
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		view.updateUI();
+		maybeRunPathFinder();
 	}
 
 	public void setTarget(int target) {
 		model.setTarget(target);
-		if (model.getResults().get(selectedAlgorithm) != null) {
-			model.getResults().get(selectedAlgorithm).clear();
-		}
-		model.getPathFinder(selectedAlgorithm).init();
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		view.updateUI();
-	}
-
-	public void setSelectedAlgorithm(PathFinderAlgorithm algorithm) {
-		selectedAlgorithm = algorithm;
-		if (model.getResults().get(selectedAlgorithm) != null) {
-			model.getResults().get(selectedAlgorithm).clear();
-		}
-		model.getPathFinder(selectedAlgorithm).init();
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		if (view != null) {
-			view.updateUI();
-		}
-	}
-
-	public void resetScene() {
-		model.getMap().vertices().forEach(cell -> model.changeTile(cell, BLANK));
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		}
-		view.updateUI();
+		maybeRunPathFinder();
 	}
 
 	public void setTileAt(int cell, Tile tile) {
-		model.changeTile(cell, tile);
-		if (autoRunPathFinders) {
-			model.runPathFinders();
-		} else {
-			if (model.getResults().get(getSelectedAlgorithm()) != null) {
-				model.getResults().get(getSelectedAlgorithm()).clear();
-			}
-			model.getPathFinder(getSelectedAlgorithm()).init();
+		if (cell == model.getSource() || cell == model.getTarget()) {
+			return;
 		}
-		view.updateUI();
+		model.setTile(cell, tile);
+		maybeRunPathFinder();
 	}
 
 	public void flipTileAt(int cell) {
-		setTileAt(cell, model.getMap().get(cell) == WALL ? BLANK : WALL);
-	}
-
-	public PathFinderAlgorithm getSelectedAlgorithm() {
-		return selectedAlgorithm;
+		Tile newTile = model.getMap().get(cell) == WALL ? BLANK : WALL;
+		setTileAt(cell, newTile);
 	}
 }
