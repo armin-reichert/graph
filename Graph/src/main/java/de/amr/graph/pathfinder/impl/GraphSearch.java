@@ -36,8 +36,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected Frontier frontier;
 
 	protected GraphSearch(Graph<V, E> graph) {
-		Objects.requireNonNull(graph);
-		this.graph = graph;
+		this.graph = Objects.requireNonNull(graph);
 		parentMap = new HashMap<>();
 		stateMap = new HashMap<>();
 		observers = new HashSet<>(5);
@@ -145,10 +144,6 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		return path;
 	}
 
-	public Frontier getFrontier() {
-		return frontier;
-	}
-
 	/**
 	 * Sets the traversal state for the given vertex.
 	 * 
@@ -204,12 +199,12 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	// Observer related stuff
 
 	public void addObserver(GraphSearchObserver observer) {
-		Objects.nonNull(observer);
+		Objects.requireNonNull(observer);
 		observers.add(observer);
 	}
 
 	public void removeObserver(GraphSearchObserver observer) {
-		Objects.nonNull(observer);
+		Objects.requireNonNull(observer);
 		observers.remove(observer);
 	}
 
