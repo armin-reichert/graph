@@ -1,7 +1,5 @@
 package de.amr.demos.graph.pathfinding.view;
 
-import static java.lang.Math.min;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -9,11 +7,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,7 +18,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -42,12 +34,8 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
-import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
-import de.amr.graph.grid.ui.animation.AbstractAnimation;
-import de.amr.graph.pathfinder.api.GraphSearchObserver;
-import de.amr.graph.pathfinder.api.TraversalState;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -60,33 +48,6 @@ public class PathFinderDemoView extends JFrame {
 	private static final String _4_NEIGHBORS = "4 Neighbors";
 	private static final String _8_NEIGHBORS = "8 Neighbors";
 
-	private class Animation extends AbstractAnimation implements GraphSearchObserver {
-
-		@Override
-		public void vertexAddedToFrontier(int v) {
-			delayed(() -> canvas.drawGridCell(v));
-		}
-
-		@Override
-		public void vertexRemovedFromFrontier(int v) {
-			delayed(() -> canvas.drawGridCell(v));
-		}
-
-		@Override
-		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
-			delayed(() -> canvas.drawGridCell(v));
-		}
-
-		@Override
-		public void edgeTraversed(int either, int other) {
-			delayed(() -> {
-				canvas.drawGridPassage(either, other, true);
-				canvas.drawGridCell(either);
-				canvas.drawGridCell(other);
-			});
-		}
-	}
-
 	private class PathFinderAnimationTask extends SwingWorker<Void, Void> {
 
 		@Override
@@ -95,9 +56,9 @@ public class PathFinderDemoView extends JFrame {
 			model.clearResult(algorithm);
 			model.newPathFinder(algorithm);
 			canvas.drawGrid();
-			model.getPathFinder(algorithm).addObserver(animation);
+			model.getPathFinder(algorithm).addObserver(canvas.getAnimation());
 			model.runPathFinder(algorithm);
-			model.getPathFinder(algorithm).removeObserver(animation);
+			model.getPathFinder(algorithm).removeObserver(canvas.getAnimation());
 			return null;
 		}
 
@@ -128,7 +89,7 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.setSource(selectedCell);
+			controller.setSource(canvas.getSelectedCell());
 		}
 	};
 
@@ -136,7 +97,7 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.setTarget(selectedCell);
+			controller.setTarget(canvas.getSelectedCell());
 		}
 	};
 
@@ -219,67 +180,19 @@ public class PathFinderDemoView extends JFrame {
 		}
 	};
 
-	private MouseListener mouseHandler = new MouseAdapter() {
-
-		@Override
-		public void mouseClicked(MouseEvent mouse) {
-			if (mouse.getButton() == MouseEvent.BUTTON1 && mouse.isShiftDown()) {
-				int cell = cellAt(mouse.getX(), mouse.getY());
-				controller.flipTileAt(cell);
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent mouse) {
-			if (draggedCell != -1) {
-				// end dragging
-				draggedCell = -1;
-				if (controller.isAutoRunPathFinders()) {
-					controller.runPathFinders();
-				}
-			} else if (mouse.isPopupTrigger()) {
-				// open popup menu
-				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-				actionSetSource.setEnabled(blank);
-				actionSetTarget.setEnabled(blank);
-				popupMenu.show(canvas, mouse.getX(), mouse.getY());
-			}
-		}
-	};
-
-	private MouseMotionListener mouseMotionHandler = new MouseMotionAdapter() {
-
-		@Override
-		public void mouseDragged(MouseEvent mouse) {
-			int cell = cellAt(mouse.getX(), mouse.getY());
-			if (cell != draggedCell) {
-				// drag enters new cell
-				draggedCell = cell;
-				if (mouse.isShiftDown()) {
-					controller.flipTileAt(cell);
-				}
-			}
-		}
-	};
-
 	private PathFinderDemoModel model;
 	private PathFinderDemoController controller;
 
 	// UI specific
 	private RenderingStyle style;
 	private int cellSize;
-	private int draggedCell;
-	private int selectedCell;
 	private MapCanvas canvas;
-	private Animation animation;
 	private int initialHeight;
 
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tableResults;
 	private PathFinderResultsTableModel pathFinderResults;
-	private JPopupMenu popupMenu;
 	private JSpinner spinnerMapSize;
 	private JCheckBox cbShowCost;
 	private JLabel lblPathFinding;
@@ -401,19 +314,11 @@ public class PathFinderDemoView extends JFrame {
 				"<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
 		panelActions.add(textLegend, "cell 0 14 2 1,grow");
 
-		popupMenu = new JPopupMenu();
-		popupMenu.add(actionSetSource);
-		popupMenu.add(actionSetTarget);
-		popupMenu.addSeparator();
-		popupMenu.add(actionResetScene);
 	}
 
 	public void init(PathFinderDemoModel model, PathFinderDemoController controller) {
 		this.model = model;
 		this.controller = controller;
-
-		selectedCell = -1;
-		draggedCell = -1;
 
 		// canvas
 		cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
@@ -422,9 +327,14 @@ public class PathFinderDemoView extends JFrame {
 		canvas.setController(controller);
 		canvas.setStyle(style);
 		canvas.setShowCost(cbShowCost.isSelected());
-		canvas.addMouseListener(mouseHandler);
-		canvas.addMouseMotionListener(mouseMotionHandler);
 		canvas.requestFocus();
+		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
+
+		canvas.getPopupMenu().add(actionSetSource);
+		canvas.getPopupMenu().add(actionSetTarget);
+		canvas.getPopupMenu().addSeparator();
+		canvas.getPopupMenu().add(actionResetScene);
+
 		panelMap.add(canvas, BorderLayout.CENTER);
 		initialHeight = canvas.getHeight();
 
@@ -446,8 +356,6 @@ public class PathFinderDemoView extends JFrame {
 		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
 		comboAlgorithm.setAction(actionSelectAlgorithm);
 
-		animation = new Animation();
-		animation.setFnDelay(sliderDelay::getValue);
 		sliderDelay.setValue(5);
 
 		cbAutoRunPathFinder.setSelected(controller.isAutoRunPathFinders());
@@ -476,9 +384,4 @@ public class PathFinderDemoView extends JFrame {
 		updateUI();
 	}
 
-	private int cellAt(int x, int y) {
-		int gridX = min(x / cellSize, model.getMap().numCols() - 1);
-		int gridY = min(y / cellSize, model.getMap().numRows() - 1);
-		return model.getMap().cell(gridX, gridY);
-	}
 }

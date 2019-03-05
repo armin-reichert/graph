@@ -3,37 +3,144 @@ package de.amr.demos.graph.pathfinding.view;
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
+import static java.lang.Math.min;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPopupMenu;
 
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
+import de.amr.graph.grid.ui.animation.AbstractAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
-import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 
-public class MapCanvas extends GridCanvas {
+class MapCanvas extends GridCanvas {
+
+	public class Animation extends AbstractAnimation implements GraphSearchObserver {
+
+		@Override
+		public void vertexAddedToFrontier(int v) {
+			delayed(() -> drawGridCell(v));
+		}
+
+		@Override
+		public void vertexRemovedFromFrontier(int v) {
+			delayed(() -> drawGridCell(v));
+		}
+
+		@Override
+		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
+			delayed(() -> drawGridCell(v));
+		}
+
+		@Override
+		public void edgeTraversed(int either, int other) {
+			delayed(() -> {
+				drawGridPassage(either, other, true);
+				drawGridCell(either);
+				drawGridCell(other);
+			});
+		}
+	}
+
+	private MouseListener mouseHandler = new MouseAdapter() {
+
+		@Override
+		public void mouseClicked(MouseEvent mouse) {
+			if (mouse.getButton() == MouseEvent.BUTTON1 && mouse.isShiftDown()) {
+				int cell = cellAt(mouse.getX(), mouse.getY());
+				controller.flipTileAt(cell);
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent mouse) {
+			if (draggedCell != -1) {
+				// end dragging
+				draggedCell = -1;
+				if (controller.isAutoRunPathFinders()) {
+					controller.runPathFinders();
+				}
+			} else if (mouse.isPopupTrigger()) {
+				// open popup menu
+				selectedCell = cellAt(mouse.getX(), mouse.getY());
+				//TODO
+//				boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
+//				actionSetSource.setEnabled(blank);
+//				actionSetTarget.setEnabled(blank);
+				popupMenu.show(MapCanvas.this, mouse.getX(), mouse.getY());
+			}
+		}
+	};
+
+	private MouseMotionListener mouseMotionHandler = new MouseMotionAdapter() {
+
+		@Override
+		public void mouseDragged(MouseEvent mouse) {
+			int cell = cellAt(mouse.getX(), mouse.getY());
+			if (cell != draggedCell) {
+				// drag enters new cell
+				draggedCell = cell;
+				if (mouse.isShiftDown()) {
+					controller.flipTileAt(cell);
+				}
+			}
+		}
+	};
 
 	private PathFinderDemoModel model;
 	private PathFinderDemoController controller;
 	private RenderingStyle style;
 	private boolean showCost;
+	private Animation animation;
+	private int draggedCell;
+	private int selectedCell;
+	private JPopupMenu popupMenu;
 
 	public MapCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		super(grid, cellSize);
 		ConfigurableGridRenderer r = createMapRenderer(cellSize);
 		pushRenderer(r);
 		setBorder(BorderFactory.createLineBorder(r.getModel().getGridBgColor(), 1));
+		animation = new Animation();
+		selectedCell = -1;
+		draggedCell = -1;
+		addMouseListener(mouseHandler);
+		addMouseMotionListener(mouseMotionHandler);
+		popupMenu = new JPopupMenu();
+	}
+	
+	public JPopupMenu getPopupMenu() {
+		return popupMenu;
+	}
+
+	public Animation getAnimation() {
+		return animation;
+	}
+
+	public int getSelectedCell() {
+		return selectedCell;
+	}
+
+	private int getCellSize() {
+		return getRenderer().get().getModel().getCellSize();
 	}
 
 	public void setModel(PathFinderDemoModel model) {
@@ -47,14 +154,21 @@ public class MapCanvas extends GridCanvas {
 	public void setStyle(RenderingStyle style) {
 		this.style = style;
 		clear();
-		GridRenderer oldRenderer = popRenderer();
-		pushRenderer(createMapRenderer(oldRenderer.getModel().getCellSize()));
+		int cellSize = getCellSize();
+		popRenderer();
+		pushRenderer(createMapRenderer(cellSize));
 		drawGrid();
 	}
 
 	public void setShowCost(boolean showCost) {
 		this.showCost = showCost;
 		drawGrid();
+	}
+
+	private int cellAt(int x, int y) {
+		int gridX = min(x / getCellSize(), model.getMap().numCols() - 1);
+		int gridY = min(y / getCellSize(), model.getMap().numRows() - 1);
+		return model.getMap().cell(gridX, gridY);
 	}
 
 	private ConfigurableGridRenderer createMapRenderer(int cellSize) {
@@ -120,5 +234,4 @@ public class MapCanvas extends GridCanvas {
 		PathFinderResult result = model.getResult(controller.getSelectedAlgorithm());
 		return result != null && result.solutionCells.get(cell);
 	}
-
 }
