@@ -12,12 +12,11 @@ public class PathFinderResult {
 	public int pathLength;
 	public double pathCost;
 	public long numVisitedVertices;
-	
-	
+
 	public PathFinderResult() {
 		clear();
 	}
-	
+
 	public void clear() {
 		path = Collections.emptyList();
 		solutionCells = new BitSet();

@@ -80,7 +80,7 @@ public class PathFinderDemoView extends JFrame {
 		public void vertexRemovedFromFrontier(int v) {
 			delayed(() -> canvas.drawGridCell(v));
 		}
-		
+
 		@Override
 		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			delayed(() -> canvas.drawGridCell(v));
@@ -316,27 +316,35 @@ public class PathFinderDemoView extends JFrame {
 		setTitle("Pathfinder Demo");
 
 		settingsPanel = new JPanel();
+		settingsPanel.setBackground(Color.WHITE);
 		settingsPanel.setPreferredSize(new Dimension(500, 10));
 		settingsPanel.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(settingsPanel, BorderLayout.CENTER);
-		settingsPanel.setLayout(
-				new MigLayout("", "[grow,trailing][5px:n:5px,fill][grow]", "[][][][][][][][][][][][grow][grow]"));
+		settingsPanel
+				.setLayout(new MigLayout("", "[grow,trailing][grow]", "[][][][][][][][][][][][][grow][grow]"));
+
+		JLabel lblMap = new JLabel("Map");
+		settingsPanel.add(lblMap, "cell 0 1 2 1,alignx leading");
+		lblMap.setForeground(Color.BLACK);
+		lblMap.setFont(new Font("SansSerif", Font.BOLD, 20));
 
 		Component verticalStrut = Box.createVerticalStrut(20);
-		settingsPanel.add(verticalStrut, "cell 0 4");
+		settingsPanel.add(verticalStrut, "cell 0 5");
 
 		lblPathFinding = new JLabel("Path Finding");
-		lblPathFinding.setFont(new Font("SansSerif", Font.BOLD, 14));
-		settingsPanel.add(lblPathFinding, "cell 0 5");
+		lblPathFinding.setForeground(Color.BLACK);
+		lblPathFinding.setFont(new Font("SansSerif", Font.BOLD, 20));
+		settingsPanel.add(lblPathFinding, "cell 0 6 2 1,alignx leading");
 
 		JLabel lblMapSize = new JLabel("Rows/Cols");
-		settingsPanel.add(lblMapSize, "cell 0 1,alignx trailing");
+		settingsPanel.add(lblMapSize, "cell 0 2,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
-		settingsPanel.add(spinnerMapSize, "cell 2 1");
+		settingsPanel.add(spinnerMapSize, "cell 1 2");
 
 		JPanel panel = new JPanel();
-		settingsPanel.add(panel, "flowx,cell 2 7,growx");
+		panel.setOpaque(false);
+		settingsPanel.add(panel, "flowx,cell 1 8,growx");
 
 		JButton btnRun = new JButton("Run");
 		panel.add(btnRun);
@@ -347,7 +355,7 @@ public class PathFinderDemoView extends JFrame {
 		btnNewButton.setAction(actionClear);
 
 		JLabel lblDelay = new JLabel("Delay [ms]");
-		settingsPanel.add(lblDelay, "cell 0 8,alignx trailing,aligny top");
+		settingsPanel.add(lblDelay, "cell 0 9,alignx trailing,aligny top");
 
 		sliderDelay = new JSlider();
 		sliderDelay.setMaximum(50);
@@ -355,43 +363,39 @@ public class PathFinderDemoView extends JFrame {
 		sliderDelay.setPaintTicks(true);
 		sliderDelay.setPaintLabels(true);
 		sliderDelay.setMajorTickSpacing(10);
-		settingsPanel.add(sliderDelay, "cell 2 8,growx");
+		settingsPanel.add(sliderDelay, "cell 1 9,growx");
 
 		cbAutoRunPathFinder = new JCheckBox("Run Automatically");
-		settingsPanel.add(cbAutoRunPathFinder, "cell 2 9,alignx leading,aligny center");
+		settingsPanel.add(cbAutoRunPathFinder, "cell 1 10,alignx leading,aligny center");
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
-		settingsPanel.add(lblAlgorithm, "cell 0 6,alignx trailing");
+		settingsPanel.add(lblAlgorithm, "cell 0 7,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
-		settingsPanel.add(comboAlgorithm, "cell 2 6,growx");
-
-		JLabel lblMap = new JLabel("Map");
-		lblMap.setFont(new Font("SansSerif", Font.BOLD, 14));
-		settingsPanel.add(lblMap, "cell 0 0");
+		settingsPanel.add(comboAlgorithm, "cell 1 7,growx");
 
 		JLabel lblTopology = new JLabel("Topology");
-		settingsPanel.add(lblTopology, "flowy,cell 0 2,alignx trailing");
+		settingsPanel.add(lblTopology, "flowy,cell 0 3,alignx trailing");
 
 		comboTopology = new JComboBox<>();
-		settingsPanel.add(comboTopology, "cell 2 2,growx");
+		settingsPanel.add(comboTopology, "cell 1 3,growx");
 
 		JLabel lblStyle = new JLabel("Display Style");
-		settingsPanel.add(lblStyle, "cell 0 3,alignx trailing");
+		settingsPanel.add(lblStyle, "cell 0 4,alignx trailing");
 
 		style = RenderingStyle.BLOCKS;
 		comboStyle = new JComboBox<>();
 		comboStyle.setAction(actionChangeStyle);
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
-		settingsPanel.add(comboStyle, "cell 2 3,growx");
+		settingsPanel.add(comboStyle, "cell 1 4,growx");
 
 		cbShowCost = new JCheckBox("Show Cost");
 		cbShowCost.setAction(actionShowCost);
-		settingsPanel.add(cbShowCost, "cell 2 10,alignx leading,aligny bottom");
+		settingsPanel.add(cbShowCost, "cell 1 11,alignx leading,aligny bottom");
 
 		JScrollPane scrollPaneTableResults = new JScrollPane();
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		settingsPanel.add(scrollPaneTableResults, "cell 0 11 3 1,growx,aligny top");
+		settingsPanel.add(scrollPaneTableResults, "cell 0 12 2 1,growx,aligny top");
 
 		tableResults = new JTable();
 		tableResults.setEnabled(false);
@@ -404,7 +408,7 @@ public class PathFinderDemoView extends JFrame {
 		textLegend.setContentType("text/html");
 		textLegend.setText(
 				"<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
-		settingsPanel.add(textLegend, "cell 0 12 3 1,grow");
+		settingsPanel.add(textLegend, "cell 0 13 2 1,grow");
 
 		popupMenu = new JPopupMenu();
 		popupMenu.add(actionSetSource);
