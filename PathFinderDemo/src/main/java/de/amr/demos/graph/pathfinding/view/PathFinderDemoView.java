@@ -121,7 +121,7 @@ public class PathFinderDemoView extends JFrame {
 			actionRunSelectedPathFinder.setEnabled(!auto);
 			actionClear.setEnabled(!auto);
 			sliderDelay.setEnabled(!auto);
-			tableResults.setVisible(auto);
+			scrollPaneTableResults.setVisible(auto);
 			controller.setAutoRunPathFinders(auto);
 			if (auto) {
 				controller.runPathFinders();
@@ -174,11 +174,12 @@ public class PathFinderDemoView extends JFrame {
 	private JComboBox<RenderingStyle> comboStyle;
 	private JSlider sliderDelay;
 	private JPanel panelMap;
+	private JScrollPane scrollPaneTableResults;
+	private Component verticalStrut_1;
 
 	public PathFinderDemoView() {
-		setResizable(false);
-		setBackground(Color.WHITE);
 		getContentPane().setBackground(Color.WHITE);
+		setResizable(false);
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
 		} catch (Exception e) {
@@ -190,40 +191,40 @@ public class PathFinderDemoView extends JFrame {
 		getContentPane().setLayout(new MigLayout("", "[grow][]", "[grow]"));
 
 		panelMap = new JPanel();
-		panelMap.setBackground(Color.WHITE);
+		panelMap.setOpaque(false);
 		getContentPane().add(panelMap, "cell 0 0,grow");
 		panelMap.setLayout(new BorderLayout(0, 0));
 
 		panelActions = new JPanel();
-		panelActions.setBackground(Color.WHITE);
+		panelActions.setOpaque(false);
 		panelActions.setPreferredSize(new Dimension(500, 10));
 		panelActions.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(panelActions, "cell 1 0,alignx left,growy");
 		panelActions
-				.setLayout(new MigLayout("", "[grow,trailing][grow]", "[][][][][][][][][][][][][grow][][grow]"));
+				.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow][]"));
 
 		JLabel lblMap = new JLabel("Map");
-		panelActions.add(lblMap, "cell 0 1 2 1,alignx leading");
+		panelActions.add(lblMap, "cell 0 0 2 1,alignx leading");
 		lblMap.setForeground(Color.BLACK);
 		lblMap.setFont(new Font("SansSerif", Font.BOLD, 20));
 
 		Component verticalStrut = Box.createVerticalStrut(20);
-		panelActions.add(verticalStrut, "cell 0 5");
+		panelActions.add(verticalStrut, "cell 0 4");
 
 		lblPathFinding = new JLabel("Path Finding");
 		lblPathFinding.setForeground(Color.BLACK);
 		lblPathFinding.setFont(new Font("SansSerif", Font.BOLD, 20));
-		panelActions.add(lblPathFinding, "cell 0 6 2 1,alignx leading");
+		panelActions.add(lblPathFinding, "cell 0 5 2 1,alignx leading");
 
 		JLabel lblMapSize = new JLabel("Rows/Cols");
-		panelActions.add(lblMapSize, "cell 0 2,alignx trailing");
+		panelActions.add(lblMapSize, "cell 0 1,alignx trailing");
 
 		spinnerMapSize = new JSpinner();
-		panelActions.add(spinnerMapSize, "cell 1 2");
+		panelActions.add(spinnerMapSize, "cell 1 1");
 
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
-		panelActions.add(panel, "flowx,cell 1 8,growx");
+		panelActions.add(panel, "flowx,cell 1 7,growx");
 
 		JButton btnRun = new JButton("Run");
 		panel.add(btnRun);
@@ -234,7 +235,7 @@ public class PathFinderDemoView extends JFrame {
 		btnNewButton.setAction(actionClear);
 
 		JLabel lblDelay = new JLabel("Delay [ms]");
-		panelActions.add(lblDelay, "cell 0 9,alignx trailing,aligny top");
+		panelActions.add(lblDelay, "cell 0 8,alignx trailing,aligny top");
 
 		sliderDelay = new JSlider();
 		sliderDelay.setMaximum(50);
@@ -242,52 +243,57 @@ public class PathFinderDemoView extends JFrame {
 		sliderDelay.setPaintTicks(true);
 		sliderDelay.setPaintLabels(true);
 		sliderDelay.setMajorTickSpacing(10);
-		panelActions.add(sliderDelay, "cell 1 9,growx");
-
-		cbAutoRunPathFinder = new JCheckBox("Run Automatically");
-		panelActions.add(cbAutoRunPathFinder, "cell 1 10,alignx leading,aligny center");
+		panelActions.add(sliderDelay, "cell 1 8,growx");
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
-		panelActions.add(lblAlgorithm, "cell 0 7,alignx trailing");
+		panelActions.add(lblAlgorithm, "cell 0 6,alignx trailing");
 
 		comboAlgorithm = new JComboBox<>();
-		panelActions.add(comboAlgorithm, "cell 1 7,growx");
+		panelActions.add(comboAlgorithm, "cell 1 6,growx");
 
 		JLabel lblTopology = new JLabel("Topology");
-		panelActions.add(lblTopology, "flowy,cell 0 3,alignx trailing");
+		panelActions.add(lblTopology, "flowy,cell 0 2,alignx trailing");
 
 		comboTopology = new JComboBox<>();
-		panelActions.add(comboTopology, "cell 1 3,growx");
+		panelActions.add(comboTopology, "cell 1 2,growx");
 
 		JLabel lblStyle = new JLabel("Display Style");
-		panelActions.add(lblStyle, "cell 0 4,alignx trailing");
+		panelActions.add(lblStyle, "cell 0 3,alignx trailing");
 
 		comboStyle = new JComboBox<>();
 		comboStyle.setAction(actionSelectMapStyle);
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
-		panelActions.add(comboStyle, "cell 1 4,growx");
+		panelActions.add(comboStyle, "cell 1 3,growx");
+		
+				cbAutoRunPathFinder = new JCheckBox("Run Automatically");
+				panelActions.add(cbAutoRunPathFinder, "cell 0 9,alignx leading");
+		
+				cbShowCost = new JCheckBox("Show Cost");
+				cbShowCost.setAction(actionShowCost);
+				panelActions.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
 
-		cbShowCost = new JCheckBox("Show Cost");
-		cbShowCost.setAction(actionShowCost);
-		panelActions.add(cbShowCost, "cell 1 11,alignx leading,aligny bottom");
-
-		JScrollPane scrollPaneTableResults = new JScrollPane();
+		scrollPaneTableResults = new JScrollPane();
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		panelActions.add(scrollPaneTableResults, "cell 0 12 2 1,growx,aligny top");
+		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx");
 
 		tableResults = new JTable();
+		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 100));
+		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
+		
+		verticalStrut_1 = Box.createVerticalStrut(20);
+		panelActions.add(verticalStrut_1, "cell 0 11");
 
 		JTextPane textLegend = new JTextPane();
-		textLegend.setBorder(new LineBorder(new Color(192, 192, 192)));
+		textLegend.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		textLegend.setEditable(false);
 		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		textLegend.setContentType("text/html");
 		textLegend.setText(
-				"<div style=\"padding:10px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
-		panelActions.add(textLegend, "cell 0 14 2 1,grow");
+				"<div style=\"padding:14px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. \r\nRight-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \r\n\"closed\" cells in <span style=\"background-color:orange\">orange</span>. \r\n\r\nThe source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, \r\nthe target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
+		panelActions.add(textLegend, "cell 0 12 2 1,growx");
 
 	}
 
@@ -296,7 +302,7 @@ public class PathFinderDemoView extends JFrame {
 		this.controller = controller;
 
 		// canvas
-		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
+		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 80 / 100) / model.getMapSize();
 		canvas = new MapCanvas(model.getMap(), cellSize);
 		canvas.setModel(model);
 		canvas.setController(controller);
@@ -311,8 +317,8 @@ public class PathFinderDemoView extends JFrame {
 		// path finder results table
 		pathFinderResults = new PathFinderResultsTableModel(model);
 		tableResults.setModel(pathFinderResults);
-		tableResults.setVisible(controller.isAutoRunPathFinders());
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
+		scrollPaneTableResults.setVisible(controller.isAutoRunPathFinders());
 
 		// others controls
 		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 100, 1));
