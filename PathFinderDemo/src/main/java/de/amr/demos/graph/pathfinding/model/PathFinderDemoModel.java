@@ -134,7 +134,7 @@ public class PathFinderDemoModel {
 	public void newPathFinder(PathFinderAlgorithm algorithm) {
 		pathFinders.put(algorithm, createPathFinder(algorithm));
 	}
-	
+
 	private void newPathFinders() {
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			pathFinders.put(algorithm, createPathFinder(algorithm));
@@ -164,16 +164,16 @@ public class PathFinderDemoModel {
 				.count();
 		results.put(algorithm, r);
 	}
-	
+
 	public PathFinderResult getResult(PathFinderAlgorithm algorithm) {
 		return results.get(algorithm);
 	}
-	
+
 	public void clearResult(PathFinderAlgorithm algorithm) {
 		results.get(algorithm).clear();
 		getPathFinder(algorithm).init();
 	}
-	
+
 	public int numPathFinders() {
 		return pathFinders.size();
 	}

@@ -7,12 +7,15 @@ import static java.lang.Math.min;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 
@@ -61,12 +64,39 @@ class MapCanvas extends GridCanvas {
 	}
 
 	public class ContextMenu extends JPopupMenu {
-		
+
 		public void show(int x, int y) {
+			boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
+			actionSetSource.setEnabled(blank);
+			actionSetTarget.setEnabled(blank);
 			super.show(MapCanvas.this, x, y);
 		}
 
 	}
+
+	private Action actionSetSource = new AbstractAction("Start Search Here") {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			controller.setSource(selectedCell);
+		}
+	};
+
+	private Action actionSetTarget = new AbstractAction("End Search Here") {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			controller.setTarget(selectedCell);
+		}
+	};
+
+	private Action actionResetScene = new AbstractAction("Reset Scene") {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			controller.resetScene();
+		}
+	};
 
 	private MouseListener mouseHandler = new MouseAdapter() {
 
@@ -89,10 +119,6 @@ class MapCanvas extends GridCanvas {
 			} else if (mouse.isPopupTrigger()) {
 				// open popup menu
 				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				// TODO
-				// boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-				// actionSetSource.setEnabled(blank);
-				// actionSetTarget.setEnabled(blank);
 				contextMenu.show(mouse.getX(), mouse.getY());
 			}
 		}
@@ -133,6 +159,10 @@ class MapCanvas extends GridCanvas {
 		addMouseListener(mouseHandler);
 		addMouseMotionListener(mouseMotionHandler);
 		contextMenu = new ContextMenu();
+		contextMenu.add(actionSetSource);
+		contextMenu.add(actionSetTarget);
+		contextMenu.addSeparator();
+		contextMenu.add(actionResetScene);
 	}
 
 	public ContextMenu getContextMenu() {
@@ -149,6 +179,12 @@ class MapCanvas extends GridCanvas {
 
 	private int getCellSize() {
 		return getRenderer().get().getModel().getCellSize();
+	}
+
+	@Override
+	public void setCellSize(int cellSize) {
+		popRenderer();
+		pushRenderer(createMapRenderer(cellSize));
 	}
 
 	public void setModel(PathFinderDemoModel model) {

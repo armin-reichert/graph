@@ -27,6 +27,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -85,22 +86,6 @@ public class PathFinderDemoView extends JFrame {
 		}
 	};
 
-	private Action actionSetSource = new AbstractAction("Start Search Here") {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			controller.setSource(canvas.getSelectedCell());
-		}
-	};
-
-	private Action actionSetTarget = new AbstractAction("End Search Here") {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			controller.setTarget(canvas.getSelectedCell());
-		}
-	};
-
 	private Action actionSelectAlgorithm = new AbstractAction("Select Algorithm") {
 
 		@Override
@@ -125,14 +110,6 @@ public class PathFinderDemoView extends JFrame {
 			default:
 				throw new IllegalArgumentException("Unknown topology: " + topology);
 			}
-		}
-	};
-
-	private Action actionResetScene = new AbstractAction("Reset Scene") {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			controller.resetScene();
 		}
 	};
 
@@ -182,11 +159,9 @@ public class PathFinderDemoView extends JFrame {
 	private PathFinderDemoModel model;
 	private PathFinderDemoController controller;
 
-	// UI specific
-	private int cellSize;
-	private MapCanvas canvas;
 	private int initialHeight;
 
+	private MapCanvas canvas;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tableResults;
@@ -201,6 +176,8 @@ public class PathFinderDemoView extends JFrame {
 	private JPanel panelMap;
 
 	public PathFinderDemoView() {
+		setResizable(false);
+		setBackground(Color.WHITE);
 		getContentPane().setBackground(Color.WHITE);
 		try {
 			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
@@ -304,11 +281,12 @@ public class PathFinderDemoView extends JFrame {
 		scrollPaneTableResults.setViewportView(tableResults);
 
 		JTextPane textLegend = new JTextPane();
+		textLegend.setBorder(new LineBorder(new Color(192, 192, 192)));
 		textLegend.setEditable(false);
 		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		textLegend.setContentType("text/html");
 		textLegend.setText(
-				"<div style=\"padding:10px\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
+				"<div style=\"padding:10px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. Right-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \"closed\" cells in <span style=\"background-color:orange\">orange</span>. The source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, the target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
 		panelActions.add(textLegend, "cell 0 14 2 1,grow");
 
 	}
@@ -318,7 +296,7 @@ public class PathFinderDemoView extends JFrame {
 		this.controller = controller;
 
 		// canvas
-		cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
+		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
 		canvas = new MapCanvas(model.getMap(), cellSize);
 		canvas.setModel(model);
 		canvas.setController(controller);
@@ -326,11 +304,6 @@ public class PathFinderDemoView extends JFrame {
 		canvas.setShowCost(cbShowCost.isSelected());
 		canvas.requestFocus();
 		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
-
-		canvas.getContextMenu().add(actionSetSource);
-		canvas.getContextMenu().add(actionSetTarget);
-		canvas.getContextMenu().addSeparator();
-		canvas.getContextMenu().add(actionResetScene);
 
 		panelMap.add(canvas, BorderLayout.CENTER);
 		initialHeight = canvas.getHeight();
@@ -374,7 +347,7 @@ public class PathFinderDemoView extends JFrame {
 
 	public void updateCanvasAndUI() {
 		if (canvas != null) {
-			cellSize = initialHeight / model.getMapSize();
+			int cellSize = initialHeight / model.getMapSize();
 			canvas.setGrid(model.getMap());
 			canvas.setCellSize(cellSize);
 		}
