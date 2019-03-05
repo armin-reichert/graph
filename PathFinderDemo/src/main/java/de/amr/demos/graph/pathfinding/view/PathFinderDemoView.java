@@ -1,8 +1,5 @@
 package de.amr.demos.graph.pathfinding.view;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.lang.Math.min;
 
 import java.awt.BorderLayout;
@@ -20,7 +17,6 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -46,19 +42,12 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
-import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import de.amr.graph.grid.ui.animation.AbstractAnimation;
-import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
-import de.amr.graph.grid.ui.rendering.GridCanvas;
-import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
-import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
-import de.amr.graph.pathfinder.impl.AStarSearch;
-import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -210,10 +199,7 @@ public class PathFinderDemoView extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			style = comboStyle.getItemAt(comboStyle.getSelectedIndex());
-			canvas.clear();
-			canvas.popRenderer();
-			canvas.pushRenderer(createMapRenderer());
-			canvas.drawGrid();
+			canvas.setStyle(style);
 		}
 	};
 
@@ -221,7 +207,7 @@ public class PathFinderDemoView extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			canvas.drawGrid();
+			canvas.setShowCost(cbShowCost.isSelected());
 		}
 	};
 
@@ -285,7 +271,7 @@ public class PathFinderDemoView extends JFrame {
 	private int cellSize;
 	private int draggedCell;
 	private int selectedCell;
-	private GridCanvas canvas;
+	private MapCanvas canvas;
 	private Animation animation;
 	private int initialHeight;
 
@@ -431,13 +417,14 @@ public class PathFinderDemoView extends JFrame {
 
 		// canvas
 		cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
-		canvas = new GridCanvas(model.getMap(), cellSize);
-		canvas.pushRenderer(createMapRenderer());
+		canvas = new MapCanvas(model.getMap(), cellSize);
+		canvas.setModel(model);
+		canvas.setController(controller);
+		canvas.setStyle(style);
+		canvas.setShowCost(cbShowCost.isSelected());
 		canvas.addMouseListener(mouseHandler);
 		canvas.addMouseMotionListener(mouseMotionHandler);
 		canvas.requestFocus();
-		canvas
-				.setBorder(BorderFactory.createLineBorder(canvas.getRenderer().get().getModel().getGridBgColor(), 1));
 		panelMap.add(canvas, BorderLayout.CENTER);
 		initialHeight = canvas.getHeight();
 
@@ -487,71 +474,6 @@ public class PathFinderDemoView extends JFrame {
 			canvas.setCellSize(cellSize);
 		}
 		updateUI();
-	}
-
-	private ConfigurableGridRenderer createMapRenderer() {
-		ConfigurableGridRenderer r = style == RenderingStyle.BLOCKS ? new WallPassageGridRenderer()
-				: new PearlsGridRenderer();
-		r.fnGridBgColor = () -> new Color(160, 160, 160);
-		r.fnCellSize = () -> cellSize;
-		r.fnCellBgColor = cell -> {
-			if (model.getMap().get(cell) == Tile.WALL) {
-				return new Color(139, 69, 19);
-			}
-			if (cell == model.getSource()) {
-				return Color.BLUE;
-			}
-			if (cell == model.getTarget()) {
-				return Color.GREEN.darker();
-			}
-			if (isCellPartOfSolution(cell)) {
-				return Color.RED.brighter();
-			}
-			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-			if (pf.getState(cell) == COMPLETED) {
-				return Color.ORANGE;
-			}
-			if (pf.getState(cell) == VISITED) {
-				return Color.YELLOW;
-			}
-			return Color.WHITE;
-		};
-		r.fnText = cell -> {
-			if (!cbShowCost.isSelected()) {
-				return "";
-			}
-			if (model.getMap().get(cell) == Tile.WALL) {
-				return "";
-			}
-			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-			if (pf.getState(cell) == UNVISITED) {
-				return "";
-			}
-			double cost = pf.getCost(cell);
-			if (pf instanceof AStarSearch) {
-				AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
-				cost = astar.getScore(cell);
-			}
-			return cost == Double.MAX_VALUE ? "" : String.format("%.0f", cost);
-		};
-		r.fnTextColor = cell -> {
-			if (cell == model.getSource() || cell == model.getTarget() || isCellPartOfSolution(cell)) {
-				return Color.WHITE;
-			}
-			return Color.BLUE;
-
-		};
-		r.fnTextFont = () -> new Font("Arial", Font.PLAIN,
-				style == RenderingStyle.PEARLS ? cellSize * 30 / 100 : cellSize * 50 / 100);
-		r.fnMinFontSize = () -> 4;
-		r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : cellSize - 1;
-		r.fnPassageColor = (cell, dir) -> Color.WHITE;
-		return r;
-	}
-
-	private boolean isCellPartOfSolution(int cell) {
-		PathFinderResult result = model.getResult(controller.getSelectedAlgorithm());
-		return result != null && result.solutionCells.get(cell);
 	}
 
 	private int cellAt(int x, int y) {
