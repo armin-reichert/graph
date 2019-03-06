@@ -200,8 +200,7 @@ public class PathFinderDemoView extends JFrame {
 		panelActions.setPreferredSize(new Dimension(500, 10));
 		panelActions.setMinimumSize(new Dimension(500, 10));
 		getContentPane().add(panelActions, "cell 1 0,alignx left,growy");
-		panelActions
-				.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow][]"));
+		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow][]"));
 
 		JLabel lblMap = new JLabel("Map");
 		panelActions.add(lblMap, "cell 0 0 2 1,alignx leading");
@@ -264,13 +263,13 @@ public class PathFinderDemoView extends JFrame {
 		comboStyle.setAction(actionSelectMapStyle);
 		comboStyle.setModel(new DefaultComboBoxModel<>(RenderingStyle.values()));
 		panelActions.add(comboStyle, "cell 1 3,growx");
-		
-				cbAutoRunPathFinder = new JCheckBox("Run Automatically");
-				panelActions.add(cbAutoRunPathFinder, "cell 0 9,alignx leading");
-		
-				cbShowCost = new JCheckBox("Show Cost");
-				cbShowCost.setAction(actionShowCost);
-				panelActions.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
+
+		cbAutoRunPathFinder = new JCheckBox("Run Automatically");
+		panelActions.add(cbAutoRunPathFinder, "cell 0 9,alignx leading");
+
+		cbShowCost = new JCheckBox("Show Cost");
+		cbShowCost.setAction(actionShowCost);
+		panelActions.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
 
 		scrollPaneTableResults = new JScrollPane();
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -282,7 +281,7 @@ public class PathFinderDemoView extends JFrame {
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
-		
+
 		verticalStrut_1 = Box.createVerticalStrut(20);
 		panelActions.add(verticalStrut_1, "cell 0 11");
 
@@ -302,7 +301,7 @@ public class PathFinderDemoView extends JFrame {
 		this.controller = controller;
 
 		// canvas
-		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 80 / 100) / model.getMapSize();
+		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
 		canvas = new MapCanvas(model.getMap(), cellSize);
 		canvas.setModel(model);
 		canvas.setController(controller);
