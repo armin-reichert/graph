@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface PathFinder {
 
+	Double INFINITE_COST = Double.MAX_VALUE;
+
 	/**
 	 * Finds a path between the given vertices.
 	 * 

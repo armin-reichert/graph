@@ -11,6 +11,7 @@ import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.Multigraph;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.core.impl.DefaultMultigraph;
+import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
@@ -77,7 +78,7 @@ public class GraphUtils {
 	public static <V, E> boolean areConnected(Graph<V, E> graph, int u, int v) {
 		BreadthFirstSearch<V, E> bfs = new BreadthFirstSearch<>(graph);
 		bfs.exploreGraph(u, v);
-		return bfs.getCost(v) != -1;
+		return bfs.getCost(v) != PathFinder.INFINITE_COST;
 	}
 
 	/**

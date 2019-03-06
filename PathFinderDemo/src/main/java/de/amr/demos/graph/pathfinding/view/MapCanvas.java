@@ -1,7 +1,6 @@
 package de.amr.demos.graph.pathfinding.view;
 
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static java.lang.Math.min;
 
@@ -30,6 +29,7 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
@@ -246,19 +246,13 @@ class MapCanvas extends GridCanvas {
 			if (!showCost) {
 				return "";
 			}
-			if (model.getMap().get(cell) == Tile.WALL) {
-				return "";
-			}
 			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-			if (pf.getState(cell) == UNVISITED) {
-				return "";
-			}
 			double cost = pf.getCost(cell);
 			if (pf instanceof AStarSearch) {
 				AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
 				cost = astar.getScore(cell);
 			}
-			return cost == Double.MAX_VALUE ? "" : String.format("%.0f", cost);
+			return cost != PathFinder.INFINITE_COST ? String.format("%.0f", cost) : "";
 		};
 		r.fnTextColor = cell -> {
 			if (cell == model.getSource() || cell == model.getTarget() || isCellPartOfSolution(cell)) {
