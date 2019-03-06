@@ -25,7 +25,6 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -49,31 +48,11 @@ public class PathFinderDemoView extends JFrame {
 	private static final String _4_NEIGHBORS = "4 Neighbors";
 	private static final String _8_NEIGHBORS = "8 Neighbors";
 
-	private class PathFinderAnimationTask extends SwingWorker<Void, Void> {
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			PathFinderAlgorithm algorithm = controller.getSelectedAlgorithm();
-			model.clearResult(algorithm);
-			model.newPathFinder(algorithm);
-			canvas.drawGrid();
-			model.getPathFinder(algorithm).addObserver(canvas.getAnimation());
-			model.runPathFinder(algorithm);
-			model.getPathFinder(algorithm).removeObserver(canvas.getAnimation());
-			return null;
-		}
-
-		@Override
-		protected void done() {
-			canvas.drawGrid(); // redraw to highlight solution
-		}
-	}
-
 	private Action actionRunSelectedPathFinder = new AbstractAction("Run Selected Path Finder") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new PathFinderAnimationTask().execute();
+			canvas.runPathFinderAnimation();
 		}
 	};
 

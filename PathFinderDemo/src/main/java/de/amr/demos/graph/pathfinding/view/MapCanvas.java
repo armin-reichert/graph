@@ -17,8 +17,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingWorker;
 
 import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
+import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
@@ -42,7 +44,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 class MapCanvas extends GridCanvas {
 
-	public class Animation extends AbstractAnimation implements GraphSearchObserver {
+	class Animation extends AbstractAnimation implements GraphSearchObserver {
 
 		@Override
 		public void vertexAddedToFrontier(int v) {
@@ -69,6 +71,26 @@ class MapCanvas extends GridCanvas {
 					drawGridCell(other);
 				}
 			});
+		}
+	}
+
+	private class PathFinderAnimationTask extends SwingWorker<Void, Void> {
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			PathFinderAlgorithm algorithm = controller.getSelectedAlgorithm();
+			model.clearResult(algorithm);
+			model.newPathFinder(algorithm);
+			drawGrid();
+			model.getPathFinder(algorithm).addObserver(animation);
+			model.runPathFinder(algorithm);
+			model.getPathFinder(algorithm).removeObserver(animation);
+			return null;
+		}
+
+		@Override
+		protected void done() {
+			drawGrid(); // redraw to highlight solution
 		}
 	}
 
@@ -165,6 +187,10 @@ class MapCanvas extends GridCanvas {
 
 	public Animation getAnimation() {
 		return animation;
+	}
+
+	public void runPathFinderAnimation() {
+		new PathFinderAnimationTask().execute();
 	}
 
 	public int getSelectedCell() {
