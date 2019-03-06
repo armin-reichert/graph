@@ -33,19 +33,25 @@ import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 
+/**
+ * Display area for map and path finder animations.
+ * 
+ * @author Armin Reichert
+ */
 class MapCanvas extends GridCanvas {
 
 	public class Animation extends AbstractAnimation implements GraphSearchObserver {
 
 		@Override
 		public void vertexAddedToFrontier(int v) {
-			delayed(() -> drawGridCell(v));
+			// state change handles this
 		}
 
 		@Override
 		public void vertexRemovedFromFrontier(int v) {
-			delayed(() -> drawGridCell(v));
+			// state change handles this
 		}
 
 		@Override
@@ -57,21 +63,13 @@ class MapCanvas extends GridCanvas {
 		public void edgeTraversed(int either, int other) {
 			delayed(() -> {
 				drawGridPassage(either, other, true);
-				drawGridCell(either);
-				drawGridCell(other);
+				// TODO fixme
+				if (style == RenderingStyle.PEARLS) {
+					drawGridCell(either);
+					drawGridCell(other);
+				}
 			});
 		}
-	}
-
-	public class ContextMenu extends JPopupMenu {
-
-		public void show(int x, int y) {
-			boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-			actionSetSource.setEnabled(blank);
-			actionSetTarget.setEnabled(blank);
-			super.show(MapCanvas.this, x, y);
-		}
-
 	}
 
 	private Action actionSetSource = new AbstractAction("Start Search Here") {
@@ -119,7 +117,7 @@ class MapCanvas extends GridCanvas {
 			} else if (mouse.isPopupTrigger()) {
 				// open popup menu
 				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				contextMenu.show(mouse.getX(), mouse.getY());
+				showContextMenu(mouse.getX(), mouse.getY());
 			}
 		}
 	};
@@ -146,7 +144,7 @@ class MapCanvas extends GridCanvas {
 	private Animation animation;
 	private int draggedCell;
 	private int selectedCell;
-	private ContextMenu contextMenu;
+	private JPopupMenu contextMenu;
 
 	public MapCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		super(grid, cellSize);
@@ -158,15 +156,11 @@ class MapCanvas extends GridCanvas {
 		draggedCell = -1;
 		addMouseListener(mouseHandler);
 		addMouseMotionListener(mouseMotionHandler);
-		contextMenu = new ContextMenu();
+		contextMenu = new JPopupMenu();
 		contextMenu.add(actionSetSource);
 		contextMenu.add(actionSetTarget);
 		contextMenu.addSeparator();
 		contextMenu.add(actionResetScene);
-	}
-
-	public ContextMenu getContextMenu() {
-		return contextMenu;
 	}
 
 	public Animation getAnimation() {
@@ -209,6 +203,13 @@ class MapCanvas extends GridCanvas {
 		drawGrid();
 	}
 
+	public void showContextMenu(int x, int y) {
+		boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
+		actionSetSource.setEnabled(blank);
+		actionSetTarget.setEnabled(blank);
+		contextMenu.show(this, x, y);
+	}
+
 	private int cellAt(int x, int y) {
 		int gridX = min(x / getCellSize(), model.getMap().numCols() - 1);
 		int gridY = min(y / getCellSize(), model.getMap().numRows() - 1);
@@ -230,10 +231,10 @@ class MapCanvas extends GridCanvas {
 			if (cell == model.getTarget()) {
 				return Color.GREEN.darker();
 			}
-			if (isCellPartOfSolution(cell)) {
+			if (partOfSolution(cell)) {
 				return Color.RED.brighter();
 			}
-			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
+			GraphSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
 			if (pf.getState(cell) == COMPLETED) {
 				return Color.ORANGE;
 			}
@@ -255,7 +256,7 @@ class MapCanvas extends GridCanvas {
 			return cost != PathFinder.INFINITE_COST ? String.format("%.0f", cost) : "";
 		};
 		r.fnTextColor = cell -> {
-			if (cell == model.getSource() || cell == model.getTarget() || isCellPartOfSolution(cell)) {
+			if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {
 				return Color.WHITE;
 			}
 			return Color.BLUE;
@@ -268,8 +269,8 @@ class MapCanvas extends GridCanvas {
 		return r;
 	}
 
-	private boolean isCellPartOfSolution(int cell) {
+	private boolean partOfSolution(int cell) {
 		PathFinderResult result = model.getResult(controller.getSelectedAlgorithm());
-		return result != null && result.solutionCells.get(cell);
+		return result.solutionCells.get(cell);
 	}
 }
