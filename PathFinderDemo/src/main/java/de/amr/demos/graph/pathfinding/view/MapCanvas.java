@@ -9,9 +9,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -42,7 +39,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  * 
  * @author Armin Reichert
  */
-class MapCanvas extends GridCanvas {
+public class MapCanvas extends GridCanvas {
 
 	class Animation extends AbstractAnimation implements GraphSearchObserver {
 
@@ -94,6 +91,56 @@ class MapCanvas extends GridCanvas {
 		}
 	}
 
+	private class MouseHandler extends MouseAdapter {
+
+		private int draggedCell;
+
+		private int cellAt(MouseEvent e) {
+			int col = min(e.getX() / getCellSize(), model.getMap().numCols() - 1);
+			int row = min(e.getY() / getCellSize(), model.getMap().numRows() - 1);
+			return model.getMap().cell(col, row);
+		}
+
+		public MouseHandler() {
+			draggedCell = -1;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				int cell = cellAt(e);
+				controller.flipTileAt(cell);
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (draggedCell != -1) {
+				// end dragging
+				draggedCell = -1;
+				if (controller.isAutoRunPathFinders()) {
+					controller.runPathFinders();
+				}
+			} else if (e.isPopupTrigger()) {
+				// open popup menu
+				selectedCell = cellAt(e);
+				showContextMenu(e.getX(), e.getY());
+			}
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			int cell = cellAt(e);
+			if (cell != draggedCell) {
+				// drag enters new cell
+				draggedCell = cell;
+				if (e.isShiftDown()) {
+					controller.flipTileAt(cell);
+				}
+			}
+		}
+	}
+
 	private Action actionSetSource = new AbstractAction("Start Search Here") {
 
 		@Override
@@ -118,55 +165,13 @@ class MapCanvas extends GridCanvas {
 		}
 	};
 
-	private MouseListener mouseHandler = new MouseAdapter() {
-
-		@Override
-		public void mouseClicked(MouseEvent mouse) {
-			if (mouse.getButton() == MouseEvent.BUTTON1 && mouse.isShiftDown()) {
-				int cell = cellAt(mouse.getX(), mouse.getY());
-				controller.flipTileAt(cell);
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent mouse) {
-			if (draggedCell != -1) {
-				// end dragging
-				draggedCell = -1;
-				if (controller.isAutoRunPathFinders()) {
-					controller.runPathFinders();
-				}
-			} else if (mouse.isPopupTrigger()) {
-				// open popup menu
-				selectedCell = cellAt(mouse.getX(), mouse.getY());
-				showContextMenu(mouse.getX(), mouse.getY());
-			}
-		}
-	};
-
-	private MouseMotionListener mouseMotionHandler = new MouseMotionAdapter() {
-
-		@Override
-		public void mouseDragged(MouseEvent mouse) {
-			int cell = cellAt(mouse.getX(), mouse.getY());
-			if (cell != draggedCell) {
-				// drag enters new cell
-				draggedCell = cell;
-				if (mouse.isShiftDown()) {
-					controller.flipTileAt(cell);
-				}
-			}
-		}
-	};
-
 	private PathFinderDemoModel model;
 	private PathFinderDemoController controller;
 	private RenderingStyle style;
 	private boolean showCost;
 	private Animation animation;
-	private int draggedCell;
-	private int selectedCell;
 	private JPopupMenu contextMenu;
+	private int selectedCell;
 
 	public MapCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		super(grid, cellSize);
@@ -175,9 +180,9 @@ class MapCanvas extends GridCanvas {
 		setBorder(BorderFactory.createLineBorder(r.getModel().getGridBgColor(), 1));
 		animation = new Animation();
 		selectedCell = -1;
-		draggedCell = -1;
-		addMouseListener(mouseHandler);
-		addMouseMotionListener(mouseMotionHandler);
+		MouseHandler mouse = new MouseHandler();
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
 		contextMenu = new JPopupMenu();
 		contextMenu.add(actionSetSource);
 		contextMenu.add(actionSetTarget);
@@ -191,10 +196,6 @@ class MapCanvas extends GridCanvas {
 
 	public void runPathFinderAnimation() {
 		new PathFinderAnimationTask().execute();
-	}
-
-	public int getSelectedCell() {
-		return selectedCell;
 	}
 
 	private int getCellSize() {
@@ -234,12 +235,6 @@ class MapCanvas extends GridCanvas {
 		actionSetSource.setEnabled(blank);
 		actionSetTarget.setEnabled(blank);
 		contextMenu.show(this, x, y);
-	}
-
-	private int cellAt(int x, int y) {
-		int gridX = min(x / getCellSize(), model.getMap().numCols() - 1);
-		int gridY = min(y / getCellSize(), model.getMap().numRows() - 1);
-		return model.getMap().cell(gridX, gridY);
 	}
 
 	private ConfigurableGridRenderer createMapRenderer(int cellSize) {

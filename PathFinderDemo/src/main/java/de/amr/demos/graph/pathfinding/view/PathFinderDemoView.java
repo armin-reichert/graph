@@ -272,7 +272,6 @@ public class PathFinderDemoView extends JFrame {
 		textLegend.setText(
 				"<div style=\"padding:14px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. \r\nRight-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \r\n\"closed\" cells in <span style=\"background-color:orange\">orange</span>. \r\n\r\nThe source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, \r\nthe target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
 		panelActions.add(textLegend, "cell 0 12 2 1,growx");
-
 	}
 
 	public void init(PathFinderDemoModel model, PathFinderDemoController controller) {
