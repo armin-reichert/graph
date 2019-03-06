@@ -138,8 +138,6 @@ public class PathFinderDemoView extends JFrame {
 	private PathFinderDemoModel model;
 	private PathFinderDemoController controller;
 
-	private int initialHeight;
-
 	private MapCanvas canvas;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
@@ -287,9 +285,9 @@ public class PathFinderDemoView extends JFrame {
 		canvas.setShowCost(cbShowCost.isSelected());
 		canvas.requestFocus();
 		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
+		canvas.setPreferredSize(canvas.getSize());
 
 		panelMap.add(canvas, BorderLayout.CENTER);
-		initialHeight = canvas.getHeight();
 
 		// path finder results table
 		pathFinderResults = new PathFinderResultsTableModel(model);
@@ -330,9 +328,8 @@ public class PathFinderDemoView extends JFrame {
 
 	public void updateCanvasAndUI() {
 		if (canvas != null) {
-			int cellSize = initialHeight / model.getMapSize();
 			canvas.setGrid(model.getMap());
-			canvas.setCellSize(cellSize);
+			canvas.setCellSize(canvas.getPreferredSize().height / model.getMapSize());
 		}
 		updateUI();
 	}
