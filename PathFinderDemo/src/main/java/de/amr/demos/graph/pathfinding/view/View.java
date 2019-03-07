@@ -127,6 +127,7 @@ public class View extends JPanel {
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
+			// System.out.println("Map size changed to " + spinnerMapSize.getValue());
 			controller.resizeMap((int) spinnerMapSize.getValue());
 		}
 	};
@@ -151,10 +152,12 @@ public class View extends JPanel {
 
 	public View() {
 		setOpaque(false);
-		setLayout(new MigLayout("", "[grow][grow]", "[grow]"));
+		setLayout(new MigLayout("", "[grow][grow]", "[grow,fill]"));
 
 		panelMap = new JPanel();
-		panelMap.setOpaque(false);
+		panelMap.setPreferredSize(new Dimension(500, 10));
+		panelMap.setBackground(Color.WHITE);
+		panelMap.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(panelMap, "cell 0 0,growy");
 		panelMap.setLayout(new BorderLayout(0, 0));
 

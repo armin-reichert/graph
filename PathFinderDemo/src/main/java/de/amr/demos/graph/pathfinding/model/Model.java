@@ -36,32 +36,31 @@ public class Model {
 	}
 
 	public Model(int mapSize, Topology topology) {
-
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			results.put(algorithm, new PathFinderResult());
 		}
 		newMap(mapSize, topology);
-		setSource(map.cell(mapSize / 4, mapSize / 2));
-		setTarget(map.cell(mapSize * 3 / 4, mapSize / 2));
+		source = map.cell(mapSize / 4, mapSize / 2);
+		target = map.cell(mapSize * 3 / 4, mapSize / 2);
 		newPathFinders();
 	}
 
 	private void newMap(int mapSize, Topology topology) {
 		GridGraph<Tile, Double> oldMap = map;
 		map = new GridGraph<>(mapSize, mapSize, topology, v -> Tile.BLANK, this::distance, UndirectedEdge::new);
+		map.fill();
 		if (oldMap == null) {
-			map.fill();
 			return;
 		}
-		for (int row = 0; row < map.numRows(); ++row) {
-			for (int col = 0; col < map.numCols(); ++col) {
-				if (!oldMap.isValidRow(row) || !oldMap.isValidCol(col)) {
-					continue;
-				}
+		map.removeEdges();
+		float scalingFactor = (float) map.numCols() / oldMap.numCols();
+		for (int oldRow = 0; oldRow < oldMap.numRows(); ++oldRow) {
+			for (int oldCol = 0; oldCol < oldMap.numCols(); ++oldCol) {
+				int row = scale(oldRow, scalingFactor), col = scale(oldCol, scalingFactor);
 				int cell = map.cell(col, row);
-				Tile tile = oldMap.get(oldMap.cell(col, row));
+				Tile tile = oldMap.get(oldMap.cell(oldCol, oldRow));
 				map.set(cell, tile);
 				if (tile == WALL) {
 					map.neighbors(cell).forEach(neighbor -> {
@@ -78,22 +77,32 @@ public class Model {
 				}
 			}
 		}
+
+		int sourceCol = scale(oldMap.col(source), scalingFactor), sourceRow = scale(oldMap.row(source), scalingFactor);
+		if (map.isValidCol(sourceCol) && map.isValidRow(sourceRow)) {
+			source = map.cell(sourceCol, sourceRow);
+		} else {
+			source = 0;
+		}
+		int targetCol = scale(oldMap.col(target), scalingFactor), targetRow = scale(oldMap.row(target), scalingFactor);
+		if (map.isValidCol(targetCol) && map.isValidRow(targetRow)) {
+			target = map.cell(targetCol, targetRow);
+		} else {
+			target = map.numVertices() - 1;
+		}
+		System.out.println("New source " + source + ", new target " + target);
+	}
+
+	private static int scale(int coord, float scaling) {
+		return (int) Math.round(scaling * coord);
 	}
 
 	public void resizeMap(int size) {
 		if (size != map.numRows()) {
-			int oldSourceCol = map.col(source), oldSourceRow = map.row(source);
-			int oldTargetCol = map.col(target), oldTargetRow = map.row(target);
 			newMap(size, map.getTopology());
-			if (map.isValidCol(oldSourceCol) && map.isValidRow(oldSourceRow)) {
-				source = map.cell(oldSourceCol, oldSourceRow);
-			} else {
-				source = 0;
-			}
-			if (map.isValidCol(oldTargetCol) && map.isValidRow(oldTargetRow)) {
-				target = map.cell(oldTargetCol, oldTargetRow);
-			} else {
-				target = map.numVertices() - 1;
+			for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+				newPathFinder(algorithm);
+				clearResult(algorithm);
 			}
 		}
 	}
