@@ -88,7 +88,7 @@ public class View extends JPanel {
 		}
 	};
 
-	private Action actionToggleAutoPathFinding = new AbstractAction("Run Path Finders Automatically") {
+	private Action actionToggleAutoPathFinding = new AbstractAction("Run All") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -200,11 +200,12 @@ public class View extends JPanel {
 		panelActions.add(lblDelay, "cell 0 8,alignx trailing,aligny top");
 
 		sliderDelay = new JSlider();
+		sliderDelay.setValue(10);
 		sliderDelay.setMaximum(50);
-		sliderDelay.setMinorTickSpacing(2);
+		sliderDelay.setMinorTickSpacing(1);
 		sliderDelay.setPaintTicks(true);
 		sliderDelay.setPaintLabels(true);
-		sliderDelay.setMajorTickSpacing(10);
+		sliderDelay.setMajorTickSpacing(5);
 		panelActions.add(sliderDelay, "cell 1 8,growx");
 
 		JLabel lblAlgorithm = new JLabel("Algorithm");
@@ -286,8 +287,6 @@ public class View extends JPanel {
 		comboAlgorithm.setModel(new DefaultComboBoxModel<>(PathFinderAlgorithm.values()));
 		comboAlgorithm.setSelectedItem(controller.getSelectedAlgorithm());
 		comboAlgorithm.setAction(actionSelectAlgorithm);
-
-		sliderDelay.setValue(5);
 
 		cbAutoRunPathFinder.setSelected(controller.isAutoRunPathFinders());
 		cbAutoRunPathFinder.setAction(actionToggleAutoPathFinding);

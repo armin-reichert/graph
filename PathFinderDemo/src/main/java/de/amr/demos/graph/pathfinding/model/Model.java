@@ -90,7 +90,7 @@ public class Model {
 		} else {
 			target = map.numVertices() - 1;
 		}
-		System.out.println("New source " + source + ", new target " + target);
+//		System.out.println("New source " + source + ", new target " + target);
 	}
 
 	private static int scale(int coord, float scaling) {
