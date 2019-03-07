@@ -18,7 +18,7 @@ import de.amr.graph.grid.impl.Top8;
  */
 public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 
-	private class WallPassageCellRenderer implements GridCellRenderer {
+	private class DefaultCellRenderer implements GridCellRenderer {
 
 		private void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 			final int cellX = grid.col(cell) * getCellSize();
@@ -61,10 +61,10 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 	private GridCellRenderer cellRenderer;
 
 	public WallPassageGridRenderer() {
-		cellRenderer = new WallPassageCellRenderer();
+		cellRenderer = new DefaultCellRenderer();
 	}
 
-	public void setCellRenderer(GridCellRenderer cellRenderer) {
+	public WallPassageGridRenderer(GridCellRenderer cellRenderer) {
 		this.cellRenderer = cellRenderer;
 	}
 
@@ -86,8 +86,8 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		final int inv = grid.getTopology().inv(dir);
 		drawHalfPassage(g, grid, either, dir, visible ? getPassageColor(either, dir) : getGridBgColor());
 		drawHalfPassage(g, grid, other, inv, visible ? getPassageColor(other, inv) : getGridBgColor());
-		cellRenderer.drawCell(g, grid, either);
-		cellRenderer.drawCell(g, grid, other);
+		getCellRenderer(either).drawCell(g, grid, either);
+		getCellRenderer(either).drawCell(g, grid, other);
 	}
 
 	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, int dir, Color passageColor) {

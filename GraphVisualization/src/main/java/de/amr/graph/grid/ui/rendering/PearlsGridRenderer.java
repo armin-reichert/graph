@@ -6,26 +6,19 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.util.function.IntSupplier;
 
 import de.amr.graph.grid.api.GridGraph2D;
 
 public class PearlsGridRenderer extends ConfigurableGridRenderer {
 
-	private class PearlsGridCellRenderer implements GridCellRenderer {
-
-		private IntSupplier fnPearlSize = () -> Math.max(1, getCellSize() / 2);
-
-		int getPearlSize() {
-			return fnPearlSize.getAsInt();
-		}
+	private class DefaultGridCellRenderer implements GridCellRenderer {
 
 		@Override
 		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 			int cs = getCellSize();
 			int x = grid.col(cell) * cs;
 			int y = grid.row(cell) * cs;
-			int ps = getPearlSize();
+			int ps = Math.max(1, getCellSize() / 2); // TODO
 			int offset = cs / 4;
 			int arc = ps / 2;
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -36,16 +29,15 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 			g.translate(-x - offset, -y - offset);
 			drawCellContent(g, grid, cell);
 		}
-
 	}
 
 	private GridCellRenderer cellRenderer;
 
 	public PearlsGridRenderer() {
-		cellRenderer = new PearlsGridCellRenderer();
+		cellRenderer = new DefaultGridCellRenderer();
 	}
 
-	public void setCellRenderer(GridCellRenderer cellRenderer) {
+	public PearlsGridRenderer(GridCellRenderer cellRenderer) {
 		this.cellRenderer = cellRenderer;
 	}
 
@@ -63,7 +55,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	@Override
 	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
 		int cs = getCellSize();
-		int ps = ((PearlsGridCellRenderer) cellRenderer).getPearlSize();
+		int ps = Math.max(1, getCellSize() / 2); // TODO
 		int x1 = grid.col(either) * cs + ps / 2;
 		int y1 = grid.row(either) * cs + ps / 2;
 		int x2 = grid.col(other) * cs + ps / 2;

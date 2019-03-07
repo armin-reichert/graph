@@ -20,7 +20,7 @@ public interface GridRenderer {
 	 * @return the used cell renderer
 	 */
 	GridCellRenderer getCellRenderer(int cell);
-
+	
 	/**
 	 * Draws the complete grid.
 	 * 

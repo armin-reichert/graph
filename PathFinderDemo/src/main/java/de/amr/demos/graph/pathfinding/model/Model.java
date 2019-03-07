@@ -94,7 +94,7 @@ public class Model {
 	}
 
 	private static int scale(int coord, float scaling) {
-		return (int) Math.round(scaling * coord);
+		return (int) (scaling * coord);
 	}
 
 	public void resizeMap(int size) {
@@ -125,7 +125,7 @@ public class Model {
 		});
 	}
 
-	private double distance(int u, int v) {
+	public double distance(int u, int v) {
 		return 10 * map.euclidean(u, v);
 	}
 
