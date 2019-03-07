@@ -208,11 +208,8 @@ public class CanvasView extends GridCanvas {
 		pushRenderer(createMapRenderer(cellSize));
 	}
 
-	public void setModel(Model model) {
+	public void init(Model model, Controller controller) {
 		this.model = model;
-	}
-
-	public void setController(Controller controller) {
 		this.controller = controller;
 	}
 

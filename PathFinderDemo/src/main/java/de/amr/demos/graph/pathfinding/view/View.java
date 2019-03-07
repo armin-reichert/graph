@@ -2,7 +2,6 @@ package de.amr.demos.graph.pathfinding.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -10,7 +9,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,6 +32,7 @@ import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import net.miginfocom.swing.MigLayout;
+import java.awt.SystemColor;
 
 /**
  * Main view of path finder demo app.
@@ -149,7 +148,6 @@ public class View extends JPanel {
 	private JSlider sliderDelay;
 	private JPanel panelMap;
 	private JScrollPane scrollPaneTableResults;
-	private Component verticalStrut_1;
 
 	public View() {
 		setOpaque(false);
@@ -161,7 +159,7 @@ public class View extends JPanel {
 		panelMap.setLayout(new BorderLayout(0, 0));
 
 		panelActions = new JPanel();
-		panelActions.setOpaque(false);
+		panelActions.setBackground(Color.WHITE);
 		panelActions.setPreferredSize(new Dimension(500, 10));
 		panelActions.setMinimumSize(new Dimension(500, 10));
 		add(panelActions, "cell 1 0,alignx left,growy");
@@ -169,15 +167,12 @@ public class View extends JPanel {
 
 		JLabel lblMap = new JLabel("Map");
 		panelActions.add(lblMap, "cell 0 0 2 1,alignx leading");
-		lblMap.setForeground(Color.BLACK);
-		lblMap.setFont(new Font("SansSerif", Font.BOLD, 20));
-
-		Component verticalStrut = Box.createVerticalStrut(20);
-		panelActions.add(verticalStrut, "cell 0 4");
+		lblMap.setForeground(SystemColor.textHighlight);
+		lblMap.setFont(new Font("Arial Black", Font.PLAIN, 16));
 
 		lblPathFinding = new JLabel("Path Finding");
-		lblPathFinding.setForeground(Color.BLACK);
-		lblPathFinding.setFont(new Font("SansSerif", Font.BOLD, 20));
+		lblPathFinding.setForeground(SystemColor.textHighlight);
+		lblPathFinding.setFont(new Font("Arial Black", Font.PLAIN, 16));
 		panelActions.add(lblPathFinding, "cell 0 5 2 1,alignx leading");
 
 		JLabel lblMapSize = new JLabel("Rows/Cols");
@@ -241,19 +236,15 @@ public class View extends JPanel {
 		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx");
 
 		tableResults = new JTable();
-		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 100));
 		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
 
-		verticalStrut_1 = Box.createVerticalStrut(20);
-		panelActions.add(verticalStrut_1, "cell 0 11");
-
 		JTextPane textLegend = new JTextPane();
 		textLegend.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		textLegend.setEditable(false);
-		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textLegend.setContentType("text/html");
 		textLegend.setText(
 				"<div style=\"padding:14px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. \r\nRight-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \r\n\"closed\" cells in <span style=\"background-color:orange\">orange</span>. \r\n\r\nThe source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, \r\nthe target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
@@ -265,13 +256,11 @@ public class View extends JPanel {
 		this.controller = controller;
 
 		// canvas
-		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
+		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 85 / 100) / model.getMapSize();
 		canvas = new CanvasView(model.getMap(), cellSize);
-		canvas.setModel(model);
-		canvas.setController(controller);
+		canvas.init(model, controller);
 		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		canvas.setShowCost(cbShowCost.isSelected());
-		canvas.requestFocus();
 		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
 		canvas.setPreferredSize(canvas.getSize());
 

@@ -6,10 +6,10 @@ import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
 
 public enum PathFinderAlgorithm {
-	AStar(AStarSearch.class),
+	BFS(BreadthFirstSearch.class),
 	Dijkstra(DijkstraSearch.class),
 	GreedyBestFirst(BestFirstSearch.class),
-	BFS(BreadthFirstSearch.class);
+	AStar(AStarSearch.class);
 
 	private final Class<?> implementation;
 
@@ -27,7 +27,7 @@ public enum PathFinderAlgorithm {
 		case AStar:
 			return "A* Search";
 		case GreedyBestFirst:
-			return "Greedy Best-First Search";
+			return "Best-First Search";
 		case BFS:
 			return "Breadth-First Search";
 		default:

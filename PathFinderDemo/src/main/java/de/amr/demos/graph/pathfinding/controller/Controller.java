@@ -24,7 +24,7 @@ public class Controller {
 
 	public Controller(Model model) {
 		this.model = model;
-		selectedAlgorithm = PathFinderAlgorithm.AStar;
+		selectedAlgorithm = PathFinderAlgorithm.values()[0];
 		autoRunPathFinders = false;
 	}
 
