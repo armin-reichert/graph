@@ -77,7 +77,7 @@ public class GridCanvas extends JComponent {
 	public void drawGridCell(int cell) {
 		getRenderer().ifPresent(r -> {
 			Graphics2D g = getDrawGraphics();
-			r.drawCell(g, grid, cell);
+			r.getCellRenderer(cell).drawCell(g, grid, cell);
 			repaint();
 		});
 	}

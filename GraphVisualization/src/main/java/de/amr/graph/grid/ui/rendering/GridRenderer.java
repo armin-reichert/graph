@@ -17,6 +17,11 @@ public interface GridRenderer {
 	GridRenderingModel getModel();
 
 	/**
+	 * @return the used cell renderer
+	 */
+	GridCellRenderer getCellRenderer(int cell);
+
+	/**
 	 * Draws the complete grid.
 	 * 
 	 * @param g
@@ -24,10 +29,7 @@ public interface GridRenderer {
 	 * @param grid
 	 *               the grid graph
 	 */
-	default void drawGrid(Graphics2D g, GridGraph2D<?, ?> grid) {
-		grid.edges().forEach(edge -> drawPassage(g, grid, edge.either(), edge.other(), true));
-		grid.vertices().forEach(cell -> drawCell(g, grid, cell));
-	}
+	void drawGrid(Graphics2D g, GridGraph2D<?, ?> grid);
 
 	/**
 	 * Draws the "passage" between the given cells.
@@ -45,15 +47,4 @@ public interface GridRenderer {
 	 */
 	void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible);
 
-	/**
-	 * Draws a single grid "cell".
-	 * 
-	 * @param g
-	 *               the graphics context
-	 * @param grid
-	 *               the grid graph
-	 * @param cell
-	 *               the cell
-	 */
-	void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell);
 }
