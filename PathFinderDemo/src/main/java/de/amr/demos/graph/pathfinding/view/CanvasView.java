@@ -296,7 +296,7 @@ public class CanvasView extends GridCanvas {
 					if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {
 						g.setColor(Color.WHITE);
 					}
-					Font font = new Font("Arial Narrow", Font.PLAIN, cellSize * 33 / 100);
+					Font font = new Font("Arial Narrow", Font.PLAIN, cellSize * 30 / 100);
 					g.setFont(font);
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					int inset = 3;
@@ -326,20 +326,20 @@ public class CanvasView extends GridCanvas {
 		};
 
 		if (style == RenderingStyle.BLOCKS) {
-			ConfigurableGridRenderer r = new WallPassageGridRenderer(cellRenderer);
+			WallPassageGridRenderer r = new WallPassageGridRenderer(cellRenderer);
 			r.fnGridBgColor = () -> new Color(160, 160, 160);
 			r.fnCellSize = () -> cellSize;
-			r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : cellSize - 1;
+			r.fnPassageWidth = (u, v) -> cellSize - 1;
 			r.fnPassageColor = (cell, dir) -> Color.WHITE;
 			return r;
 		}
 
 		if (style == RenderingStyle.PEARLS) {
-			ConfigurableGridRenderer r = new PearlsGridRenderer();
+			PearlsGridRenderer r = new PearlsGridRenderer();
 			r.fnGridBgColor = () -> new Color(160, 160, 160);
 			r.fnCellSize = () -> cellSize;
 			r.fnCellBgColor = this::getGridCellBackground;
-			r.fnPassageWidth = (u, v) -> style == RenderingStyle.PEARLS ? 1 : cellSize - 1;
+			r.fnPassageWidth = (u, v) -> 1;
 			r.fnPassageColor = (cell, dir) -> Color.WHITE;
 			return r;
 		}
