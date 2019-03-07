@@ -21,7 +21,6 @@ import javax.swing.SwingWorker;
 import de.amr.demos.graph.pathfinding.controller.Controller;
 import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.ui.animation.AbstractAnimation;
@@ -43,7 +42,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 public class CanvasView extends GridCanvas {
 
-	class Animation extends AbstractAnimation implements GraphSearchObserver {
+	class PathFinderAnimation extends AbstractAnimation implements GraphSearchObserver {
 
 		@Override
 		public void vertexAddedToFrontier(int v) {
@@ -171,7 +170,7 @@ public class CanvasView extends GridCanvas {
 	private Controller controller;
 	private RenderingStyle style;
 	private boolean showCost;
-	private Animation animation;
+	private PathFinderAnimation animation;
 	private JPopupMenu contextMenu;
 	private int selectedCell;
 
@@ -181,7 +180,7 @@ public class CanvasView extends GridCanvas {
 		ConfigurableGridRenderer r = createMapRenderer(cellSize);
 		pushRenderer(r);
 		setBorder(BorderFactory.createLineBorder(r.getModel().getGridBgColor(), 1));
-		animation = new Animation();
+		animation = new PathFinderAnimation();
 		selectedCell = -1;
 		MouseHandler mouse = new MouseHandler();
 		addMouseListener(mouse);
@@ -193,7 +192,7 @@ public class CanvasView extends GridCanvas {
 		contextMenu.add(actionResetScene);
 	}
 
-	public Animation getAnimation() {
+	public PathFinderAnimation getAnimation() {
 		return animation;
 	}
 
@@ -262,13 +261,12 @@ public class CanvasView extends GridCanvas {
 		return Color.WHITE;
 	}
 
-	private String formatCost(double value) {
+	private String formatDouble(double value) {
 		return value == INFINITE_COST ? "" : String.format("%.0f", value);
 	}
 
 	private boolean partOfSolution(int cell) {
-		PathFinderResult result = model.getResult(controller.getSelectedAlgorithm());
-		return result.solutionCells.get(cell);
+		return model.getResult(controller.getSelectedAlgorithm()).solutionCells.get(cell);
 	}
 
 	private ConfigurableGridRenderer createMapRenderer(int cellSize) {
@@ -302,18 +300,18 @@ public class CanvasView extends GridCanvas {
 					int inset = 3;
 					if (pf.getClass() == AStarSearch.class) {
 						AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
-						String gCost = formatCost(pf.getCost(cell));
+						String gCost = formatDouble(pf.getCost(cell));
 						Rectangle2D box = g.getFontMetrics().getStringBounds(gCost, g);
 						drawString(g, gCost, inset, box.getHeight());
-						String hCost = formatCost(model.distance(cell, model.getTarget()));
+						String hCost = formatDouble(model.distance(cell, model.getTarget()));
 						box = g.getFontMetrics().getStringBounds(hCost, g);
 						drawString(g, hCost, cellSize - box.getWidth() - inset, box.getHeight());
-						String fCost = formatCost(astar.getScore(cell));
+						String fCost = formatDouble(astar.getScore(cell));
 						g.setFont(font.deriveFont(Font.BOLD, cellSize * 50 / 100));
 						box = g.getFontMetrics().getStringBounds(fCost, g);
 						drawString(g, fCost, (cellSize - box.getWidth()) / 2, cellSize - inset);
 					} else {
-						String gCost = formatCost(pf.getCost(cell));
+						String gCost = formatDouble(pf.getCost(cell));
 						g.setFont(font.deriveFont(Font.BOLD, cellSize * 50 / 100));
 						Rectangle2D box = g.getFontMetrics().getStringBounds(gCost, g);
 						drawString(g, gCost, (cellSize - box.getWidth()) / 2,
