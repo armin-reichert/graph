@@ -26,5 +26,10 @@
 			<artifactId>Graph</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>de.amr.graph.viz</groupId>
+			<artifactId>GraphVisualization</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
