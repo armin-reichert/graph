@@ -3,10 +3,10 @@ package de.amr.demos.graph.pathfinding.controller;
 import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
 
+import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.Tile;
-import de.amr.demos.graph.pathfinding.view.PathFinderDemoView;
+import de.amr.demos.graph.pathfinding.view.View;
 import de.amr.graph.grid.api.Topology;
 
 /**
@@ -14,15 +14,15 @@ import de.amr.graph.grid.api.Topology;
  * 
  * @author Armin Reichert
  */
-public class PathFinderDemoController {
+public class Controller {
 
-	private final PathFinderDemoModel model;
-	private PathFinderDemoView view;
+	private final Model model;
+	private View view;
 
 	private PathFinderAlgorithm selectedAlgorithm;
 	private boolean autoRunPathFinders;
 
-	public PathFinderDemoController(PathFinderDemoModel model) {
+	public Controller(Model model) {
 		this.model = model;
 		selectedAlgorithm = PathFinderAlgorithm.AStar;
 		autoRunPathFinders = false;
@@ -35,13 +35,13 @@ public class PathFinderDemoController {
 			model.clearResult(selectedAlgorithm);
 		}
 		if (view != null) {
-			view.updateUI();
+			view.updateView();
 		}
 	}
 
 	public void runPathFinders() {
 		model.runPathFinders();
-		view.updateUI();
+		view.updateView();
 	}
 
 	public void resetScene() {
@@ -58,7 +58,7 @@ public class PathFinderDemoController {
 		return selectedAlgorithm;
 	}
 
-	public void setView(PathFinderDemoView view) {
+	public void setView(View view) {
 		this.view = view;
 	}
 
@@ -73,13 +73,15 @@ public class PathFinderDemoController {
 	public void resizeMap(int size) {
 		model.resizeMap(size);
 		maybeRunPathFinder();
-		view.updateCanvasAndUI();
+		view.updateCanvas();
+		view.updateView();
 	}
 
 	public void setTopology(Topology topology) {
 		model.setTopology(topology);
 		maybeRunPathFinder();
-		view.updateCanvasAndUI();
+		view.updateCanvas();
+		view.updateView();
 	}
 
 	public void setSource(int source) {

@@ -16,9 +16,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
-import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
+import de.amr.demos.graph.pathfinding.controller.Controller;
+import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
@@ -35,11 +35,11 @@ import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
- * Display area for map and path finder animations.
+ * View showing map and path finder animations.
  * 
  * @author Armin Reichert
  */
-public class MapCanvas extends GridCanvas {
+public class CanvasView extends GridCanvas {
 
 	class Animation extends AbstractAnimation implements GraphSearchObserver {
 
@@ -165,15 +165,15 @@ public class MapCanvas extends GridCanvas {
 		}
 	};
 
-	private PathFinderDemoModel model;
-	private PathFinderDemoController controller;
+	private Model model;
+	private Controller controller;
 	private RenderingStyle style;
 	private boolean showCost;
 	private Animation animation;
 	private JPopupMenu contextMenu;
 	private int selectedCell;
 
-	public MapCanvas(GridGraph2D<?, ?> grid, int cellSize) {
+	public CanvasView(GridGraph2D<?, ?> grid, int cellSize) {
 		super(grid, cellSize);
 		ConfigurableGridRenderer r = createMapRenderer(cellSize);
 		pushRenderer(r);
@@ -208,11 +208,11 @@ public class MapCanvas extends GridCanvas {
 		pushRenderer(createMapRenderer(cellSize));
 	}
 
-	public void setModel(PathFinderDemoModel model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 
-	public void setController(PathFinderDemoController controller) {
+	public void setController(Controller controller) {
 		this.controller = controller;
 	}
 

@@ -2,11 +2,11 @@ package de.amr.demos.graph.pathfinding.view;
 
 import javax.swing.table.AbstractTableModel;
 
+import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 
-public class PathFinderResultsTableModel extends AbstractTableModel {
+public class ResultsTableModel extends AbstractTableModel {
 
 	private static final Object[][] COLUMNS = {
 		//@formatter:off
@@ -19,9 +19,9 @@ public class PathFinderResultsTableModel extends AbstractTableModel {
 		//@formatter:on
 	};
 
-	private final PathFinderDemoModel model;
+	private final Model model;
 
-	public PathFinderResultsTableModel(PathFinderDemoModel model) {
+	public ResultsTableModel(Model model) {
 		this.model = model;
 	}
 

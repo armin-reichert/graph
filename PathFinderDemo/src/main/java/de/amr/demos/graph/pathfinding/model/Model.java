@@ -23,7 +23,7 @@ import de.amr.util.StopWatch;
  * 
  * @author Armin Reichert
  */
-public class PathFinderDemoModel {
+public class Model {
 
 	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
 	private final Map<PathFinderAlgorithm, PathFinderResult> results;
@@ -31,17 +31,20 @@ public class PathFinderDemoModel {
 	private int source;
 	private int target;
 
-	public PathFinderDemoModel() {
+	public Model() {
 		this(10, Top8.get());
 	}
 
-	public PathFinderDemoModel(int mapSize, Topology topology) {
+	public Model(int mapSize, Topology topology) {
+
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			results.put(algorithm, new PathFinderResult());
 		}
 		newMap(mapSize, topology);
+		setSource(map.cell(mapSize / 4, mapSize / 2));
+		setTarget(map.cell(mapSize * 3 / 4, mapSize / 2));
 		newPathFinders();
 	}
 

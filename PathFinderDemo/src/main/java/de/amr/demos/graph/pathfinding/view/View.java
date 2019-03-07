@@ -15,7 +15,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,25 +24,23 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import de.amr.demos.graph.pathfinding.controller.PathFinderDemoController;
+import de.amr.demos.graph.pathfinding.controller.Controller;
+import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderDemoModel;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * UI for path finder demo app.
+ * Main view of path finder demo app.
  * 
  * @author Armin Reichert
  */
-public class PathFinderDemoView extends JFrame {
+public class View extends JPanel {
 
 	private static final String _4_NEIGHBORS = "4 Neighbors";
 	private static final String _8_NEIGHBORS = "8 Neighbors";
@@ -135,14 +132,14 @@ public class PathFinderDemoView extends JFrame {
 		}
 	};
 
-	private PathFinderDemoModel model;
-	private PathFinderDemoController controller;
+	private Model model;
+	private Controller controller;
 
-	private MapCanvas canvas;
+	private CanvasView canvas;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
 	private JTable tableResults;
-	private PathFinderResultsTableModel pathFinderResults;
+	private ResultsTableModel pathFinderResults;
 	private JSpinner spinnerMapSize;
 	private JCheckBox cbShowCost;
 	private JLabel lblPathFinding;
@@ -154,29 +151,20 @@ public class PathFinderDemoView extends JFrame {
 	private JScrollPane scrollPaneTableResults;
 	private Component verticalStrut_1;
 
-	public PathFinderDemoView() {
-		getContentPane().setBackground(Color.WHITE);
-		setResizable(false);
-		try {
-			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Pathfinder Demo");
-		getContentPane().setLayout(new MigLayout("", "[grow][]", "[grow]"));
+	public View() {
+		setOpaque(false);
+		setLayout(new MigLayout("", "[grow][grow]", "[grow]"));
 
 		panelMap = new JPanel();
 		panelMap.setOpaque(false);
-		getContentPane().add(panelMap, "cell 0 0,grow");
+		add(panelMap, "cell 0 0,growy");
 		panelMap.setLayout(new BorderLayout(0, 0));
 
 		panelActions = new JPanel();
 		panelActions.setOpaque(false);
 		panelActions.setPreferredSize(new Dimension(500, 10));
 		panelActions.setMinimumSize(new Dimension(500, 10));
-		getContentPane().add(panelActions, "cell 1 0,alignx left,growy");
+		add(panelActions, "cell 1 0,alignx left,growy");
 		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow][]"));
 
 		JLabel lblMap = new JLabel("Map");
@@ -272,13 +260,13 @@ public class PathFinderDemoView extends JFrame {
 		panelActions.add(textLegend, "cell 0 12 2 1,growx");
 	}
 
-	public void init(PathFinderDemoModel model, PathFinderDemoController controller) {
+	public void init(Model model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
 
 		// canvas
 		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 90 / 100) / model.getMapSize();
-		canvas = new MapCanvas(model.getMap(), cellSize);
+		canvas = new CanvasView(model.getMap(), cellSize);
 		canvas.setModel(model);
 		canvas.setController(controller);
 		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
@@ -290,7 +278,7 @@ public class PathFinderDemoView extends JFrame {
 		panelMap.add(canvas, BorderLayout.CENTER);
 
 		// path finder results table
-		pathFinderResults = new PathFinderResultsTableModel(model);
+		pathFinderResults = new ResultsTableModel(model);
 		tableResults.setModel(pathFinderResults);
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
 		scrollPaneTableResults.setVisible(controller.isAutoRunPathFinders());
@@ -316,7 +304,7 @@ public class PathFinderDemoView extends JFrame {
 		actionRunSelectedPathFinder.setEnabled(!controller.isAutoRunPathFinders());
 	}
 
-	public void updateUI() {
+	public void updateView() {
 		if (pathFinderResults != null) {
 			pathFinderResults.fireTableDataChanged();
 		}
@@ -326,11 +314,10 @@ public class PathFinderDemoView extends JFrame {
 		}
 	}
 
-	public void updateCanvasAndUI() {
+	public void updateCanvas() {
 		if (canvas != null) {
 			canvas.setGrid(model.getMap());
 			canvas.setCellSize(canvas.getPreferredSize().height / model.getMapSize());
 		}
-		updateUI();
 	}
 }
