@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,6 +27,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent.EventType;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
 import de.amr.demos.graph.pathfinding.model.Model;
@@ -32,14 +35,13 @@ import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import net.miginfocom.swing.MigLayout;
-import java.awt.SystemColor;
 
 /**
  * Main view of path finder demo app.
  * 
  * @author Armin Reichert
  */
-public class View extends JPanel {
+public class MainView extends JPanel {
 
 	private static final String _4_NEIGHBORS = "4 Neighbors";
 	private static final String _8_NEIGHBORS = "8 Neighbors";
@@ -149,8 +151,9 @@ public class View extends JPanel {
 	private JSlider sliderDelay;
 	private JPanel panelMap;
 	private JScrollPane scrollPaneTableResults;
+	private JTextPane textLegend;
 
-	public View() {
+	public MainView() {
 		setOpaque(false);
 		setLayout(new MigLayout("", "[grow][grow]", "[grow,fill]"));
 
@@ -239,19 +242,21 @@ public class View extends JPanel {
 		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx");
 
 		tableResults = new JTable();
+		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 200));
 		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
 
-		JTextPane textLegend = new JTextPane();
+		textLegend = new JTextPane();
+		textLegend.setMinimumSize(new Dimension(12, 40));
+		textLegend.setBackground(SystemColor.info);
+		textLegend.setText("HERE THE HELP TEXT WILL APPEAR!\r\n");
 		textLegend.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		textLegend.setEditable(false);
 		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textLegend.setContentType("text/html");
-		textLegend.setText(
-				"<div style=\"padding:14px; background-color:#ffffe1\">\r\nPress <em>SHIFT</em> and drag the mouse to add or remove walls. \r\nRight-click opens a context menu where you can change the source and target cells and reset the scene.\r\n<p>\r\n\"Open\" cells are shown in <span style=\"background-color:yellow\">yellow</span>, \r\n\"closed\" cells in <span style=\"background-color:orange\">orange</span>. \r\n\r\nThe source cell is shown in <span style=\"background-color:blue;color:white\">blue</span>, \r\nthe target cell in <span style=\"background-color:green;color:white\">green</span>.\r\n<p>\r\nSource code on GitHub: <b>https://github.com/armin-reichert/graph</b>\r\n</div>");
-		panelActions.add(textLegend, "cell 0 12 2 1,growx");
+		panelActions.add(textLegend, "cell 0 12 2 1,grow");
 	}
 
 	public void init(Model model, Controller controller) {
@@ -274,6 +279,22 @@ public class View extends JPanel {
 		tableResults.setModel(pathFinderResults);
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
 		scrollPaneTableResults.setVisible(controller.isAutoRunPathFinders());
+
+		try {
+			textLegend.setPage(getClass().getResource("/help.html"));
+			textLegend.addHyperlinkListener(e -> {
+				if (e.getEventType() == EventType.ACTIVATED) {
+					try {
+						Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + e.getURL());
+					} catch (IOException x) {
+						x.printStackTrace();
+					}
+				}
+			});
+		} catch (IOException e) {
+			textLegend.setText("COULD NOT READ HELP HTML FILE!");
+			e.printStackTrace();
+		}
 
 		// others controls
 		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 100, 1));

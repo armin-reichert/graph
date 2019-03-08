@@ -6,7 +6,7 @@ import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
 import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.Tile;
-import de.amr.demos.graph.pathfinding.view.View;
+import de.amr.demos.graph.pathfinding.view.MainView;
 import de.amr.graph.grid.api.Topology;
 
 /**
@@ -17,7 +17,7 @@ import de.amr.graph.grid.api.Topology;
 public class Controller {
 
 	private final Model model;
-	private View view;
+	private MainView view;
 
 	private PathFinderAlgorithm selectedAlgorithm;
 	private boolean autoRunPathFinders;
@@ -58,7 +58,7 @@ public class Controller {
 		return selectedAlgorithm;
 	}
 
-	public void setView(View view) {
+	public void setView(MainView view) {
 		this.view = view;
 	}
 

@@ -5,15 +5,15 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-public class Window extends JFrame {
+public class MainWindow extends JFrame {
 
-	public Window() {
+	public MainWindow() {
 		getContentPane().setBackground(Color.WHITE);
 		setTitle("Path Finder Demo");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public void setView(View view) {
+	public void setView(MainView view) {
 		getContentPane().removeAll();
 		getContentPane().add(view, BorderLayout.CENTER);
 		pack();

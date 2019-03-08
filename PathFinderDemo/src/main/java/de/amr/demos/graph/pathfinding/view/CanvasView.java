@@ -131,7 +131,9 @@ public class CanvasView extends GridCanvas {
 				// drag enters new cell
 				draggedCell = cell;
 				if (e.isShiftDown()) {
-					controller.flipTileAt(cell);
+					controller.setTileAt(cell, Tile.BLANK);
+				} else {
+					controller.setTileAt(cell, Tile.WALL);
 				}
 			}
 		}

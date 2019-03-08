@@ -7,8 +7,8 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
 import de.amr.demos.graph.pathfinding.model.Model;
-import de.amr.demos.graph.pathfinding.view.View;
-import de.amr.demos.graph.pathfinding.view.Window;
+import de.amr.demos.graph.pathfinding.view.MainView;
+import de.amr.demos.graph.pathfinding.view.MainWindow;
 import de.amr.graph.grid.impl.Top8;
 
 /**
@@ -30,10 +30,10 @@ public class PathFinderDemoApp {
 	public PathFinderDemoApp() {
 		Model model = new Model(23, Top8.get());
 		Controller controller = new Controller(model);
-		View view = new View();
+		MainView view = new MainView();
 		view.init(model, controller);
 		controller.setView(view);
-		Window window = new Window();
+		MainWindow window = new MainWindow();
 		window.setView(view);
 		window.setVisible(true);
 	}
