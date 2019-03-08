@@ -262,103 +262,108 @@ public class CanvasView extends GridCanvas {
 		return Color.WHITE;
 	}
 
-	private String formatValue(double value) {
-		return value == INFINITE_COST ? "" : String.format("%.0f", value);
-	}
-
 	private boolean partOfSolution(int cell) {
 		return model.getResult(controller.getSelectedAlgorithm()).solutionCells.get(cell);
 	}
 
+	private String formatValue(double value) {
+		return value == INFINITE_COST ? "" : String.format("%.0f", value);
+	}
+
+	private class BlockCellRenderer implements GridCellRenderer {
+
+		final Font font = new Font("Arial Narrow", Font.PLAIN, 12);
+		final int inset;
+		final int cellSize;
+
+		public BlockCellRenderer(int cellSize) {
+			this.cellSize = cellSize;
+			this.inset = cellSize / 10;
+		}
+
+		private void textSizePct(Graphics2D g, int percent) {
+			g.setFont(font.deriveFont(Font.PLAIN, cellSize * percent / 100));
+		}
+
+		private Rectangle2D box(Graphics2D g, String text) {
+			return g.getFontMetrics().getStringBounds(text, g);
+		}
+
+		@Override
+		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
+
+			int cellX = grid.col(cell) * getCellSize();
+			int cellY = grid.row(cell) * getCellSize();
+
+			// cell square
+			g.setColor(getCellBackground(cell));
+			g.fillRect(cellX, cellY, cellSize, cellSize);
+			g.setColor(new Color(160, 160, 160));
+			g.drawRect(cellX, cellY, cellSize, cellSize);
+
+			// check if text gets drawn
+			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
+			if (!showCost || pf.getState(cell) == TraversalState.UNVISITED) {
+				return;
+			}
+
+			// cell text color
+			if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {
+				g.setColor(Color.WHITE);
+			} else {
+				g.setColor(Color.BLUE);
+			}
+
+			g.setFont(font);
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g.translate(cellX, cellY);
+
+			// cell text
+			Rectangle2D box;
+			if (pf.getClass() == AStarSearch.class) {
+				// G-value
+				String gCost = formatValue(pf.getCost(cell));
+				textSizePct(g, 30);
+				box = box(g, gCost);
+				g.drawString(gCost, inset, (int) box.getHeight());
+				// H-value
+				String hCost = formatValue(model.distance(cell, model.getTarget()));
+				textSizePct(g, 30);
+				box = box(g, hCost);
+				g.drawString(hCost, (int) (cellSize - box.getWidth() - inset), (int) box.getHeight());
+				// F-value
+				AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
+				String fCost = formatValue(astar.getScore(cell));
+				textSizePct(g, 50);
+				box = box(g, fCost);
+				g.drawString(fCost, (int) (cellSize - box.getWidth()) / 2, cellSize - inset);
+			} else if (pf.getClass() == BestFirstSearch.class) {
+				// H-value
+				String hCost = formatValue(model.distance(cell, model.getTarget()));
+				textSizePct(g, 30);
+				box = box(g, hCost);
+				g.drawString(hCost, inset, (int) box.getHeight());
+				// G-value
+				String gCost = formatValue(pf.getCost(cell));
+				textSizePct(g, 50);
+				box = box(g, gCost);
+				g.drawString(gCost, (int) (cellSize - box.getWidth()) / 2, cellSize - inset);
+			} else {
+				// G-value
+				String gCost = formatValue(pf.getCost(cell));
+				textSizePct(g, 50);
+				box = box(g, gCost);
+				g.drawString(gCost, (int) (cellSize - box.getWidth()) / 2,
+						cellSize / 2 + g.getFontMetrics().getDescent());
+			}
+			g.translate(-cellX, -cellY);
+		}
+	}
+
 	private ConfigurableGridRenderer createMapRenderer(int cellSize) {
-
-		GridCellRenderer cellBlockRenderer = new GridCellRenderer() {
-
-			final int inset = 4;
-			final Font font = new Font("Arial Narrow", Font.PLAIN, 12);
-
-			private void scaleFont(Graphics2D g, int percent) {
-				g.setFont(font.deriveFont(Font.PLAIN, cellSize * percent / 100));
-			}
-
-			private Rectangle2D box(Graphics2D g, String text) {
-				return g.getFontMetrics().getStringBounds(text, g);
-			}
-
-			@Override
-			public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
-
-				int cellX = grid.col(cell) * getCellSize();
-				int cellY = grid.row(cell) * getCellSize();
-
-				// cell square
-				g.setColor(getCellBackground(cell));
-				g.fillRect(cellX, cellY, cellSize, cellSize);
-				g.setColor(new Color(160, 160, 160));
-				g.drawRect(cellX, cellY, cellSize, cellSize);
-
-				// check if text gets drawn
-				BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-				if (!showCost || pf.getState(cell) == TraversalState.UNVISITED) {
-					return;
-				}
-
-				// cell text color
-				if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {
-					g.setColor(Color.WHITE);
-				} else {
-					g.setColor(Color.BLUE);
-				}
-
-				g.setFont(font);
-				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-				g.translate(cellX, cellY);
-
-				// cell text
-				Rectangle2D box;
-				if (pf.getClass() == AStarSearch.class) {
-					// G-value
-					String gCost = formatValue(pf.getCost(cell));
-					scaleFont(g, 30);
-					box = box(g, gCost);
-					g.drawString(gCost, inset, (int) box.getHeight());
-					// H-value
-					String hCost = formatValue(model.distance(cell, model.getTarget()));
-					scaleFont(g, 30);
-					box = box(g, hCost);
-					g.drawString(hCost, (int) (cellSize - box.getWidth() - inset), (int) box.getHeight());
-					// F-value
-					AStarSearch<Tile, Double> astar = (AStarSearch<Tile, Double>) pf;
-					String fCost = formatValue(astar.getScore(cell));
-					scaleFont(g, 50);
-					box = box(g, fCost);
-					g.drawString(fCost, (int) (cellSize - box.getWidth()) / 2, cellSize - inset);
-				} else if (pf.getClass() == BestFirstSearch.class) {
-					// H-value
-					String hCost = formatValue(model.distance(cell, model.getTarget()));
-					scaleFont(g, 30);
-					box = box(g, hCost);
-					g.drawString(hCost, inset, (int) box.getHeight());
-					// G-value
-					String gCost = formatValue(pf.getCost(cell));
-					scaleFont(g, 50);
-					box = box(g, gCost);
-					g.drawString(gCost, (int) (cellSize - box.getWidth()) / 2, cellSize - inset);
-				} else {
-					// G-value
-					String gCost = formatValue(pf.getCost(cell));
-					scaleFont(g, 50);
-					box = box(g, gCost);
-					g.drawString(gCost, (int) (cellSize - box.getWidth()) / 2,
-							cellSize / 2 + g.getFontMetrics().getDescent());
-				}
-				g.translate(-cellX, -cellY);
-			}
-		};
-
 		ConfigurableGridRenderer r;
 		if (style == RenderingStyle.BLOCKS) {
-			r = new WallPassageGridRenderer(cellBlockRenderer);
+			r = new WallPassageGridRenderer(new BlockCellRenderer(cellSize));
 			r.fnPassageWidth = (u, v) -> cellSize - 1;
 		} else if (style == RenderingStyle.PEARLS) {
 			r = new PearlsGridRenderer();
@@ -372,5 +377,4 @@ public class CanvasView extends GridCanvas {
 		r.fnPassageColor = (cell, dir) -> Color.WHITE;
 		return r;
 	}
-
 }
