@@ -60,10 +60,6 @@ public class DFSAnimation extends AbstractAnimation {
 	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
 
 		@Override
-		public void edgeTraversed(int either, int other) {
-		}
-
-		@Override
 		public void vertexAddedToFrontier(int vertex) {
 			delayed(() -> drawPath(vertex));
 		}
@@ -71,10 +67,6 @@ public class DFSAnimation extends AbstractAnimation {
 		@Override
 		public void vertexRemovedFromFrontier(int vertex) {
 			delayed(() -> drawPath(vertex));
-		}
-
-		@Override
-		public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
 		}
 	};
 

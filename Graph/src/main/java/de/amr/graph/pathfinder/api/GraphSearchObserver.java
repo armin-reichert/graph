@@ -7,11 +7,15 @@ package de.amr.graph.pathfinder.api;
  */
 public interface GraphSearchObserver {
 
-	void vertexAddedToFrontier(int vertex);
+	default void vertexAddedToFrontier(int vertex) {
+	}
 
-	void vertexRemovedFromFrontier(int vertex);
+	default void vertexRemovedFromFrontier(int vertex) {
+	}
 
-	void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState);
+	default void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
+	}
 
-	void edgeTraversed(int either, int other);
+	default void edgeTraversed(int either, int other) {
+	}
 }

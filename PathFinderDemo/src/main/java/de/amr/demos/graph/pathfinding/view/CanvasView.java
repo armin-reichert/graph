@@ -46,16 +46,6 @@ public class CanvasView extends GridCanvas {
 	class PathFinderAnimation extends AbstractAnimation implements GraphSearchObserver {
 
 		@Override
-		public void vertexAddedToFrontier(int v) {
-			// state change handles this
-		}
-
-		@Override
-		public void vertexRemovedFromFrontier(int v) {
-			// state change handles this
-		}
-
-		@Override
 		public void vertexStateChanged(int v, TraversalState oldState, TraversalState newState) {
 			delayed(() -> drawGridCell(v));
 		}
