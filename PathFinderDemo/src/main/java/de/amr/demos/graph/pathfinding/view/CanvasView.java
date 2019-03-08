@@ -14,6 +14,9 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
@@ -22,6 +25,7 @@ import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
+import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.ui.animation.AbstractAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -133,19 +137,31 @@ public class CanvasView extends GridCanvas {
 		}
 	}
 
-	private Action actionSetSource = new AbstractAction("Start Search Here") {
+	private Action actionSetSource = new AbstractAction("Search From Here") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.setSource(selectedCell);
+			JComponent trigger = (JComponent) e.getSource();
+			GridPosition position = (GridPosition) trigger.getClientProperty("position");
+			if (position != null) {
+				controller.setSource(model.getMap().cell(position));
+			} else {
+				controller.setSource(selectedCell);
+			}
 		}
 	};
 
-	private Action actionSetTarget = new AbstractAction("End Search Here") {
+	private Action actionSetTarget = new AbstractAction("Search To Here") {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.setTarget(selectedCell);
+			JComponent trigger = (JComponent) e.getSource();
+			GridPosition position = (GridPosition) trigger.getClientProperty("position");
+			if (position != null) {
+				controller.setTarget(model.getMap().cell(position));
+			} else {
+				controller.setTarget(selectedCell);
+			}
 		}
 	};
 
@@ -175,9 +191,28 @@ public class CanvasView extends GridCanvas {
 		MouseHandler mouse = new MouseHandler();
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
+		createContextMenu();
+	}
+
+	private void createContextMenu() {
 		contextMenu = new JPopupMenu();
 		contextMenu.add(actionSetSource);
+		JMenu sourceMenu = new JMenu("Search From");
+		for (GridPosition position : GridPosition.values()) {
+			JMenuItem item = sourceMenu.add(actionSetSource);
+			item.setText(position.toString());
+			item.putClientProperty("position", position);
+		}
+		contextMenu.add(sourceMenu);
+		contextMenu.addSeparator();
 		contextMenu.add(actionSetTarget);
+		JMenu targetMenu = new JMenu("Search To");
+		for (GridPosition position : GridPosition.values()) {
+			JMenuItem item = targetMenu.add(actionSetTarget);
+			item.setText(position.toString());
+			item.putClientProperty("position", position);
+		}
+		contextMenu.add(targetMenu);
 		contextMenu.addSeparator();
 		contextMenu.add(actionResetScene);
 	}
@@ -196,7 +231,7 @@ public class CanvasView extends GridCanvas {
 	public void runPathFinderAnimation() {
 		new PathFinderAnimationTask().execute();
 	}
-	
+
 	public void fixHeight(int fixedHeight) {
 		this.fixedHeight = fixedHeight;
 	}
@@ -217,7 +252,7 @@ public class CanvasView extends GridCanvas {
 	@Override
 	public void setGrid(GridGraph<?, ?> grid) {
 		super.setGrid(grid);
-		int cellSize = (int)Math.floor((float)fixedHeight / grid.numCols());
+		int cellSize = (int) Math.floor((float) fixedHeight / grid.numCols());
 		resizeCanvas(cellSize);
 		replaceRenderer(cellSize);
 	}
