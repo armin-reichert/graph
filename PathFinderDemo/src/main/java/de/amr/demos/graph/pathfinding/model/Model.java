@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import de.amr.graph.core.api.UndirectedEdge;
+import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
@@ -78,19 +79,48 @@ public class Model {
 			}
 		}
 
-		int sourceCol = scale(oldMap.col(source), scalingFactor), sourceRow = scale(oldMap.row(source), scalingFactor);
-		if (map.isValidCol(sourceCol) && map.isValidRow(sourceRow)) {
-			source = map.cell(sourceCol, sourceRow);
-		} else {
-			source = 0;
+		boolean mapped = false;
+		for (GridPosition pos : GridPosition.values()) {
+			if (pos == GridPosition.CENTER) {
+				 continue;
+			}
+			if (source == oldMap.cell(pos)) {
+				source = map.cell(pos);
+				mapped = true;
+				break;
+			}
 		}
-		int targetCol = scale(oldMap.col(target), scalingFactor), targetRow = scale(oldMap.row(target), scalingFactor);
-		if (map.isValidCol(targetCol) && map.isValidRow(targetRow)) {
-			target = map.cell(targetCol, targetRow);
-		} else {
-			target = map.numVertices() - 1;
+		if (!mapped) {
+			int sourceCol = scale(oldMap.col(source), scalingFactor),
+					sourceRow = scale(oldMap.row(source), scalingFactor);
+			if (map.isValidCol(sourceCol) && map.isValidRow(sourceRow)) {
+				source = map.cell(sourceCol, sourceRow);
+			} else {
+				source = 0;
+			}
 		}
-//		System.out.println("New source " + source + ", new target " + target);
+
+		mapped = false;
+		for (GridPosition pos : GridPosition.values()) {
+			if (pos == GridPosition.CENTER) {
+				 continue;
+			}
+			if (target == oldMap.cell(pos)) {
+				target = map.cell(pos);
+				mapped = true;
+				break;
+			}
+		}
+		if (!mapped) {
+			int targetCol = scale(oldMap.col(target), scalingFactor),
+					targetRow = scale(oldMap.row(target), scalingFactor);
+			if (map.isValidCol(targetCol) && map.isValidRow(targetRow)) {
+				target = map.cell(targetCol, targetRow);
+			} else {
+				target = map.numVertices() - 1;
+			}
+		}
+		// System.out.println("New source " + source + ", new target " + target);
 	}
 
 	private static int scale(int coord, float scaling) {
