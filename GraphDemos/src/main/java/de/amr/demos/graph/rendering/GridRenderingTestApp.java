@@ -26,6 +26,7 @@ public class GridRenderingTestApp extends SwingGridSampleApp {
 			setCellSize(cellSize);
 			getGrid().setDefaultVertexLabel(v -> COMPLETED);
 			getGrid().fill();
+			getCanvas().clear();
 			watch.measure(getCanvas()::drawGrid);
 			out.println(format("Rendering grid with %d cells took %.3f seconds", getGrid().numVertices(),
 					watch.getSeconds()));

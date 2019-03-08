@@ -10,7 +10,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
 import de.amr.graph.grid.api.GridGraph2D;
@@ -27,14 +26,12 @@ public class GridCanvas extends JComponent {
 	protected GridGraph2D<?, ?> grid;
 	protected BufferedImage buffer;
 
-	public GridCanvas(GridGraph2D<?, ?> grid, int cellSize) {
+	public GridCanvas(GridGraph2D<?, ?> grid) {
 		if (grid == null) {
 			throw new IllegalArgumentException("No grid specified");
 		}
 		this.grid = grid;
 		setDoubleBuffered(false);
-		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		resizeTo(cellSize);
 	}
 
 	public GridGraph2D<?, ?> getGrid() {
@@ -98,7 +95,7 @@ public class GridCanvas extends JComponent {
 		});
 	}
 
-	protected void resizeTo(int cellSize) {
+	protected void resizeCanvas(int cellSize) {
 		int width = grid.numCols() * cellSize, height = grid.numRows() * cellSize;
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
@@ -109,36 +106,31 @@ public class GridCanvas extends JComponent {
 		setSize(dimension);
 	}
 
-	public void setCellSize(int cellSize) {
-		resizeTo(cellSize);
-		repaint();
-	}
-
 	public Optional<GridRenderer> getRenderer() {
 		return Optional.ofNullable(rendererStack.peek());
 	}
 
 	public void pushRenderer(GridRenderer newRenderer) {
-		getRenderer().ifPresent(oldRenderer -> {
-			if (oldRenderer.getModel().getCellSize() != newRenderer.getModel().getCellSize()) {
-				resizeTo(newRenderer.getModel().getCellSize());
-			}
-			repaint();
-		});
+		int oldCellSize = rendererStack.isEmpty() ? 0 : rendererStack.peek().getModel().getCellSize();
+		int newCellSize = newRenderer.getModel().getCellSize();
 		rendererStack.push(newRenderer);
+		if (newCellSize != oldCellSize) {
+			resizeCanvas(newCellSize);
+		}
+		repaint();
 	}
 
 	public GridRenderer popRenderer() {
-		if (rendererStack.isEmpty()) {
-			throw new IllegalStateException("Cannot remove last renderer");
+		if (rendererStack.size() < 2) {
+			throw new IllegalStateException("Cannot remove last renderer from stack");
 		}
 		GridRenderer oldRenderer = rendererStack.pop();
-		getRenderer().ifPresent(newRenderer -> {
-			if (oldRenderer.getModel().getCellSize() != newRenderer.getModel().getCellSize()) {
-				resizeTo(newRenderer.getModel().getCellSize());
-			}
-			repaint();
-		});
+		int oldCellSize = oldRenderer.getModel().getCellSize();
+		int newCellSize = rendererStack.peek().getModel().getCellSize();
+		if (oldCellSize != newCellSize) {
+			resizeCanvas(newCellSize);
+		}
+		repaint();
 		return oldRenderer;
 	}
 }

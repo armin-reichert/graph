@@ -14,7 +14,6 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
@@ -23,6 +22,7 @@ import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
+import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.ui.animation.AbstractAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -164,13 +164,12 @@ public class CanvasView extends GridCanvas {
 	private PathFinderAnimation animation;
 	private JPopupMenu contextMenu;
 	private int selectedCell;
+	private int fixedHeight;
 
-	public CanvasView(GridGraph2D<?, ?> grid, int cellSize) {
-		super(grid, cellSize);
+	public CanvasView(GridGraph2D<?, ?> grid, int height) {
+		super(grid);
+		this.fixedHeight = height;
 		style = RenderingStyle.BLOCKS;
-		ConfigurableGridRenderer r = createMapRenderer(cellSize);
-		pushRenderer(r);
-		setBorder(BorderFactory.createLineBorder(r.getModel().getGridBgColor(), 1));
 		animation = new PathFinderAnimation();
 		selectedCell = -1;
 		MouseHandler mouse = new MouseHandler();
@@ -181,6 +180,13 @@ public class CanvasView extends GridCanvas {
 		contextMenu.add(actionSetTarget);
 		contextMenu.addSeparator();
 		contextMenu.add(actionResetScene);
+	}
+
+	public void init(Model model, Controller controller) {
+		this.model = model;
+		this.controller = controller;
+		ConfigurableGridRenderer r = createMapRenderer(fixedHeight / model.getMapSize());
+		pushRenderer(r);
 	}
 
 	public PathFinderAnimation getAnimation() {
@@ -196,22 +202,19 @@ public class CanvasView extends GridCanvas {
 	}
 
 	@Override
-	public void setCellSize(int cellSize) {
-		popRenderer();
-		pushRenderer(createMapRenderer(cellSize));
-	}
-
-	public void init(Model model, Controller controller) {
-		this.model = model;
-		this.controller = controller;
+	public void setGrid(GridGraph<?, ?> grid) {
+		super.setGrid(grid);
+		resizeCanvas(fixedHeight / model.getMapSize());
 	}
 
 	public void setStyle(RenderingStyle style) {
 		this.style = style;
-		clear();
 		int cellSize = getCellSize();
-		popRenderer();
+		if (rendererStack.size() > 1) {
+			popRenderer();
+		}
 		pushRenderer(createMapRenderer(cellSize));
+		clear();
 		drawGrid();
 	}
 

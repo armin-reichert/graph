@@ -260,8 +260,8 @@ public class View extends JPanel {
 		this.controller = controller;
 
 		// canvas
-		int cellSize = (Toolkit.getDefaultToolkit().getScreenSize().height * 85 / 100) / model.getMapSize();
-		canvas = new CanvasView(model.getMap(), cellSize);
+		int height = Toolkit.getDefaultToolkit().getScreenSize().height * 85 / 100;
+		canvas = new CanvasView(model.getMap(), height);
 		canvas.init(model, controller);
 		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		canvas.setShowCost(cbShowCost.isSelected());
@@ -308,7 +308,6 @@ public class View extends JPanel {
 	public void updateCanvas() {
 		if (canvas != null) {
 			canvas.setGrid(model.getMap());
-			canvas.setCellSize(canvas.getPreferredSize().height / model.getMapSize());
 		}
 	}
 }

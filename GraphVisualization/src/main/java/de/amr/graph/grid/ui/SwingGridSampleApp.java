@@ -126,7 +126,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	private GridCanvas createAnimatedCanvas() {
-		GridCanvas canvas = new GridCanvas(grid, cellSize);
+		GridCanvas canvas = new GridCanvas(grid);
 		canvas.setBackground(Color.BLACK);
 		canvas.pushRenderer(createRenderer());
 		canvas.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
@@ -147,7 +147,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 		renderer.fnCellSize = () -> cellSize;
 		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED));
 		canvas.setGrid(grid);
-		canvas.setCellSize(cellSize);
 		window.setTitle(getTitleText());
 	}
 
