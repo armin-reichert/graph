@@ -4,8 +4,8 @@ import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static java.lang.Math.min;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.traversals.ExpandingCircle;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class ExpandingCircleApp extends SwingGridSampleApp {
 

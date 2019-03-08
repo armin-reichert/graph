@@ -5,9 +5,9 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class FullGridApp extends SwingGridSampleApp {
 

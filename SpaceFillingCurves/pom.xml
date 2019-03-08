@@ -20,13 +20,8 @@
   </build>
   <dependencies>
   	<dependency>
-  		<groupId>de.amr.graph</groupId>
-  		<artifactId>Graph</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.amr.demos.graph</groupId>
-  		<artifactId>GraphDemos</artifactId>
+  		<groupId>de.amr.graph.viz</groupId>
+  		<artifactId>GraphVisualization</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>

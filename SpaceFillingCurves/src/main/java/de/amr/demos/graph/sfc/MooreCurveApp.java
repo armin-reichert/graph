@@ -5,8 +5,8 @@ import static de.amr.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.curves.MooreLCurve;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 /**
  * Creates Moore curves of different sizes and shows an animation of the creation and BFS-traversal

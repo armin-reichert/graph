@@ -6,7 +6,7 @@ import static java.lang.System.out;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class GridRenderingTestApp extends SwingGridSampleApp {
 

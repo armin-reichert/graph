@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.curves.HilbertCurve;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 /**
  * Creates Hilbert curves of different sizes and shows an animation of the creation and a flood-fill

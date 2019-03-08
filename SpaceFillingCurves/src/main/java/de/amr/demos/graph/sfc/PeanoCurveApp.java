@@ -6,8 +6,8 @@ import static de.amr.graph.util.GraphUtils.log;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.curves.PeanoCurve;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class PeanoCurveApp extends SwingGridSampleApp {
 

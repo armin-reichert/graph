@@ -5,8 +5,8 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.traversals.Spiral;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class SpiralApp extends SwingGridSampleApp {
 

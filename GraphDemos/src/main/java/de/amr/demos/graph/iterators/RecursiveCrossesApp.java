@@ -4,8 +4,8 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 
 import java.util.stream.IntStream;
 
-import de.amr.demos.graph.SwingGridSampleApp;
 import de.amr.graph.grid.traversals.RecursiveCrosses;
+import de.amr.graph.grid.ui.SwingGridSampleApp;
 
 public class RecursiveCrossesApp extends SwingGridSampleApp {
 
