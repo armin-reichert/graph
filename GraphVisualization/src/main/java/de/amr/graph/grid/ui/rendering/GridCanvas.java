@@ -61,7 +61,6 @@ public class GridCanvas extends JComponent {
 
 	public void clear() {
 		getRenderer().ifPresent(r -> fill(r.getModel().getGridBgColor()));
-		repaint();
 	}
 
 	public void fill(Color bgColor) {
@@ -97,13 +96,14 @@ public class GridCanvas extends JComponent {
 
 	protected void resizeCanvas(int cellSize) {
 		int width = grid.numCols() * cellSize, height = grid.numRows() * cellSize;
+		Dimension dimension = new Dimension(width, height);
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
-		Dimension dimension = new Dimension(width, height);
 		setMinimumSize(dimension);
 		setMaximumSize(dimension);
 		setPreferredSize(dimension);
 		setSize(dimension);
+		// System.out.println("Canvas width: " + dimension);
 	}
 
 	public Optional<GridRenderer> getRenderer() {
@@ -117,7 +117,6 @@ public class GridCanvas extends JComponent {
 		if (newCellSize != oldCellSize) {
 			resizeCanvas(newCellSize);
 		}
-		repaint();
 	}
 
 	public GridRenderer popRenderer() {
@@ -130,7 +129,6 @@ public class GridCanvas extends JComponent {
 		if (oldCellSize != newCellSize) {
 			resizeCanvas(newCellSize);
 		}
-		repaint();
 		return oldRenderer;
 	}
 }

@@ -166,9 +166,9 @@ public class CanvasView extends GridCanvas {
 	private int selectedCell;
 	private int fixedHeight;
 
-	public CanvasView(GridGraph2D<?, ?> grid, int height) {
+	public CanvasView(GridGraph2D<?, ?> grid, int initialHeight) {
 		super(grid);
-		this.fixedHeight = height;
+		this.fixedHeight = initialHeight;
 		style = RenderingStyle.BLOCKS;
 		animation = new PathFinderAnimation();
 		selectedCell = -1;
@@ -196,26 +196,35 @@ public class CanvasView extends GridCanvas {
 	public void runPathFinderAnimation() {
 		new PathFinderAnimationTask().execute();
 	}
+	
+	public void fixHeight(int fixedHeight) {
+		this.fixedHeight = fixedHeight;
+	}
 
 	private int getCellSize() {
 		return getRenderer().get().getModel().getCellSize();
 	}
 
-	@Override
-	public void setGrid(GridGraph<?, ?> grid) {
-		super.setGrid(grid);
-		resizeCanvas(fixedHeight / model.getMapSize());
-	}
-
-	public void setStyle(RenderingStyle style) {
-		this.style = style;
-		int cellSize = getCellSize();
+	private void replaceRenderer(int cellSize) {
 		if (rendererStack.size() > 1) {
-			popRenderer();
+			rendererStack.pop();
 		}
 		pushRenderer(createMapRenderer(cellSize));
 		clear();
 		drawGrid();
+	}
+
+	@Override
+	public void setGrid(GridGraph<?, ?> grid) {
+		super.setGrid(grid);
+		int cellSize = (int)Math.floor((float)fixedHeight / grid.numCols());
+		resizeCanvas(cellSize);
+		replaceRenderer(cellSize);
+	}
+
+	public void setStyle(RenderingStyle style) {
+		this.style = style;
+		replaceRenderer(getCellSize());
 	}
 
 	public void setShowCost(boolean showCost) {

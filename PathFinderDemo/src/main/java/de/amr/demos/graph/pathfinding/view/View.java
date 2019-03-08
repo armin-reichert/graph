@@ -157,7 +157,6 @@ public class View extends JPanel {
 		panelMap = new JPanel();
 		panelMap.setPreferredSize(new Dimension(500, 10));
 		panelMap.setBackground(Color.WHITE);
-		panelMap.setBorder(new LineBorder(new Color(0, 0, 0)));
 		add(panelMap, "cell 0 0,growy");
 		panelMap.setLayout(new BorderLayout(0, 0));
 
@@ -266,7 +265,7 @@ public class View extends JPanel {
 		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		canvas.setShowCost(cbShowCost.isSelected());
 		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
-		canvas.setPreferredSize(canvas.getSize());
+		canvas.fixHeight(canvas.getSize().height);
 
 		panelMap.add(canvas, BorderLayout.CENTER);
 

@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.Top4;
-import de.amr.graph.grid.impl.Top8;
 
 /**
  * Renders a grid as "passages" or "cells with walls" depending on the selected passage thickness.
@@ -78,6 +77,9 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		grid.edges().forEach(passage -> drawPassage(g, grid, passage.either(), passage.other(), true));
 		grid.vertices().filter(cell -> grid.degree(cell) == 0)
 				.forEach(cell -> getCellRenderer(cell).drawCell(g, grid, cell));
+		g.setColor(getGridBgColor());
+		// what the heck?
+		g.drawRect(0, 0, getCellSize() * grid.numCols() - 1, getCellSize() * grid.numRows() - 1);
 	}
 
 	@Override
@@ -99,31 +101,27 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		final int longside = (getCellSize() + passageWidth) / 2;
 		final int shortside = passageWidth;
 		g.setColor(passageColor);
-		if (grid.getTopology() instanceof Top4) {
-			switch (dir) {
-			case Top4.E:
-				g.translate(centerX - shortside / 2, centerY - shortside / 2);
-				g.fillRect(0, 0, longside, shortside);
-				g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
-				break;
-			case Top4.S:
-				g.translate(centerX - shortside / 2, centerY - shortside / 2);
-				g.fillRect(0, 0, shortside, longside);
-				g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
-				break;
-			case Top4.W:
-				g.translate(centerX - getCellSize() / 2, centerY - shortside / 2);
-				g.fillRect(0, 0, longside, shortside);
-				g.translate(-centerX + getCellSize() / 2, -centerY + shortside / 2);
-				break;
-			case Top4.N:
-				g.translate(centerX - shortside / 2, centerY - getCellSize() / 2);
-				g.fillRect(0, 0, shortside, longside);
-				g.translate(-centerX + shortside / 2, -centerY + getCellSize() / 2);
-				break;
-			}
-		} else if (grid.getTopology() instanceof Top8) {
-			// TODO
+		switch (dir) {
+		case Top4.E:
+			g.translate(centerX - shortside / 2, centerY - shortside / 2);
+			g.fillRect(0, 0, longside, shortside);
+			g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
+			break;
+		case Top4.S:
+			g.translate(centerX - shortside / 2, centerY - shortside / 2);
+			g.fillRect(0, 0, shortside, longside);
+			g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
+			break;
+		case Top4.W:
+			g.translate(centerX - getCellSize() / 2, centerY - shortside / 2);
+			g.fillRect(0, 0, longside, shortside);
+			g.translate(-centerX + getCellSize() / 2, -centerY + shortside / 2);
+			break;
+		case Top4.N:
+			g.translate(centerX - shortside / 2, centerY - getCellSize() / 2);
+			g.fillRect(0, 0, shortside, longside);
+			g.translate(-centerX + shortside / 2, -centerY + getCellSize() / 2);
+			break;
 		}
 	}
 }
