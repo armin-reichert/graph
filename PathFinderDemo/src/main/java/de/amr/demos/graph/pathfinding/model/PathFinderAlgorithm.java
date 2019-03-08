@@ -7,8 +7,8 @@ import de.amr.graph.pathfinder.impl.DijkstraSearch;
 
 public enum PathFinderAlgorithm {
 	BFS(BreadthFirstSearch.class),
-	Dijkstra(DijkstraSearch.class),
 	GreedyBestFirst(BestFirstSearch.class),
+	Dijkstra(DijkstraSearch.class),
 	AStar(AStarSearch.class);
 
 	private final Class<?> implementation;
@@ -25,11 +25,11 @@ public enum PathFinderAlgorithm {
 	public String toString() {
 		switch (this) {
 		case AStar:
-			return "A* Search";
+			return "A*";
 		case GreedyBestFirst:
-			return "Best-First Search";
+			return "Greedy Best-First";
 		case BFS:
-			return "Breadth-First Search";
+			return "Breadth-First";
 		default:
 			return super.toString();
 		}
