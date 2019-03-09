@@ -1,15 +1,16 @@
 package de.amr.demos.graph.pathfinding.view;
 
 import java.awt.Component;
+import java.util.function.Function;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 
 import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
+import de.amr.graph.pathfinder.api.PathFinder;
 
 /**
  * Table with path finder results.
@@ -22,23 +23,42 @@ public class ResultsTable extends JTable {
 
 		final String title;
 		final Class<?> type;
-		final String format;
+		final Function<Object, String> formatter;
 
-		ColumnSpec(String title, Class<?> type, String format) {
+		ColumnSpec(String title, Class<?> type, Function<Object, String> formatter) {
 			this.title = title;
 			this.type = type;
-			this.format = format;
+			this.formatter = formatter;
+		}
+
+		ColumnSpec(String title, Class<?> type) {
+			this(title, type, Object::toString);
 		}
 	}
 
 	private static final ColumnSpec[] COLUMNS = {
 		//@formatter:off
-		new ColumnSpec("Algorithm", String.class, "%s"), 
-		new ColumnSpec("Time [ms]", Float.class, "%.2f"), 
-		new ColumnSpec("Path length", Integer.class, "%d"), 
-		new ColumnSpec("Path cost", Double.class, "%.2f"),
-		new ColumnSpec("Loss (%)", Double.class, "%.0f"),
-		new ColumnSpec("Visited", Long.class, "%d"), 
+		new ColumnSpec(
+				"Algorithm", 
+				String.class), 
+		new ColumnSpec(
+				"Time [ms]", 
+				Float.class, 
+				time -> String.format("%.1f", time)), 
+		new ColumnSpec(
+				"Path length", 
+				Integer.class, 
+				len -> (int) len == -1 ? "\u221e" : String.format("%d", len)), 
+		new ColumnSpec(
+				"Path cost", 
+				Double.class, 
+				cost -> (double)cost == PathFinder.INFINITE_COST ? "\u221e" : String.format("%.2f", cost)),
+		new ColumnSpec(
+				"Loss (%)", 
+				Double.class, 
+				loss -> String.format("%.0f", loss)),
+		new ColumnSpec(
+				"Visited", Long.class), 
 		//@formatter:on
 	};
 
@@ -95,32 +115,20 @@ public class ResultsTable extends JTable {
 
 	private void formatColumns() {
 		for (int i = 0; i < COLUMNS.length; ++i) {
-			TableColumn column = getColumnModel().getColumn(i);
-			ColumnSpec columnSpec = COLUMNS[i];
-			column.setCellRenderer(new DefaultTableCellRenderer() {
+			final ColumnSpec column = COLUMNS[i];
+			getColumnModel().getColumn(i).setCellRenderer(new DefaultTableCellRenderer() {
 
 				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-						boolean hasFocus, int row, int column) {
-					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+						boolean hasFocus, int rowIndex, int columnIndex) {
+					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
 					if (value == null) {
 						return this;
 					}
-					if (columnSpec.type == String.class) {
-						setHorizontalAlignment(LEADING);
-						setText(String.format(columnSpec.format, value));
-					} else if (columnSpec.type == Float.class) {
+					if (column.type == Float.class || column.type == Double.class || column.type == Integer.class
+							|| column.type == Long.class) {
 						setHorizontalAlignment(TRAILING);
-						setText(String.format(columnSpec.format, (Float) value));
-					} else if (columnSpec.type == Double.class) {
-						setHorizontalAlignment(TRAILING);
-						setText(String.format(columnSpec.format, (Double) value));
-					} else if (columnSpec.type == Integer.class) {
-						setHorizontalAlignment(TRAILING);
-						setText(String.format(columnSpec.format, (Integer) value));
-					} else if (columnSpec.type == Long.class) {
-						setHorizontalAlignment(TRAILING);
-						setText(String.format(columnSpec.format, (Long) value));
+						setText(column.formatter.apply(value));
 					}
 					return this;
 				}
