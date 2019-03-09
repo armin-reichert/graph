@@ -285,7 +285,7 @@ public class MainView extends JPanel {
 	}
 
 	public void updateView() {
-		tableResults.update();
+		tableResults.dataChanged();
 		if (canvasView != null) {
 			canvasView.clear();
 			canvasView.drawGrid();
@@ -297,5 +297,4 @@ public class MainView extends JPanel {
 			canvasView.setGrid(model.getMap());
 		}
 	}
-
 }

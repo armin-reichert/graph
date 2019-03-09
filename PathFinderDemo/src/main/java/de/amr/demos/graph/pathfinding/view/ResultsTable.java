@@ -2,30 +2,47 @@ package de.amr.demos.graph.pathfinding.view;
 
 import java.awt.Component;
 
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
 
+/**
+ * Table with path finder results.
+ * 
+ * @author Armin Reichert
+ */
 public class ResultsTable extends JTable {
 
-	private static class ResultsTableModel extends AbstractTableModel {
+	private static class ColumnSpec {
 
-		private static final Object[][] COLUMNS = {
-			//@formatter:off
-			{ "Algorithm", String.class }, 
-			{ "Time [ms]", Float.class }, 
-			{ "Path length", Integer.class }, 
-			{ "Path cost", Double.class },
-			{ "Loss (%)", Double.class },
-			{ "Visited", Integer.class } 
-			//@formatter:on
-		};
+		final String title;
+		final Class<?> type;
+		final String format;
+
+		ColumnSpec(String title, Class<?> type, String format) {
+			this.title = title;
+			this.type = type;
+			this.format = format;
+		}
+	}
+
+	private static final ColumnSpec[] COLUMNS = {
+		//@formatter:off
+		new ColumnSpec("Algorithm", String.class, "%s"), 
+		new ColumnSpec("Time [ms]", Float.class, "%.2f"), 
+		new ColumnSpec("Path length", Integer.class, "%d"), 
+		new ColumnSpec("Path cost", Double.class, "%.2f"),
+		new ColumnSpec("Loss (%)", Double.class, "%.0f"),
+		new ColumnSpec("Visited", Long.class, "%d"), 
+		//@formatter:on
+	};
+
+	private static class ResultsTableModel extends AbstractTableModel {
 
 		private final Model model;
 
@@ -45,12 +62,12 @@ public class ResultsTable extends JTable {
 
 		@Override
 		public String getColumnName(int column) {
-			return (String) COLUMNS[column][0];
+			return COLUMNS[column].title;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int column) {
-			return (Class<?>) COLUMNS[column][1];
+			return COLUMNS[column].type;
 		}
 
 		@Override
@@ -76,33 +93,48 @@ public class ResultsTable extends JTable {
 		}
 	}
 
-	private static TableCellRenderer cellRenderer(String fmt) {
-		return new DefaultTableCellRenderer() {
+	private void formatColumns() {
+		for (int i = 0; i < COLUMNS.length; ++i) {
+			TableColumn column = getColumnModel().getColumn(i);
+			ColumnSpec columnSpec = COLUMNS[i];
+			column.setCellRenderer(new DefaultTableCellRenderer() {
 
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
-				label.setHorizontalAlignment(TRAILING);
-				if (value.getClass() == Double.class) {
-					label.setText(String.format(fmt, (double) value));
-				} else if (value.getClass() == Float.class) {
-					label.setText(String.format(fmt, (float) value));
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+						boolean hasFocus, int row, int column) {
+					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					if (value == null) {
+						return this;
+					}
+					if (columnSpec.type == String.class) {
+						setHorizontalAlignment(LEADING);
+						setText(String.format(columnSpec.format, value));
+					} else if (columnSpec.type == Float.class) {
+						setHorizontalAlignment(TRAILING);
+						setText(String.format(columnSpec.format, (Float) value));
+					} else if (columnSpec.type == Double.class) {
+						setHorizontalAlignment(TRAILING);
+						setText(String.format(columnSpec.format, (Double) value));
+					} else if (columnSpec.type == Integer.class) {
+						setHorizontalAlignment(TRAILING);
+						setText(String.format(columnSpec.format, (Integer) value));
+					} else if (columnSpec.type == Long.class) {
+						setHorizontalAlignment(TRAILING);
+						setText(String.format(columnSpec.format, (Long) value));
+					}
+					return this;
 				}
-				return label;
-			}
-		};
+			});
+		}
+		getColumnModel().getColumn(0).setPreferredWidth(140);
 	}
 
 	public void init(Model model) {
 		setModel(new ResultsTableModel(model));
-		getColumnModel().getColumn(0).setPreferredWidth(140);
-		setDefaultRenderer(Float.class, cellRenderer("%.2f"));
-		setDefaultRenderer(Double.class, cellRenderer("%.2f"));
+		formatColumns();
 	}
 
-	public void update() {
+	public void dataChanged() {
 		if (getModel() != null) {
 			((ResultsTableModel) getModel()).fireTableDataChanged();
 		}
