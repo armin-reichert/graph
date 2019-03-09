@@ -1,5 +1,7 @@
 package de.amr.demos.graph.pathfinding.view;
 
+import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
+
 import java.awt.Component;
 import java.util.function.Function;
 
@@ -10,7 +12,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.PathFinderResult;
-import de.amr.graph.pathfinder.api.PathFinder;
 
 /**
  * Table with path finder results.
@@ -52,11 +53,11 @@ public class ResultsTable extends JTable {
 		new ColumnSpec(
 				"Path cost", 
 				Double.class, 
-				cost -> (double)cost == PathFinder.INFINITE_COST ? "\u221e" : String.format("%.2f", cost)),
+				cost -> (double) cost == INFINITE_COST ? "\u221e" : String.format("%.2f", cost)),
 		new ColumnSpec(
-				"Loss (%)", 
+				"Loss", 
 				Double.class, 
-				loss -> String.format("%.0f", loss)),
+				loss -> String.format("%.0f %%", loss)),
 		new ColumnSpec(
 				"Visited", Long.class), 
 		//@formatter:on

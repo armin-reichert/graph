@@ -3,6 +3,7 @@ package de.amr.demos.graph.pathfinding.view;
 import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
 import static java.lang.Math.min;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -179,6 +180,7 @@ public class CanvasView extends GridCanvas {
 	private Controller controller;
 	private RenderingStyle style;
 	private boolean showCost;
+	private boolean showParent = false;
 	private PathFinderAnimation animation;
 	private JPopupMenu contextMenu;
 	private int selectedCell;
@@ -342,7 +344,7 @@ public class CanvasView extends GridCanvas {
 
 			// check if text gets drawn
 			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-			if (!showCost || pf.getState(cell) == TraversalState.UNVISITED) {
+			if (!showCost) {
 				return;
 			}
 
@@ -353,11 +355,11 @@ public class CanvasView extends GridCanvas {
 				g.setColor(Color.BLUE);
 			}
 
-			g.setFont(font);
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.translate(cellX, cellY);
 
 			// cell text
+			g.setFont(font);
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			Rectangle2D box;
 			if (pf.getClass() == AStarSearch.class) {
 				// G-value
@@ -396,6 +398,20 @@ public class CanvasView extends GridCanvas {
 						cellSize / 2 + g.getFontMetrics().getDescent());
 			}
 			g.translate(-cellX, -cellY);
+			
+			// parent 
+			if (showParent) {
+				int parent = pf.getParent(cell);
+				if (parent != -1) {
+					int parentX = grid.col(parent) * getCellSize();
+					int parentY = grid.row(parent) * getCellSize();
+					int offset = getCellSize() / 2;
+					g.setColor(Color.BLACK);
+					g.setStroke(new BasicStroke(2));
+					g.drawLine(cellX + offset, cellY + offset, parentX + offset, parentY + offset);
+				}
+			}
+			
 		}
 	}
 
