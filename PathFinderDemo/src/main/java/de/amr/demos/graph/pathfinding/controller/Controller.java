@@ -38,6 +38,11 @@ public class Controller {
 			view.updateView();
 		}
 	}
+	
+	public void clearResults() {
+		model.clearResults();
+		view.updateView();
+	}
 
 	public void runPathFinders() {
 		model.runPathFinders();

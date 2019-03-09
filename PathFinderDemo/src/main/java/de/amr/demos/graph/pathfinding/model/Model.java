@@ -59,7 +59,7 @@ public class Model {
 		float scalingFactor = (float) map.numCols() / oldMap.numCols();
 		for (int oldRow = 0; oldRow < oldMap.numRows(); ++oldRow) {
 			for (int oldCol = 0; oldCol < oldMap.numCols(); ++oldCol) {
-				int row = scale(oldRow, scalingFactor), col = scale(oldCol, scalingFactor);
+				int row = scaledCoord(oldRow, scalingFactor), col = scaledCoord(oldCol, scalingFactor);
 				int cell = map.cell(col, row);
 				Tile tile = oldMap.get(oldMap.cell(oldCol, oldRow));
 				map.set(cell, tile);
@@ -82,7 +82,7 @@ public class Model {
 		boolean mapped = false;
 		for (GridPosition pos : GridPosition.values()) {
 			if (pos == GridPosition.CENTER) {
-				 continue;
+				continue;
 			}
 			if (source == oldMap.cell(pos)) {
 				source = map.cell(pos);
@@ -91,8 +91,8 @@ public class Model {
 			}
 		}
 		if (!mapped) {
-			int sourceCol = scale(oldMap.col(source), scalingFactor),
-					sourceRow = scale(oldMap.row(source), scalingFactor);
+			int sourceCol = scaledCoord(oldMap.col(source), scalingFactor),
+					sourceRow = scaledCoord(oldMap.row(source), scalingFactor);
 			if (map.isValidCol(sourceCol) && map.isValidRow(sourceRow)) {
 				source = map.cell(sourceCol, sourceRow);
 			} else {
@@ -103,7 +103,7 @@ public class Model {
 		mapped = false;
 		for (GridPosition pos : GridPosition.values()) {
 			if (pos == GridPosition.CENTER) {
-				 continue;
+				continue;
 			}
 			if (target == oldMap.cell(pos)) {
 				target = map.cell(pos);
@@ -112,18 +112,17 @@ public class Model {
 			}
 		}
 		if (!mapped) {
-			int targetCol = scale(oldMap.col(target), scalingFactor),
-					targetRow = scale(oldMap.row(target), scalingFactor);
+			int targetCol = scaledCoord(oldMap.col(target), scalingFactor),
+					targetRow = scaledCoord(oldMap.row(target), scalingFactor);
 			if (map.isValidCol(targetCol) && map.isValidRow(targetRow)) {
 				target = map.cell(targetCol, targetRow);
 			} else {
 				target = map.numVertices() - 1;
 			}
 		}
-		// System.out.println("New source " + source + ", new target " + target);
 	}
 
-	private static int scale(int coord, float scaling) {
+	private static int scaledCoord(int coord, float scaling) {
 		return (int) (scaling * coord);
 	}
 
@@ -159,6 +158,12 @@ public class Model {
 		return 10 * map.euclidean(u, v);
 	}
 
+	private void newPathFinders() {
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			pathFinders.put(algorithm, createPathFinder(algorithm));
+		}
+	}
+
 	private BreadthFirstSearch<Tile, Double> createPathFinder(PathFinderAlgorithm algorithm) {
 		switch (algorithm) {
 		case AStar:
@@ -173,14 +178,12 @@ public class Model {
 		throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
 	}
 
-	public void newPathFinder(PathFinderAlgorithm algorithm) {
-		pathFinders.put(algorithm, createPathFinder(algorithm));
+	public BreadthFirstSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
+		return pathFinders.get(algorithm);
 	}
 
-	private void newPathFinders() {
-		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			pathFinders.put(algorithm, createPathFinder(algorithm));
-		}
+	public void newPathFinder(PathFinderAlgorithm algorithm) {
+		pathFinders.put(algorithm, createPathFinder(algorithm));
 	}
 
 	public void runPathFinders() {
@@ -206,9 +209,15 @@ public class Model {
 				.count();
 		results.put(algorithm, r);
 	}
-
+	
 	public PathFinderResult getResult(PathFinderAlgorithm algorithm) {
 		return results.get(algorithm);
+	}
+
+	public void clearResults() {
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			clearResult(algorithm);
+		}
 	}
 
 	public void clearResult(PathFinderAlgorithm algorithm) {
@@ -216,26 +225,18 @@ public class Model {
 		getPathFinder(algorithm).init();
 	}
 
-	public int numPathFinders() {
-		return pathFinders.size();
-	}
-
-	public BreadthFirstSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
-		return pathFinders.get(algorithm);
-	}
-
 	public GridGraph<Tile, Double> getMap() {
 		return map;
+	}
+
+	public int getMapSize() {
+		return map.numRows(); // square map
 	}
 
 	public void setMapSize(int mapSize) {
 		if (mapSize != map.numRows()) {
 			newMap(mapSize, map.getTopology());
 		}
-	}
-
-	public int getMapSize() {
-		return map.numRows(); // square map
 	}
 
 	public int getSource() {

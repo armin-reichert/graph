@@ -35,7 +35,7 @@ public class ResultsTable extends JTable {
 
 		@Override
 		public int getRowCount() {
-			return model.numPathFinders();
+			return PathFinderAlgorithm.values().length;
 		}
 
 		@Override
