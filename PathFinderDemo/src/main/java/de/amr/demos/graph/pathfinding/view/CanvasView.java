@@ -121,7 +121,10 @@ public class CanvasView extends GridCanvas {
 			} else if (e.isPopupTrigger()) {
 				// open popup menu
 				selectedCell = cellAt(e);
-				showContextMenu(e.getX(), e.getY());
+				boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
+				actionSetSource.setEnabled(blank);
+				actionSetTarget.setEnabled(blank);
+				contextMenu.show(CanvasView.this, e.getX(), e.getY());
 			}
 		}
 
@@ -271,13 +274,6 @@ public class CanvasView extends GridCanvas {
 		drawGrid();
 	}
 
-	public void showContextMenu(int x, int y) {
-		boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-		actionSetSource.setEnabled(blank);
-		actionSetTarget.setEnabled(blank);
-		contextMenu.show(this, x, y);
-	}
-
 	// Renderer
 
 	private Color getCellBackground(int cell) {
@@ -398,8 +394,8 @@ public class CanvasView extends GridCanvas {
 						cellSize / 2 + g.getFontMetrics().getDescent());
 			}
 			g.translate(-cellX, -cellY);
-			
-			// parent 
+
+			// parent
 			if (showParent) {
 				int parent = pf.getParent(cell);
 				if (parent != -1) {
@@ -411,7 +407,7 @@ public class CanvasView extends GridCanvas {
 					g.drawLine(cellX + offset, cellY + offset, parentX + offset, parentY + offset);
 				}
 			}
-			
+
 		}
 	}
 
