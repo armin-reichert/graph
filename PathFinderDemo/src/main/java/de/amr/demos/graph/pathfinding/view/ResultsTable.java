@@ -18,12 +18,12 @@ public class ResultsTable extends JTable {
 
 		private static final Object[][] COLUMNS = {
 			//@formatter:off
-				{ "Algorithm", String.class }, 
-				{ "Time [ms]", Float.class }, 
-				{ "Path length", Integer.class }, 
-				{ "Path cost", Double.class },
-				{ "Loss (%)", Double.class },
-				{ "Visited", Integer.class } 
+			{ "Algorithm", String.class }, 
+			{ "Time [ms]", Float.class }, 
+			{ "Path length", Integer.class }, 
+			{ "Path cost", Double.class },
+			{ "Loss (%)", Double.class },
+			{ "Visited", Integer.class } 
 			//@formatter:on
 		};
 
@@ -76,23 +76,7 @@ public class ResultsTable extends JTable {
 		}
 	}
 
-	private ResultsTableModel tableModel;
-
-	public void init(Model model) {
-		tableModel = new ResultsTableModel(model);
-		setModel(tableModel);
-		getColumnModel().getColumn(0).setPreferredWidth(140);
-		setDefaultRenderer(Float.class, createNumberFormatter("%.2f"));
-		setDefaultRenderer(Double.class, createNumberFormatter("%.2f"));
-	}
-
-	public void update() {
-		if (tableModel != null) {
-			tableModel.fireTableDataChanged();
-		}
-	}
-
-	private static TableCellRenderer createNumberFormatter(String fmt) {
+	private static TableCellRenderer cellRenderer(String fmt) {
 		return new DefaultTableCellRenderer() {
 
 			@Override
@@ -109,5 +93,18 @@ public class ResultsTable extends JTable {
 				return label;
 			}
 		};
+	}
+
+	public void init(Model model) {
+		setModel(new ResultsTableModel(model));
+		getColumnModel().getColumn(0).setPreferredWidth(140);
+		setDefaultRenderer(Float.class, cellRenderer("%.2f"));
+		setDefaultRenderer(Double.class, cellRenderer("%.2f"));
+	}
+
+	public void update() {
+		if (getModel() != null) {
+			((ResultsTableModel) getModel()).fireTableDataChanged();
+		}
 	}
 }
