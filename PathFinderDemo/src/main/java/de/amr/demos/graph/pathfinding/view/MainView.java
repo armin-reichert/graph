@@ -2,13 +2,11 @@ package de.amr.demos.graph.pathfinding.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -21,16 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.HyperlinkEvent.EventType;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
 import de.amr.demos.graph.pathfinding.model.Model;
@@ -53,7 +45,7 @@ public class MainView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			canvas.runPathFinderAnimation();
+			canvasView.runPathFinderAnimation();
 		}
 	};
 
@@ -62,7 +54,7 @@ public class MainView extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			model.clearResult(controller.getSelectedAlgorithm());
-			canvas.drawGrid();
+			canvasView.drawGrid();
 		}
 	};
 
@@ -107,7 +99,7 @@ public class MainView extends JPanel {
 				controller.runPathFinders();
 			} else {
 				model.clearResult(controller.getSelectedAlgorithm());
-				canvas.drawGrid();
+				canvasView.drawGrid();
 			}
 		}
 	};
@@ -116,7 +108,7 @@ public class MainView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
+			canvasView.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
 		}
 	};
 
@@ -124,7 +116,7 @@ public class MainView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			canvas.setShowCost(cbShowCost.isSelected());
+			canvasView.setShowCost(cbShowCost.isSelected());
 		}
 	};
 
@@ -140,11 +132,10 @@ public class MainView extends JPanel {
 	private Model model;
 	private Controller controller;
 
-	private CanvasView canvas;
+	private CanvasView canvasView;
 	private JComboBox<PathFinderAlgorithm> comboAlgorithm;
 	private JComboBox<String> comboTopology;
-	private JTable tableResults;
-	private ResultsTableModel pathFinderResults;
+	private ResultsTable tableResults;
 	private JSpinner spinnerMapSize;
 	private JCheckBox cbShowCost;
 	private JLabel lblPathFinding;
@@ -154,7 +145,7 @@ public class MainView extends JPanel {
 	private JSlider sliderDelay;
 	private JPanel panelMap;
 	private JScrollPane scrollPaneTableResults;
-	private JTextPane textLegend;
+	private HelpPanel helpPanel;
 
 	public MainView() {
 		setOpaque(false);
@@ -168,8 +159,8 @@ public class MainView extends JPanel {
 
 		panelActions = new JPanel();
 		panelActions.setBackground(Color.WHITE);
-		panelActions.setPreferredSize(new Dimension(500, 10));
-		panelActions.setMinimumSize(new Dimension(500, 10));
+		panelActions.setPreferredSize(new Dimension(500, 50));
+		panelActions.setMinimumSize(new Dimension(500, 50));
 		add(panelActions, "cell 1 0,alignx left,growy");
 		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow,bottom]"));
 
@@ -245,21 +236,15 @@ public class MainView extends JPanel {
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx,aligny top");
 
-		tableResults = new JTable();
+		tableResults = new ResultsTable();
 		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 100));
 		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
 
-		textLegend = new JTextPane();
-		textLegend.setBackground(SystemColor.info);
-		textLegend.setText("HERE THE HELP TEXT WILL APPEAR!\r\n");
-		textLegend.setBorder(new LineBorder(Color.LIGHT_GRAY));
-		textLegend.setEditable(false);
-		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		textLegend.setContentType("text/html");
-		panelActions.add(textLegend, "cell 0 11 2 1,growx,aligny bottom");
+		helpPanel = new HelpPanel();
+		panelActions.add(helpPanel, "cell 0 11 2 1,growx,aligny bottom");
 	}
 
 	public void init(Model model, Controller controller) {
@@ -268,38 +253,17 @@ public class MainView extends JPanel {
 
 		// canvas
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height * 85 / 100;
-		canvas = new CanvasView(model.getMap(), height);
-		canvas.init(model, controller);
-		canvas.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
-		canvas.setShowCost(cbShowCost.isSelected());
-		canvas.getAnimation().setFnDelay(sliderDelay::getValue);
-		canvas.fixHeight(canvas.getSize().height);
-
-		panelMap.add(canvas, BorderLayout.CENTER);
+		canvasView = new CanvasView(model.getMap(), height);
+		canvasView.init(model, controller);
+		canvasView.setStyle(comboStyle.getItemAt(comboStyle.getSelectedIndex()));
+		canvasView.setShowCost(cbShowCost.isSelected());
+		canvasView.getAnimation().setFnDelay(sliderDelay::getValue);
+		canvasView.fixHeight(canvasView.getSize().height);
+		panelMap.add(canvasView, BorderLayout.CENTER);
 
 		// path finder results table
-		pathFinderResults = new ResultsTableModel(model);
-		tableResults.setModel(pathFinderResults);
-		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
-		tableResults.setDefaultRenderer(Float.class, createNumberFormatter("%.2f"));
-		tableResults.setDefaultRenderer(Double.class, createNumberFormatter("%.2f"));
 		scrollPaneTableResults.setVisible(controller.isAutoRunPathFinders());
-
-		try {
-			textLegend.setPage(getClass().getResource("/help.html"));
-			textLegend.addHyperlinkListener(e -> {
-				if (e.getEventType() == EventType.ACTIVATED) {
-					try {
-						Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + e.getURL());
-					} catch (IOException x) {
-						x.printStackTrace();
-					}
-				}
-			});
-		} catch (IOException e) {
-			textLegend.setText("COULD NOT READ HELP HTML FILE!");
-			e.printStackTrace();
-		}
+		tableResults.init(model);
 
 		// others controls
 		spinnerMapSize.setModel(new SpinnerNumberModel(model.getMapSize(), 2, 100, 1));
@@ -321,37 +285,17 @@ public class MainView extends JPanel {
 	}
 
 	public void updateView() {
-		if (pathFinderResults != null) {
-			pathFinderResults.fireTableDataChanged();
-		}
-		if (canvas != null) {
-			canvas.clear();
-			canvas.drawGrid();
+		tableResults.update();
+		if (canvasView != null) {
+			canvasView.clear();
+			canvasView.drawGrid();
 		}
 	}
 
 	public void updateCanvas() {
-		if (canvas != null) {
-			canvas.setGrid(model.getMap());
+		if (canvasView != null) {
+			canvasView.setGrid(model.getMap());
 		}
 	}
 
-	private static TableCellRenderer createNumberFormatter(String fmt) {
-		return new DefaultTableCellRenderer() {
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
-				label.setHorizontalAlignment(TRAILING);
-				if (value.getClass() == Double.class) {
-					label.setText(String.format(fmt, (double) value));
-				} else if (value.getClass() == Float.class) {
-					label.setText(String.format(fmt, (float) value));
-				}
-				return label;
-			}
-		};
-	}
 }
