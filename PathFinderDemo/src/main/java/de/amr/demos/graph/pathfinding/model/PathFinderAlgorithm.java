@@ -6,15 +6,21 @@ import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
 
 public enum PathFinderAlgorithm {
-	BFS(BreadthFirstSearch.class),
-	GreedyBestFirst(BestFirstSearch.class),
-	Dijkstra(DijkstraSearch.class),
-	AStar(AStarSearch.class);
+	BFS("Breadth-First Search", BreadthFirstSearch.class),
+	GreedyBestFirst("Best-First Search", BestFirstSearch.class),
+	Dijkstra("Dijkstra", DijkstraSearch.class),
+	AStar("A* Search", AStarSearch.class);
 
+	private final String displayName;
 	private final Class<?> implementation;
 
-	private PathFinderAlgorithm(Class<?> implementation) {
+	private PathFinderAlgorithm(String name, Class<?> implementation) {
+		this.displayName = name;
 		this.implementation = implementation;
+	}
+
+	public String getDisplayName() {
+		return displayName;
 	}
 
 	public Class<?> getImplementation() {
@@ -23,15 +29,6 @@ public enum PathFinderAlgorithm {
 
 	@Override
 	public String toString() {
-		switch (this) {
-		case AStar:
-			return "A*";
-		case GreedyBestFirst:
-			return "Greedy Best-First";
-		case BFS:
-			return "Breadth-First";
-		default:
-			return super.toString();
-		}
+		return displayName;
 	}
 }
