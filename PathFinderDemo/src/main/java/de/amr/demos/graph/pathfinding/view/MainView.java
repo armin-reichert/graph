@@ -2,6 +2,7 @@ package de.amr.demos.graph.pathfinding.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.SystemColor;
@@ -28,6 +29,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
 import de.amr.demos.graph.pathfinding.model.Model;
@@ -278,6 +281,8 @@ public class MainView extends JPanel {
 		pathFinderResults = new ResultsTableModel(model);
 		tableResults.setModel(pathFinderResults);
 		tableResults.getColumnModel().getColumn(0).setPreferredWidth(140);
+		tableResults.setDefaultRenderer(Float.class, createNumberFormatter("%.2f"));
+		tableResults.setDefaultRenderer(Double.class, createNumberFormatter("%.2f"));
 		scrollPaneTableResults.setVisible(controller.isAutoRunPathFinders());
 
 		try {
@@ -329,5 +334,24 @@ public class MainView extends JPanel {
 		if (canvas != null) {
 			canvas.setGrid(model.getMap());
 		}
+	}
+
+	private static TableCellRenderer createNumberFormatter(String fmt) {
+		return new DefaultTableCellRenderer() {
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+				JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+						column);
+				label.setHorizontalAlignment(TRAILING);
+				if (value.getClass() == Double.class) {
+					label.setText(String.format(fmt, (double) value));
+				} else if (value.getClass() == Float.class) {
+					label.setText(String.format(fmt, (float) value));
+				}
+				return label;
+			}
+		};
 	}
 }
