@@ -168,7 +168,7 @@ public class MainView extends JPanel {
 		panelActions.setPreferredSize(new Dimension(500, 10));
 		panelActions.setMinimumSize(new Dimension(500, 10));
 		add(panelActions, "cell 1 0,alignx left,growy");
-		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow][]"));
+		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow,bottom]"));
 
 		JLabel lblMap = new JLabel("Map");
 		panelActions.add(lblMap, "cell 0 0 2 1,alignx leading");
@@ -238,25 +238,25 @@ public class MainView extends JPanel {
 		panelActions.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
 
 		scrollPaneTableResults = new JScrollPane();
+		scrollPaneTableResults.setMaximumSize(new Dimension(32767, 200));
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx");
+		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx,aligny top");
 
 		tableResults = new JTable();
-		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 200));
+		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 100));
 		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);
 		scrollPaneTableResults.setViewportView(tableResults);
 
 		textLegend = new JTextPane();
-		textLegend.setMinimumSize(new Dimension(12, 40));
 		textLegend.setBackground(SystemColor.info);
 		textLegend.setText("HERE THE HELP TEXT WILL APPEAR!\r\n");
 		textLegend.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		textLegend.setEditable(false);
 		textLegend.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textLegend.setContentType("text/html");
-		panelActions.add(textLegend, "cell 0 12 2 1,grow");
+		panelActions.add(textLegend, "cell 0 11 2 1,growx,aligny bottom");
 	}
 
 	public void init(Model model, Controller controller) {
