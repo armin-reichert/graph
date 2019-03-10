@@ -30,6 +30,7 @@ import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JTable;
 
 /**
  * Main view of path finder demo app.
@@ -149,7 +150,7 @@ public class MainView extends JPanel {
 
 	public MainView() {
 		setOpaque(false);
-		setLayout(new MigLayout("", "[grow][grow]", "[grow,fill]"));
+		setLayout(new MigLayout("", "[][grow]", "[grow,fill]"));
 
 		panelMap = new JPanel();
 		panelMap.setPreferredSize(new Dimension(500, 10));
@@ -158,10 +159,10 @@ public class MainView extends JPanel {
 		panelMap.setLayout(new BorderLayout(0, 0));
 
 		panelActions = new JPanel();
+		panelActions.setMinimumSize(new Dimension(550, 10));
 		panelActions.setBackground(Color.WHITE);
 		panelActions.setPreferredSize(new Dimension(500, 50));
-		panelActions.setMinimumSize(new Dimension(500, 50));
-		add(panelActions, "cell 1 0,alignx left,growy");
+		add(panelActions, "cell 1 0,grow");
 		panelActions.setLayout(new MigLayout("", "[grow,center][grow]", "[][][][][][][][][][][][grow,bottom]"));
 
 		JLabel lblMap = new JLabel("Map");
@@ -232,12 +233,12 @@ public class MainView extends JPanel {
 		panelActions.add(cbShowCost, "cell 1 9,alignx leading,aligny bottom");
 
 		scrollPaneTableResults = new JScrollPane();
-		scrollPaneTableResults.setMaximumSize(new Dimension(32767, 200));
 		scrollPaneTableResults.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		panelActions.add(scrollPaneTableResults, "cell 0 10 2 1,growx,aligny top");
 
 		tableResults = new ResultsTable();
-		tableResults.setPreferredScrollableViewportSize(new Dimension(450, 100));
+		tableResults.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableResults.setPreferredScrollableViewportSize(new Dimension(500, 64));
 		tableResults.setFillsViewportHeight(true);
 		tableResults.setEnabled(false);
 		tableResults.setShowVerticalLines(false);

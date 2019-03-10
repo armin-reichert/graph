@@ -59,7 +59,9 @@ public class ResultsTable extends JTable {
 				Double.class, 
 				loss -> String.format("%.0f %%", loss)),
 		new ColumnSpec(
-				"Visited", Long.class), 
+				"Open", Long.class), 
+		new ColumnSpec(
+				"Closed", Long.class), 
 		//@formatter:on
 	};
 
@@ -108,7 +110,9 @@ public class ResultsTable extends JTable {
 				double optimalCost = model.getResult(PathFinderAlgorithm.AStar).pathCost;
 				return 100 * (result.pathCost - optimalCost) / optimalCost;
 			case 5:
-				return result.numVisitedVertices;
+				return result.numOpenVertices;
+			case 6:
+				return result.numClosedVertices;
 			}
 			throw new IllegalArgumentException();
 		}
@@ -135,7 +139,7 @@ public class ResultsTable extends JTable {
 				}
 			});
 		}
-		getColumnModel().getColumn(0).setPreferredWidth(140);
+		getColumnModel().getColumn(0).setPreferredWidth(160);
 	}
 
 	public void init(Model model) {

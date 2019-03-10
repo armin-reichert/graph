@@ -1,5 +1,7 @@
 package de.amr.demos.graph.pathfinding.model;
 
+import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
+
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +13,8 @@ public class PathFinderResult {
 	public float runningTimeMillis;
 	public int pathLength;
 	public double pathCost;
-	public long numVisitedVertices;
+	public long numOpenVertices;
+	public long numClosedVertices;
 
 	public PathFinderResult() {
 		clear();
@@ -22,7 +25,8 @@ public class PathFinderResult {
 		solutionCells = new BitSet();
 		runningTimeMillis = 0;
 		pathLength = -1;
-		pathCost = -1;
-		numVisitedVertices = 0;
+		pathCost = INFINITE_COST;
+		numOpenVertices = 0;
+		numClosedVertices = 0;
 	}
 }
