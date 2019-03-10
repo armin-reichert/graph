@@ -91,7 +91,8 @@ public class CanvasView extends GridCanvas {
 
 		private int draggedCell;
 
-		private int cellAt(MouseEvent e) {
+		// grid cell index associated with event
+		private int getEventLocation(MouseEvent e) {
 			int col = max(0, min(e.getX() / getCellSize(), model.getMap().numCols() - 1));
 			int row = max(0, min(e.getY() / getCellSize(), model.getMap().numRows() - 1));
 			return model.getMap().cell(col, row);
@@ -104,7 +105,7 @@ public class CanvasView extends GridCanvas {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				int cell = cellAt(e);
+				int cell = getEventLocation(e);
 				controller.flipTileAt(cell);
 			}
 		}
@@ -112,32 +113,28 @@ public class CanvasView extends GridCanvas {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (draggedCell != -1) {
-				// end dragging
+				// dragging ends
 				draggedCell = -1;
 				if (controller.isAutoRunPathFinders()) {
 					controller.runPathFinders();
 				}
 			} else if (e.isPopupTrigger()) {
 				// open popup menu
-				selectedCell = cellAt(e);
-				boolean blank = model.getMap().get(selectedCell) == Tile.BLANK;
-				actionSetSource.setEnabled(blank);
-				actionSetTarget.setEnabled(blank);
+				selectedCell = getEventLocation(e);
+				boolean blankCellSelected = model.getMap().get(selectedCell) == Tile.BLANK;
+				actionSetSource.setEnabled(blankCellSelected);
+				actionSetTarget.setEnabled(blankCellSelected);
 				contextMenu.show(CanvasView.this, e.getX(), e.getY());
 			}
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			int cell = cellAt(e);
+			int cell = getEventLocation(e);
 			if (cell != draggedCell) {
-				// drag enters new cell
+				// dragging into new cell
 				draggedCell = cell;
-				if (e.isShiftDown()) {
-					controller.setTileAt(cell, Tile.BLANK);
-				} else {
-					controller.setTileAt(cell, Tile.WALL);
-				}
+				controller.setTileAt(cell, e.isShiftDown() ? Tile.BLANK : Tile.WALL);
 			}
 		}
 	}
