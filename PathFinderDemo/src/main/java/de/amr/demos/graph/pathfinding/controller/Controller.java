@@ -34,11 +34,9 @@ public class Controller {
 		} else {
 			model.clearResult(selectedAlgorithm);
 		}
-		if (view != null) {
-			view.updateView();
-		}
+		view.updateView();
 	}
-	
+
 	public void clearResults() {
 		model.clearResults();
 		view.updateView();
@@ -77,16 +75,14 @@ public class Controller {
 
 	public void resizeMap(int size) {
 		model.resizeMap(size);
-		maybeRunPathFinder();
 		view.updateCanvas();
-		view.updateView();
+		maybeRunPathFinder();
 	}
 
 	public void setTopology(Topology topology) {
 		model.setTopology(topology);
-		maybeRunPathFinder();
 		view.updateCanvas();
-		view.updateView();
+		maybeRunPathFinder();
 	}
 
 	public void setSource(int source) {
@@ -100,15 +96,14 @@ public class Controller {
 	}
 
 	public void setTileAt(int cell, Tile tile) {
-		if (cell == model.getSource() || cell == model.getTarget()) {
-			return;
+		if (cell != model.getSource() && cell != model.getTarget()) {
+			model.setTile(cell, tile);
+			maybeRunPathFinder();
 		}
-		model.setTile(cell, tile);
-		maybeRunPathFinder();
 	}
 
 	public void flipTileAt(int cell) {
-		Tile newTile = model.getMap().get(cell) == WALL ? BLANK : WALL;
-		setTileAt(cell, newTile);
+		Tile flippedTile = model.getMap().get(cell) == WALL ? BLANK : WALL;
+		setTileAt(cell, flippedTile);
 	}
 }

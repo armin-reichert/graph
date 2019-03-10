@@ -55,27 +55,15 @@ public class Model {
 		if (oldMap == null) {
 			return;
 		}
-		map.removeEdges();
+
 		float scalingFactor = (float) map.numCols() / oldMap.numCols();
-		for (int oldRow = 0; oldRow < oldMap.numRows(); ++oldRow) {
-			for (int oldCol = 0; oldCol < oldMap.numCols(); ++oldCol) {
-				int row = scaledCoord(oldRow, scalingFactor), col = scaledCoord(oldCol, scalingFactor);
-				int cell = map.cell(col, row);
-				Tile tile = oldMap.get(oldMap.cell(oldCol, oldRow));
-				map.set(cell, tile);
-				if (tile == WALL) {
-					map.neighbors(cell).forEach(neighbor -> {
-						if (map.adjacent(cell, neighbor)) {
-							map.removeEdge(cell, neighbor);
-						}
-					});
-				} else {
-					map.neighbors(cell).filter(neighbor -> map.get(neighbor) != WALL).forEach(neighbor -> {
-						if (!map.adjacent(cell, neighbor)) {
-							map.addEdge(cell, neighbor);
-						}
-					});
-				}
+
+		// copy walls into map, keep aspect ratio
+		for (int oldCell = 0; oldCell < oldMap.numVertices(); ++oldCell) {
+			int oldRow = oldMap.row(oldCell), oldCol = oldMap.col(oldCell);
+			int row = scaledCoord(oldRow, scalingFactor), col = scaledCoord(oldCol, scalingFactor);
+			if (map.isValidRow(row) && map.isValidCol(col)) {
+				setTile(map.cell(col, row), oldMap.get(oldCell));
 			}
 		}
 
@@ -120,6 +108,9 @@ public class Model {
 				target = map.numVertices() - 1;
 			}
 		}
+		
+		setTile(source, Tile.BLANK);
+		setTile(target, Tile.BLANK);
 	}
 
 	private static int scaledCoord(int coord, float scaling) {
@@ -206,8 +197,7 @@ public class Model {
 		r.pathCost = pf.getCost(target);
 		r.runningTimeMillis = watch.getNanos() / 1_000_000;
 		r.numOpenVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.VISITED).count();
-		r.numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED)
-				.count();
+		r.numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED).count();
 		results.put(algorithm, r);
 	}
 
