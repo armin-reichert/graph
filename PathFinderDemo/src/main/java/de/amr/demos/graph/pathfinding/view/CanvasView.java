@@ -1,7 +1,7 @@
 package de.amr.demos.graph.pathfinding.view;
 
 import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -92,8 +92,8 @@ public class CanvasView extends GridCanvas {
 		private int draggedCell;
 
 		private int cellAt(MouseEvent e) {
-			int col = min(e.getX() / getCellSize(), model.getMap().numCols() - 1);
-			int row = min(e.getY() / getCellSize(), model.getMap().numRows() - 1);
+			int col = max(0, min(e.getX() / getCellSize(), model.getMap().numCols() - 1));
+			int row = max(0, min(e.getY() / getCellSize(), model.getMap().numRows() - 1));
 			return model.getMap().cell(col, row);
 		}
 
@@ -302,11 +302,6 @@ public class CanvasView extends GridCanvas {
 		return model.getResult(controller.getSelectedAlgorithm()).solutionCells.get(cell);
 	}
 
-	private String formatValue(double value) {
-		// display real value multiplied by 10
-		return value == INFINITE_COST ? "" : String.format("%.0f", 10 * value);
-	}
-
 	private class BlockCellRenderer implements GridCellRenderer {
 
 		final Font font = new Font("Arial Narrow", Font.PLAIN, 12);
@@ -316,6 +311,11 @@ public class CanvasView extends GridCanvas {
 		public BlockCellRenderer(int cellSize) {
 			this.cellSize = cellSize;
 			this.inset = cellSize / 10;
+		}
+
+		private String formatValue(double value) {
+			// display real value multiplied by 10
+			return value == INFINITE_COST ? "" : String.format("%.0f", 10 * value);
 		}
 
 		private void textSizePct(Graphics2D g, int percent) {
