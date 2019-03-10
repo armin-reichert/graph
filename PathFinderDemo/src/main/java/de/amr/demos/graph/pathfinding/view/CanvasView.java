@@ -39,7 +39,6 @@ import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
-import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
  * View showing map and path finder animations.
@@ -289,11 +288,11 @@ public class CanvasView extends GridCanvas {
 		if (partOfSolution(cell)) {
 			return Color.RED.brighter();
 		}
-		GraphSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-		if (pf.getState(cell) == TraversalState.COMPLETED) {
+		TraversalState cellState = model.getPathFinder(controller.getSelectedAlgorithm()).getState(cell);
+		if (cellState == TraversalState.COMPLETED) {
 			return Color.ORANGE;
 		}
-		if (pf.getState(cell) == TraversalState.VISITED) {
+		if (cellState == TraversalState.VISITED) {
 			return Color.YELLOW;
 		}
 		return Color.WHITE;
@@ -304,7 +303,8 @@ public class CanvasView extends GridCanvas {
 	}
 
 	private String formatValue(double value) {
-		return value == INFINITE_COST ? "" : String.format("%.0f", value);
+		// display real value multiplied by 10
+		return value == INFINITE_COST ? "" : String.format("%.0f", 10 * value);
 	}
 
 	private class BlockCellRenderer implements GridCellRenderer {
@@ -339,14 +339,17 @@ public class CanvasView extends GridCanvas {
 			g.drawRect(cellX, cellY, cellSize, cellSize);
 
 			// check if text gets drawn
-			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
-			if (!showCost) {
+			if (!showCost || model.getMap().get(cell) == Tile.WALL) {
 				return;
 			}
+
+			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
 
 			// cell text color
 			if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {
 				g.setColor(Color.WHITE);
+			} else if (pf.getState(cell) == TraversalState.UNVISITED) {
+				g.setColor(Color.LIGHT_GRAY);
 			} else {
 				g.setColor(Color.BLUE);
 			}
@@ -407,7 +410,6 @@ public class CanvasView extends GridCanvas {
 					g.drawLine(cellX + offset, cellY + offset, parentX + offset, parentY + offset);
 				}
 			}
-
 		}
 	}
 

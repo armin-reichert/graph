@@ -114,7 +114,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *            grid cell
 	 * @param v
 	 *            grid cell
-	 * @return squared Euclidean distance between cells
+	 * @return Euclidean distance between cells
 	 */
 	default double euclidean(int u, int v) {
 		int dx = col(u) - col(v), dy = row(u) - row(v);

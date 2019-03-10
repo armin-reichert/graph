@@ -52,8 +52,9 @@ public class ResultsTable extends JTable {
 				len -> (int) len == -1 ? "\u221e" : String.format("%d", len)), 
 		new ColumnSpec(
 				"Path cost", 
-				Double.class, 
-				cost -> (double) cost == INFINITE_COST ? "\u221e" : String.format("%.2f", cost)),
+				Double.class,
+			// display real value multiplied by 10
+				cost -> (double) cost == INFINITE_COST ? "\u221e" : String.format("%.0f", 10 * (double) cost)),
 		new ColumnSpec(
 				"Loss", 
 				Double.class, 

@@ -108,7 +108,7 @@ public class Model {
 				target = map.numVertices() - 1;
 			}
 		}
-		
+
 		setTile(source, Tile.BLANK);
 		setTile(target, Tile.BLANK);
 	}
@@ -146,7 +146,7 @@ public class Model {
 	}
 
 	public double distance(int u, int v) {
-		return 10 * map.euclidean(u, v);
+		return map.euclidean(u, v);
 	}
 
 	private void newPathFinders() {
