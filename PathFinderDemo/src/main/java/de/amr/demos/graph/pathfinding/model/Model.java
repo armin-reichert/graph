@@ -3,9 +3,10 @@ package de.amr.demos.graph.pathfinding.model;
 import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
 
-import java.util.BitSet;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
@@ -39,9 +40,6 @@ public class Model {
 	public Model(int mapSize, Topology topology) {
 		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
 		results = new EnumMap<>(PathFinderAlgorithm.class);
-		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			results.put(algorithm, new PathFinderResult());
-		}
 		newMap(mapSize, topology);
 		source = map.cell(mapSize / 4, mapSize / 2);
 		target = map.cell(mapSize * 3 / 4, mapSize / 2);
@@ -186,23 +184,20 @@ public class Model {
 
 	public void runPathFinder(PathFinderAlgorithm algorithm) {
 		BreadthFirstSearch<Tile, Double> pf = pathFinders.get(algorithm);
-		PathFinderResult r = new PathFinderResult();
 		StopWatch watch = new StopWatch();
 		watch.start();
-		r.path = pf.findPath(source, target);
+		List<Integer> path = pf.findPath(source, target);
 		watch.stop();
-		r.solutionCells = new BitSet(map.numVertices());
-		r.path.forEach(r.solutionCells::set);
-		r.pathLength = r.path.size() - 1;
-		r.pathCost = pf.getCost(target);
-		r.runningTimeMillis = watch.getNanos() / 1_000_000;
-		r.numOpenVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.VISITED).count();
-		r.numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED).count();
-		results.put(algorithm, r);
+		double cost = pf.getCost(target);
+		float runningTimeMillis = watch.getNanos() / 1_000_000f;
+		long numOpenVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.VISITED).count();
+		long numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED).count();
+		results.put(algorithm,
+				new PathFinderResult(path, runningTimeMillis, cost, numOpenVertices, numClosedVertices));
 	}
 
 	public PathFinderResult getResult(PathFinderAlgorithm algorithm) {
-		return results.get(algorithm);
+		return Optional.ofNullable(results.get(algorithm)).orElse(PathFinderResult.NONE);
 	}
 
 	public void clearResults() {
@@ -212,7 +207,7 @@ public class Model {
 	}
 
 	public void clearResult(PathFinderAlgorithm algorithm) {
-		results.get(algorithm).clear();
+		results.remove(algorithm);
 		getPathFinder(algorithm).init();
 	}
 

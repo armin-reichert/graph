@@ -102,18 +102,18 @@ public class ResultsTable extends JTable {
 			case 0:
 				return algorithm;
 			case 1:
-				return result.runningTimeMillis;
+				return result.getRunningTimeMillis();
 			case 2:
-				return result.pathLength;
+				return result.getPathLength();
 			case 3:
-				return result.pathCost;
+				return result.getCost();
 			case 4:
-				double optimalCost = model.getResult(PathFinderAlgorithm.AStar).pathCost;
-				return 100 * (result.pathCost - optimalCost) / optimalCost;
+				double optimalCost = model.getResult(PathFinderAlgorithm.AStar).getCost();
+				return 100 * (result.getCost() - optimalCost) / optimalCost;
 			case 5:
-				return result.numOpenVertices;
+				return result.getNumOpenVertices();
 			case 6:
-				return result.numClosedVertices;
+				return result.getNumClosedVertices();
 			}
 			throw new IllegalArgumentException();
 		}

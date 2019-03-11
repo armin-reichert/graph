@@ -1,7 +1,8 @@
 package de.amr.demos.graph.pathfinding.view;
 
 import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -296,7 +297,7 @@ public class CanvasView extends GridCanvas {
 	}
 
 	private boolean partOfSolution(int cell) {
-		return model.getResult(controller.getSelectedAlgorithm()).solutionCells.get(cell);
+		return model.getResult(controller.getSelectedAlgorithm()).pathContains(cell);
 	}
 
 	private class BlockCellRenderer implements GridCellRenderer {
