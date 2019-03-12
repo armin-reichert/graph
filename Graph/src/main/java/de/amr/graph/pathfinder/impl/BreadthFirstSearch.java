@@ -23,7 +23,7 @@ import de.amr.graph.pathfinder.impl.frontier.FIFOFrontier;
  * @author Armin Reichert
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
-	
+
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected final Map<Integer, Double> cost;
 	protected double maxCost;
@@ -68,6 +68,7 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 	 *            vertex
 	 * @return vertex cost
 	 */
+	@Override
 	public double getCost(int v) {
 		return cost.getOrDefault(v, PathFinder.INFINITE_COST);
 	}

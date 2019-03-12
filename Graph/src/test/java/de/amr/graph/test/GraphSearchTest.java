@@ -37,7 +37,7 @@ public class GraphSearchTest {
 	public void testNonNullGraph() {
 		new BreadthFirstSearch<>(null);
 	}
-	
+
 	@Test(expected = NullPointerException.class)
 	public void testAddNullObserver() {
 		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
@@ -49,7 +49,7 @@ public class GraphSearchTest {
 		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
 		new BreadthFirstSearch<>(g).addObserver(null);
 	}
-	
+
 	@Test
 	public void testInitialization() {
 		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);

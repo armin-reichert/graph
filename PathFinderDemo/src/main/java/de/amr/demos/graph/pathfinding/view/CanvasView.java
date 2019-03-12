@@ -39,7 +39,7 @@ import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
-import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
  * View showing map and path finder animations.
@@ -341,7 +341,7 @@ public class CanvasView extends GridCanvas {
 				return;
 			}
 
-			BreadthFirstSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
+			GraphSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
 
 			// cell text color
 			if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {

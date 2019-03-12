@@ -196,6 +196,17 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		return parentMap.getOrDefault(v, -1);
 	}
 
+	/**
+	 * Returns the cost computed for this vertex.
+	 * 
+	 * @param v
+	 *            a vertex
+	 * @return the vertex cost
+	 */
+	public double getCost(int v) {
+		return INFINITE_COST;
+	}
+
 	// Observer related stuff
 
 	public void addObserver(GraphSearchObserver observer) {

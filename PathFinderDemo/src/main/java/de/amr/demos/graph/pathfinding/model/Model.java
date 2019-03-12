@@ -18,6 +18,7 @@ import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DijkstraSearch;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 import de.amr.util.StopWatch;
 
 /**
@@ -27,7 +28,7 @@ import de.amr.util.StopWatch;
  */
 public class Model {
 
-	private final Map<PathFinderAlgorithm, BreadthFirstSearch<Tile, Double>> pathFinders;
+	private final Map<PathFinderAlgorithm, GraphSearch<Tile, Double>> pathFinders;
 	private final Map<PathFinderAlgorithm, PathFinderResult> results;
 	private GridGraph<Tile, Double> map;
 	private int source;
@@ -167,7 +168,7 @@ public class Model {
 		throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
 	}
 
-	public BreadthFirstSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
+	public GraphSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
 		return pathFinders.get(algorithm);
 	}
 
@@ -183,7 +184,7 @@ public class Model {
 	}
 
 	public void runPathFinder(PathFinderAlgorithm algorithm) {
-		BreadthFirstSearch<Tile, Double> pf = pathFinders.get(algorithm);
+		GraphSearch<Tile, Double> pf = pathFinders.get(algorithm);
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pf.findPath(source, target);
