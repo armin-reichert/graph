@@ -23,7 +23,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
-import de.amr.demos.graph.pathfinding.model.Model;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
@@ -73,8 +73,7 @@ public class CanvasView extends GridCanvas {
 		@Override
 		protected Void doInBackground() throws Exception {
 			PathFinderAlgorithm algorithm = controller.getSelectedAlgorithm();
-			model.clearResult(algorithm);
-			model.newPathFinder(algorithm);
+			model.newRun(algorithm);
 			drawGrid();
 			model.getPathFinder(algorithm).addObserver(animation);
 			model.runPathFinder(algorithm);
@@ -117,7 +116,7 @@ public class CanvasView extends GridCanvas {
 				// dragging ends
 				draggedCell = -1;
 				if (controller.isAutoRunPathFinders()) {
-					controller.runPathFinders();
+					controller.runAllPathFinders();
 				}
 			} else if (e.isPopupTrigger()) {
 				// open popup menu
@@ -176,7 +175,7 @@ public class CanvasView extends GridCanvas {
 		}
 	};
 
-	private Model model;
+	private PathFinderModel model;
 	private Controller controller;
 	private RenderingStyle style;
 	private boolean showCost;
@@ -221,7 +220,7 @@ public class CanvasView extends GridCanvas {
 		contextMenu.add(actionResetScene);
 	}
 
-	public void init(Model model, Controller controller) {
+	public void init(PathFinderModel model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
 		ConfigurableGridRenderer r = createMapRenderer(fixedHeight / model.getMapSize());
@@ -297,7 +296,7 @@ public class CanvasView extends GridCanvas {
 	}
 
 	private boolean partOfSolution(int cell) {
-		return model.getResult(controller.getSelectedAlgorithm()).pathContains(cell);
+		return model.getRun(controller.getSelectedAlgorithm()).pathContains(cell);
 	}
 
 	private class BlockCellRenderer implements GridCellRenderer {

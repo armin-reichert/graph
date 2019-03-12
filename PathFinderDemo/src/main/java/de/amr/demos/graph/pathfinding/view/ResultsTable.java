@@ -9,9 +9,9 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import de.amr.demos.graph.pathfinding.model.Model;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
-import de.amr.demos.graph.pathfinding.model.PathFinderResult;
+import de.amr.demos.graph.pathfinding.model.PathFinderRun;
 
 /**
  * Table with path finder results.
@@ -68,9 +68,9 @@ public class ResultsTable extends JTable {
 
 	private static class ResultsTableModel extends AbstractTableModel {
 
-		private final Model model;
+		private final PathFinderModel model;
 
-		public ResultsTableModel(Model model) {
+		public ResultsTableModel(PathFinderModel model) {
 			this.model = model;
 		}
 
@@ -97,7 +97,7 @@ public class ResultsTable extends JTable {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			PathFinderAlgorithm algorithm = PathFinderAlgorithm.values()[rowIndex];
-			PathFinderResult result = model.getResult(algorithm);
+			PathFinderRun result = model.getRun(algorithm);
 			switch (columnIndex) {
 			case 0:
 				return algorithm;
@@ -108,7 +108,7 @@ public class ResultsTable extends JTable {
 			case 3:
 				return result.getCost();
 			case 4:
-				double optimalCost = model.getResult(PathFinderAlgorithm.AStar).getCost();
+				double optimalCost = model.getRun(PathFinderAlgorithm.AStar).getCost();
 				return 100 * (result.getCost() - optimalCost) / optimalCost;
 			case 5:
 				return result.getNumOpenVertices();
@@ -143,7 +143,7 @@ public class ResultsTable extends JTable {
 		getColumnModel().getColumn(0).setPreferredWidth(160);
 	}
 
-	public void init(Model model) {
+	public void init(PathFinderModel model) {
 		setModel(new ResultsTableModel(model));
 		formatColumns();
 	}

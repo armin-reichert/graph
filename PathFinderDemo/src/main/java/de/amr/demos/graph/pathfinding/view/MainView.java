@@ -19,18 +19,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
-import de.amr.demos.graph.pathfinding.model.Model;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JTable;
 
 /**
  * Main view of path finder demo app.
@@ -54,7 +54,7 @@ public class MainView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			model.clearResult(controller.getSelectedAlgorithm());
+			model.newRun(controller.getSelectedAlgorithm());
 			canvasView.drawGrid();
 		}
 	};
@@ -97,9 +97,9 @@ public class MainView extends JPanel {
 			scrollPaneTableResults.setVisible(auto);
 			controller.setAutoRunPathFinders(auto);
 			if (auto) {
-				controller.runPathFinders();
+				controller.runAllPathFinders();
 			} else {
-				model.clearResult(controller.getSelectedAlgorithm());
+				model.newRun(controller.getSelectedAlgorithm());
 				canvasView.drawGrid();
 			}
 		}
@@ -130,7 +130,7 @@ public class MainView extends JPanel {
 		}
 	};
 
-	private Model model;
+	private PathFinderModel model;
 	private Controller controller;
 
 	private CanvasView canvasView;
@@ -248,7 +248,7 @@ public class MainView extends JPanel {
 		panelActions.add(helpPanel, "cell 0 11 2 1,growx,aligny bottom");
 	}
 
-	public void init(Model model, Controller controller) {
+	public void init(PathFinderModel model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
 

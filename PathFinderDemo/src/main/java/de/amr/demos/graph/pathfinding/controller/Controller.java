@@ -3,8 +3,8 @@ package de.amr.demos.graph.pathfinding.controller;
 import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
 
-import de.amr.demos.graph.pathfinding.model.Model;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.demos.graph.pathfinding.view.MainView;
 import de.amr.graph.grid.api.Topology;
@@ -16,13 +16,13 @@ import de.amr.graph.grid.api.Topology;
  */
 public class Controller {
 
-	private final Model model;
+	private final PathFinderModel model;
 	private MainView view;
 
 	private PathFinderAlgorithm selectedAlgorithm;
 	private boolean autoRunPathFinders;
 
-	public Controller(Model model) {
+	public Controller(PathFinderModel model) {
 		this.model = model;
 		selectedAlgorithm = PathFinderAlgorithm.values()[0];
 		autoRunPathFinders = false;
@@ -30,25 +30,25 @@ public class Controller {
 
 	private void maybeRunPathFinder() {
 		if (autoRunPathFinders) {
-			model.runPathFinders();
+			model.runAllPathFinders();
 		} else {
-			model.clearResult(selectedAlgorithm);
+			model.newRun(selectedAlgorithm);
 		}
 		view.updateView();
 	}
 
-	public void clearResults() {
-		model.clearResults();
+	public void newRuns() {
+		model.newRuns();
 		view.updateView();
 	}
 
-	public void runPathFinders() {
-		model.runPathFinders();
+	public void runAllPathFinders() {
+		model.runAllPathFinders();
 		view.updateView();
 	}
 
 	public void resetScene() {
-		model.getMap().vertices().forEach(cell -> model.setTile(cell, BLANK));
+		model.clearMap();
 		maybeRunPathFinder();
 	}
 

@@ -5,17 +5,16 @@ import java.util.Collections;
 import java.util.List;
 
 import de.amr.graph.pathfinder.api.PathFinder;
+import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
- * Result of a path finder run.
+ * Represents of a path finder run.
  * 
  * @author Armin Reichert
  */
-public class PathFinderResult {
+public class PathFinderRun {
 
-	public static PathFinderResult NONE = new PathFinderResult(Collections.emptyList(), 0,
-			PathFinder.INFINITE_COST, 0, 0);
-
+	private final GraphSearch<Tile, Double> pathFinder;
 	private final List<Integer> path;
 	private final BitSet pathCells;
 	private final float runningTimeMillis;
@@ -23,8 +22,19 @@ public class PathFinderResult {
 	private final long numOpenVertices;
 	private final long numClosedVertices;
 
-	public PathFinderResult(List<Integer> path, float runningTimeMillis, double cost, long numOpenVertices,
-			long numClosedVertices) {
+	PathFinderRun(GraphSearch<Tile, Double> pathFinder) {
+		this.pathFinder = pathFinder;
+		this.path = Collections.emptyList();
+		this.pathCells = new BitSet();
+		this.runningTimeMillis = 0;
+		this.cost = PathFinder.INFINITE_COST;
+		this.numOpenVertices = 0;
+		this.numClosedVertices = 0;
+	}
+
+	PathFinderRun(GraphSearch<Tile, Double> pathFinder, List<Integer> path, float runningTimeMillis,
+			double cost, long numOpenVertices, long numClosedVertices) {
+		this.pathFinder = pathFinder;
 		this.path = path;
 		this.pathCells = new BitSet();
 		path.forEach(pathCells::set);
@@ -32,6 +42,10 @@ public class PathFinderResult {
 		this.cost = cost;
 		this.numOpenVertices = numOpenVertices;
 		this.numClosedVertices = numClosedVertices;
+	}
+
+	public GraphSearch<Tile, Double> getPathFinder() {
+		return pathFinder;
 	}
 
 	public boolean pathContains(int cell) {

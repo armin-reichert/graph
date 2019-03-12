@@ -26,25 +26,24 @@ import de.amr.util.StopWatch;
  * 
  * @author Armin Reichert
  */
-public class Model {
+public class PathFinderModel {
 
-	private final Map<PathFinderAlgorithm, GraphSearch<Tile, Double>> pathFinders;
-	private final Map<PathFinderAlgorithm, PathFinderResult> results;
+	private static final PathFinderRun NO_RUN = new PathFinderRun(null);
+
+	private final Map<PathFinderAlgorithm, PathFinderRun> runs = new EnumMap<>(PathFinderAlgorithm.class);
 	private GridGraph<Tile, Double> map;
 	private int source;
 	private int target;
 
-	public Model() {
+	public PathFinderModel() {
 		this(10, Top8.get());
 	}
 
-	public Model(int mapSize, Topology topology) {
-		pathFinders = new EnumMap<>(PathFinderAlgorithm.class);
-		results = new EnumMap<>(PathFinderAlgorithm.class);
+	public PathFinderModel(int mapSize, Topology topology) {
 		newMap(mapSize, topology);
 		source = map.cell(mapSize / 4, mapSize / 2);
 		target = map.cell(mapSize * 3 / 4, mapSize / 2);
-		newPathFinders();
+		newRuns();
 	}
 
 	private void newMap(int mapSize, Topology topology) {
@@ -56,7 +55,6 @@ public class Model {
 		}
 
 		float scalingFactor = (float) map.numCols() / oldMap.numCols();
-
 		// copy walls into map, keep aspect ratio
 		for (int oldCell = 0; oldCell < oldMap.numVertices(); ++oldCell) {
 			int oldRow = oldMap.row(oldCell), oldCol = oldMap.col(oldCell);
@@ -119,11 +117,12 @@ public class Model {
 	public void resizeMap(int size) {
 		if (size != map.numRows()) {
 			newMap(size, map.getTopology());
-			for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-				newPathFinder(algorithm);
-				clearResult(algorithm);
-			}
+			newRuns();
 		}
+	}
+
+	public void clearMap() {
+		map.vertices().forEach(cell -> setTile(cell, Tile.BLANK));
 	}
 
 	public void setTile(int cell, Tile tile) {
@@ -148,13 +147,7 @@ public class Model {
 		return map.euclidean(u, v);
 	}
 
-	private void newPathFinders() {
-		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			pathFinders.put(algorithm, createPathFinder(algorithm));
-		}
-	}
-
-	private BreadthFirstSearch<Tile, Double> createPathFinder(PathFinderAlgorithm algorithm) {
+	private GraphSearch<Tile, Double> newPathFinder(PathFinderAlgorithm algorithm) {
 		switch (algorithm) {
 		case AStar:
 			return new AStarSearch<>(map, e -> e, this::distance);
@@ -169,47 +162,40 @@ public class Model {
 	}
 
 	public GraphSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
-		return pathFinders.get(algorithm);
+		return runs.get(algorithm).getPathFinder();
 	}
 
-	public void newPathFinder(PathFinderAlgorithm algorithm) {
-		pathFinders.put(algorithm, createPathFinder(algorithm));
+	public void newRuns() {
+		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
+			newRun(algorithm);
+		}
 	}
 
-	public void runPathFinders() {
-		newPathFinders();
+	public void newRun(PathFinderAlgorithm algorithm) {
+		runs.put(algorithm, new PathFinderRun(newPathFinder(algorithm)));
+	}
+
+	public void runAllPathFinders() {
+		newRuns();
 		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
 			runPathFinder(algorithm);
 		}
 	}
 
 	public void runPathFinder(PathFinderAlgorithm algorithm) {
-		GraphSearch<Tile, Double> pf = pathFinders.get(algorithm);
+		GraphSearch<Tile, Double> pf = getPathFinder(algorithm);
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pf.findPath(source, target);
 		watch.stop();
-		double cost = pf.getCost(target);
-		float runningTimeMillis = watch.getNanos() / 1_000_000f;
 		long numOpenVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.VISITED).count();
 		long numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED).count();
-		results.put(algorithm,
-				new PathFinderResult(path, runningTimeMillis, cost, numOpenVertices, numClosedVertices));
+		runs.put(algorithm, new PathFinderRun(pf, path, watch.getNanos() / 1_000_000f, pf.getCost(target),
+				numOpenVertices, numClosedVertices));
 	}
 
-	public PathFinderResult getResult(PathFinderAlgorithm algorithm) {
-		return Optional.ofNullable(results.get(algorithm)).orElse(PathFinderResult.NONE);
-	}
-
-	public void clearResults() {
-		for (PathFinderAlgorithm algorithm : PathFinderAlgorithm.values()) {
-			clearResult(algorithm);
-		}
-	}
-
-	public void clearResult(PathFinderAlgorithm algorithm) {
-		results.remove(algorithm);
-		getPathFinder(algorithm).init();
+	public PathFinderRun getRun(PathFinderAlgorithm algorithm) {
+		return Optional.ofNullable(runs.get(algorithm)).orElse(NO_RUN);
 	}
 
 	public GridGraph<Tile, Double> getMap() {
@@ -217,7 +203,7 @@ public class Model {
 	}
 
 	public int getMapSize() {
-		return map.numRows(); // square map
+		return map.numRows();
 	}
 
 	public void setMapSize(int mapSize) {
