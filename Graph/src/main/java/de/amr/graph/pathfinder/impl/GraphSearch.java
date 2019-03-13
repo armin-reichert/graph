@@ -52,7 +52,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	}
 
 	/**
-	 * Initializes the search such that {@link #exploreGraph(int, int)} starts in a clean state.
+	 * Initializes the search such that {@link #exploreGraph(int, int)} always starts in a clean state.
 	 */
 	public void init() {
 		parentMap.clear();
@@ -84,10 +84,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 */
 	public void exploreGraph(int source, int target) {
 		init();
-		setState(source, VISITED);
-		setParent(source, -1);
-		frontier.add(source);
-		fireVertexAddedToFrontier(source);
+		start(source, target);
 		while (!frontier.isEmpty()) {
 			int current = frontier.next();
 			setState(current, COMPLETED);
@@ -95,17 +92,36 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 			if (current == target) {
 				return;
 			}
-			expandFrontier(current);
+			expand(current, source, target);
 		}
 	}
 
 	/**
-	 * Expands the frontier at the given vertex.
+	 * Start the search. Subclasses may modify this.
+	 * 
+	 * @param source
+	 *                 the source vertex
+	 * @param target
+	 *                 the target vertex
+	 */
+	protected void start(int source, int target) {
+		setState(source, VISITED);
+		setParent(source, -1);
+		frontier.add(source);
+		fireVertexAddedToFrontier(source);
+	}
+
+	/**
+	 * Expands the frontier at the given vertex. Subclasses may modify this.
 	 * 
 	 * @param v
-	 *            vertex to be expanded
+	 *                 vertex to be expanded
+	 * @param source
+	 *                 the source vertex
+	 * @param target
+	 *                 the target vertex
 	 */
-	protected void expandFrontier(int v) {
+	protected void expand(int v, int source, int target) {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);

@@ -69,34 +69,30 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	}
 
 	@Override
-	public void exploreGraph(int source, int target) {
-		init();
+	protected void start(int source, int target) {
 		setState(source, OPEN);
 		// next two lines only included for consistency:
 		setCost(source, 0);
 		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
 		frontier.add(source);
-		while (!frontier.isEmpty()) {
-			int current = frontier.next();
-			setState(current, CLOSED);
-			if (current == target) {
-				break;
-			}
-			graph.adj(current).filter(child -> getState(child) != CLOSED).forEach(child -> {
-				double newCost = getCost(current) + edgeCost(current, child);
-				if (getState(child) != OPEN || newCost < getCost(child)) {
-					setParent(child, current);
-					setCost(child, newCost);
-					setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
-					if (getState(child) == OPEN) {
-						((MinPQ_VertexQueue) frontier).decreaseKey(child);
-					} else {
-						setState(child, OPEN);
-						frontier.add(child);
-					}
+	}
+
+	@Override
+	protected void expand(int v, int source, int target) {
+		graph.adj(v).filter(child -> getState(child) != CLOSED).forEach(child -> {
+			double newCost = getCost(v) + edgeCost(v, child);
+			if (getState(child) != OPEN || newCost < getCost(child)) {
+				setParent(child, v);
+				setCost(child, newCost);
+				setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
+				if (getState(child) == OPEN) {
+					frontier.decreaseKey(child);
+				} else {
+					setState(child, OPEN);
+					frontier.add(child);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public double getScore(int v) {

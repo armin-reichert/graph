@@ -39,14 +39,14 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 	}
 
 	@Override
-	protected void expandFrontier(int current) {
+	protected void expand(int v,int source, int target) {
 		/*@formatter:off*/
-		graph.adj(current)
+		graph.adj(v)
 			.filter(child -> getState(child) == UNVISITED).boxed()
 			.sorted(vertexPushOrder)
 			.forEach(child -> {
 				setState(child, VISITED);
-				setParent(child, current);
+				setParent(child, v);
 				frontier.add(child);
 			});
 		/*@formatter:on*/
