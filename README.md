@@ -11,7 +11,7 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		frontier = new LIFOFrontier();
+		frontier = new LIFO_VertexQueue();
 	}
 }
 ```
