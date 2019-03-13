@@ -4,7 +4,6 @@ import static de.amr.demos.graph.pathfinding.model.Tile.BLANK;
 import static de.amr.demos.graph.pathfinding.model.Tile.WALL;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,6 +12,7 @@ import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.AStarSearch;
 import de.amr.graph.pathfinder.impl.BestFirstSearch;
@@ -186,7 +186,7 @@ public class PathFinderModel {
 		GraphSearch<Tile, Double, ?> pf = getPathFinder(algorithm);
 		StopWatch watch = new StopWatch();
 		watch.start();
-		List<Integer> path = pf.findPath(source, target);
+		Path path = Path.computePath(source, target, pf);
 		watch.stop();
 		long numOpenVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.VISITED).count();
 		long numClosedVertices = map.vertices().filter(v -> pf.getState(v) == TraversalState.COMPLETED).count();

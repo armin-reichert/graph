@@ -1,7 +1,5 @@
 package de.amr.demos.graph.pathfinding.view;
 
-import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
-
 import java.awt.Component;
 import java.util.function.Function;
 
@@ -9,9 +7,10 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderRun;
+import de.amr.graph.pathfinder.api.Path;
 
 /**
  * Table with path finder results.
@@ -54,7 +53,7 @@ public class ResultsTable extends JTable {
 				"Path cost", 
 				Double.class,
 			// display real value multiplied by 10
-				cost -> (double) cost == INFINITE_COST ? "\u221e" : String.format("%.0f", 10 * (double) cost)),
+				cost -> (double) cost == Path.INFINITE_COST ? "\u221e" : String.format("%.0f", 10 * (double) cost)),
 		new ColumnSpec(
 				"Loss", 
 				Double.class, 

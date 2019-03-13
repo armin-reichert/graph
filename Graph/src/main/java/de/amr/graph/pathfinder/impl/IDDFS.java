@@ -1,11 +1,11 @@
 package de.amr.graph.pathfinder.impl;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 
@@ -36,9 +36,9 @@ public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 			observersCopy.forEach(dls::addObserver);
 			stateMap.clear();
 			parentMap.clear();
-			List<Integer> path = dls.findPath(source, target);
+			Path path = Path.computePath(source, target, dls);
 			observersCopy.forEach(dls::removeObserver);
-			if (!path.isEmpty()) {
+			if (path.numVertices() != 0) {
 				return;
 			}
 		}
@@ -52,10 +52,5 @@ public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 	@Override
 	public int getParent(int v) {
 		return dls.getParent(v);
-	}
-
-	@Override
-	public List<Integer> buildPath(int source, int target) {
-		return dls.buildPath(source, target);
 	}
 }

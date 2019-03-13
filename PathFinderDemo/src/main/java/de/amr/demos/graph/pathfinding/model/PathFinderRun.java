@@ -1,10 +1,8 @@
 package de.amr.demos.graph.pathfinding.model;
 
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
 
-import de.amr.graph.pathfinder.api.PathFinder;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
@@ -15,7 +13,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
 public class PathFinderRun {
 
 	private final GraphSearch<Tile, Double, ?> pathFinder;
-	private final List<Integer> path;
+	private Path path;
 	private final BitSet pathCells;
 	private final float runningTimeMillis;
 	private final double cost;
@@ -24,16 +22,16 @@ public class PathFinderRun {
 
 	PathFinderRun(GraphSearch<Tile, Double, ?> pathFinder) {
 		this.pathFinder = pathFinder;
-		this.path = Collections.emptyList();
+		path = Path.EMPTY_PATH;
 		this.pathCells = new BitSet();
 		this.runningTimeMillis = 0;
-		this.cost = PathFinder.INFINITE_COST;
+		this.cost = Path.INFINITE_COST;
 		this.numOpenVertices = 0;
 		this.numClosedVertices = 0;
 	}
 
-	PathFinderRun(GraphSearch<Tile, Double, ?> pathFinder, List<Integer> path, float runningTimeMillis,
-			double cost, long numOpenVertices, long numClosedVertices) {
+	PathFinderRun(GraphSearch<Tile, Double, ?> pathFinder, Path path, float runningTimeMillis, double cost,
+			long numOpenVertices, long numClosedVertices) {
 		this.pathFinder = pathFinder;
 		this.path = path;
 		this.pathCells = new BitSet();
@@ -57,7 +55,7 @@ public class PathFinderRun {
 	}
 
 	public int getPathLength() {
-		return path.size() - 1;
+		return path.numEdges();
 	}
 
 	public double getCost() {

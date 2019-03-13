@@ -1,6 +1,6 @@
 package de.amr.demos.graph.pathfinding.view;
 
-import static de.amr.graph.pathfinder.api.PathFinder.INFINITE_COST;
+import static de.amr.graph.pathfinder.api.Path.INFINITE_COST;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 

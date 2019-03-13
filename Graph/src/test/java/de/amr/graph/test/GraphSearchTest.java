@@ -3,15 +3,13 @@ package de.amr.graph.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
@@ -104,17 +102,17 @@ public class GraphSearchTest {
 	public void testBFS() {
 		GridGraph<Void, Void> g = circle3();
 		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
-		List<Integer> path = search.findPath(0, 8);
-		assertEquals(5, path.size());
-		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
+		Path path = Path.computePath(0, 8, search);
+		assertEquals(5, path.numVertices());
+		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
 
 	@Test
 	public void testDFS() {
 		GridGraph<Void, Void> g = circle3();
 		DepthFirstSearch<Void, Void> search = new DepthFirstSearch<>(g);
-		List<Integer> path = search.findPath(0, 8);
-		assertEquals(5, path.size());
-		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
+		Path path = Path.computePath(0, 8, search);
+		assertEquals(5, path.numVertices());
+		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
 }

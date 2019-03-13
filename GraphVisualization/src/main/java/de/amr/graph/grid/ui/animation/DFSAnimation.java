@@ -2,7 +2,6 @@ package de.amr.graph.grid.ui.animation;
 
 import java.awt.Color;
 import java.util.BitSet;
-import java.util.List;
 import java.util.function.IntSupplier;
 
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -11,6 +10,7 @@ import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
@@ -115,7 +115,7 @@ public class DFSAnimation extends AbstractAnimation {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			canvas.pushRenderer(createPathRenderer(canvasRenderer));
 			dfs.addObserver(canvasUpdater);
-			List<Integer> path = dfs.findPath(source, target);
+			Path path = Path.computePath(source, target, dfs);
 			dfs.removeObserver(canvasUpdater);
 			canvas.drawGrid();
 			path.forEach(v -> {

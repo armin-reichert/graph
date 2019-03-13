@@ -4,12 +4,9 @@ import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
 import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +15,7 @@ import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
-import de.amr.graph.pathfinder.api.PathFinder;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.api.VertexQueue;
 
@@ -30,7 +27,7 @@ import de.amr.graph.pathfinder.api.VertexQueue;
  * 
  * @author Armin Reichert
  */
-public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFinder {
+public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 
 	protected final Graph<V, E> graph;
 	protected final Map<Integer, Integer> parentMap;
@@ -118,46 +115,6 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	}
 
 	/**
-	 * Returns the path from the source vertex to the target vertex as an immutable list of vertices. If
-	 * no such path exists, an empty list is returned.
-	 * 
-	 * @param source
-	 *                 source vertex
-	 * @param target
-	 *                 target vertex
-	 * @return path from source to target vertex or empty list
-	 */
-	@Override
-	public List<Integer> findPath(int source, int target) {
-		exploreGraph(source, target);
-		return buildPath(source, target);
-	}
-
-	/**
-	 * Creates the path from the source vertex to the target vertex as an immutable list of vertices.
-	 * Before calling this method, the graph search must have been executed.
-	 * 
-	 * @param source
-	 *                 source vertex
-	 * @param target
-	 *                 target vertex
-	 * @return path as list of vertices
-	 */
-	public List<Integer> buildPath(int source, int target) {
-		if (getParent(target) == -1) {
-			return Collections.emptyList(); // no path to target
-		}
-		if (source == target) {
-			return Collections.singletonList(source); // trivial path
-		}
-		List<Integer> path = new LinkedList<>();
-		for (int v = target; v != -1; v = getParent(v)) {
-			path.add(0, v);
-		}
-		return path;
-	}
-
-	/**
 	 * Sets the traversal state for the given vertex.
 	 * 
 	 * @param v
@@ -224,7 +181,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	 * @return vertex cost
 	 */
 	public double getCost(int v) {
-		return costMap.getOrDefault(v, PathFinder.INFINITE_COST);
+		return costMap.getOrDefault(v, Path.INFINITE_COST);
 	}
 
 	/**

@@ -5,7 +5,6 @@ import static java.lang.String.format;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.BitSet;
-import java.util.List;
 import java.util.function.IntSupplier;
 import java.util.function.ToDoubleFunction;
 
@@ -15,6 +14,7 @@ import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
@@ -128,24 +128,24 @@ public class BFSAnimation extends AbstractAnimation {
 	 * Highlights the path from the source to the target cell. The BFS search must have been run before
 	 * calling this method.
 	 * 
-	 * @param bfs
+	 * @param search
 	 *                 BFS
 	 * @param source
 	 *                 source cell
 	 * @param target
 	 *                 target cell
 	 */
-	public void showPath(BreadthFirstSearch<?, ?> bfs, int source, int target) {
+	public void showPath(GraphSearch<?, ?, ?> search, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			List<Integer> path = bfs.buildPath(source, target);
-			if (path.isEmpty()) {
+			Path path = Path.constructPath(source, target, search);
+			if (path.numVertices() < 2) {
 				return;
 			}
 			if (mapRenderer != null) {
-				canvas.pushRenderer(derivePathRenderer(mapRenderer, path, bfs::getCost));
+				canvas.pushRenderer(derivePathRenderer(mapRenderer, path, search::getCost));
 			} else if (canvasRenderer instanceof ConfigurableGridRenderer) {
-				canvas
-						.pushRenderer(derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, bfs::getCost));
+				canvas.pushRenderer(
+						derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, search::getCost));
 			} else {
 				throw new IllegalStateException();
 			}
@@ -169,7 +169,7 @@ public class BFSAnimation extends AbstractAnimation {
 		return r;
 	}
 
-	private ConfigurableGridRenderer derivePathRenderer(ConfigurableGridRenderer base, List<Integer> path,
+	private ConfigurableGridRenderer derivePathRenderer(ConfigurableGridRenderer base, Path path,
 			ToDoubleFunction<Integer> distance) {
 		BitSet inPath = new BitSet();
 		path.forEach(inPath::set);

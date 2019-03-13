@@ -28,6 +28,7 @@ import de.amr.graph.grid.curves.HilbertLCurveWirth;
 import de.amr.graph.grid.curves.MooreLCurve;
 import de.amr.graph.grid.curves.PeanoCurve;
 import de.amr.graph.grid.impl.OrthogonalGrid;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
@@ -77,7 +78,8 @@ public class GridTraversalTest {
 		int source = grid.cell(TOP_LEFT), target = grid.cell(BOTTOM_RIGHT);
 		DepthFirstSearch<?, ?> dfs = new DepthFirstSearch<>(grid);
 		assertState(grid.vertices(), dfs::getState, UNVISITED);
-		assertState(StreamUtils.toIntStream(dfs.findPath(source, target)), dfs::getState, VISITED, COMPLETED);
+		Path path = Path.computePath(source, target, dfs);
+		assertState(StreamUtils.toIntStream(path), dfs::getState, VISITED, COMPLETED);
 	}
 
 	@Test
@@ -85,7 +87,8 @@ public class GridTraversalTest {
 		int source = grid.cell(TOP_LEFT), target = grid.cell(BOTTOM_RIGHT);
 		DepthFirstSearch2<?, ?> dfs = new DepthFirstSearch2<>(grid);
 		assertState(grid.vertices(), dfs::getState, UNVISITED);
-		assertState(StreamUtils.toIntStream(dfs.findPath(source, target)), dfs::getState, COMPLETED);
+		Path path = Path.computePath(source, target, dfs);
+		assertState(StreamUtils.toIntStream(path), dfs::getState, COMPLETED);
 	}
 
 	@Test
@@ -94,8 +97,8 @@ public class GridTraversalTest {
 		ToDoubleFunction<Integer> cost = u -> grid.manhattan(u, target);
 		HillClimbingSearch<?, ?> hillClimbing = new HillClimbingSearch<>(grid, cost);
 		assertState(grid.vertices(), hillClimbing::getState, UNVISITED);
-		hillClimbing.findPath(source, target)
-				.forEach(cell -> assertTrue(hillClimbing.getState(cell) != UNVISITED));
+		Path path = Path.computePath(source, target, hillClimbing);
+		path.forEach(cell -> assertTrue(hillClimbing.getState(cell) != UNVISITED));
 	}
 
 	@Test

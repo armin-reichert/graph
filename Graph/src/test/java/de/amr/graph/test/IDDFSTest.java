@@ -1,14 +1,12 @@
 package de.amr.graph.test;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.core.api.ObservableGraph;
 import de.amr.graph.core.impl.ObservableUGraph;
-import de.amr.graph.pathfinder.api.PathFinder;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.IDDFS;
 
 public class IDDFSTest {
@@ -39,9 +37,9 @@ public class IDDFSTest {
 
 	@Test
 	public void testIterativeDeepening() {
-		PathFinder search = new IDDFS<>(g);
-		List<Integer> path = search.findPath(0, 7);
+		IDDFS<?, ?> search = new IDDFS<>(g);
+		Path path = Path.computePath(0, 7, search);
 		System.out.println("Path=" + path);
-		Assert.assertEquals(5, path.size());
+		Assert.assertEquals(5, path.numVertices());
 	}
 }
