@@ -4,7 +4,9 @@ This library has been written as the foundation of my [maze generation library](
 
 <img width="640" src="https://github.com/armin-reichert/mazes/blob/master/MazeDemos/images/gen/maze_80x60_WilsonUSTRecursiveCrosses.gif"/>
 
-The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). I tried to achieve "text book quality" in the code, for example:
+The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). 
+
+I tried to achieve "text book quality" in the code:
 
 ```java
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
@@ -12,6 +14,38 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
 		frontier = new LIFO_VertexQueue();
+	}
+}
+
+public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
+
+	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost);
+		frontier = new FIFO_VertexQueue();
+	}
+
+	public BreadthFirstSearch(Graph<V, E> graph) {
+		this(graph, (u, v) -> 1);
+	}
+}
+
+public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
+
+	public DijkstraSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost) {
+		super(graph, fnEdgeCost, (u, v) -> 0);
+	}
+}
+
+public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
+
+	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
+		this(graph, fnVertexPriority, (u, v) -> 1);
+	}
+
+	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
+		ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost);
+		frontier = new MinPQ_VertexQueue(fnVertexPriority);
 	}
 }
 ```
