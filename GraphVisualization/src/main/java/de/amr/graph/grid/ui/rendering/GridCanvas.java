@@ -27,6 +27,12 @@ public class GridCanvas extends JComponent {
 	protected BufferedImage buffer;
 	private boolean readyForDrawing;
 
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(getDrawingBuffer(), 0, 0, null);
+	}
+
 	public GridCanvas(GridGraph2D<?, ?> grid) {
 		if (grid == null) {
 			throw new IllegalArgumentException("No grid specified");
@@ -36,33 +42,30 @@ public class GridCanvas extends JComponent {
 		setDoubleBuffered(false); // canvas implements double-buffering itself
 	}
 
-	public GridGraph2D<?, ?> getGrid() {
-		return grid;
-	}
-
-	public void setGrid(GridGraph<?, ?> grid) {
-		if (grid == null) {
-			throw new IllegalArgumentException("No grid specified");
-		}
-		this.grid = grid;
-		readyForDrawing = false;
-	}
-
-	public BufferedImage getDrawingBuffer() {
-		if (!readyForDrawing && renderStack.peek() != null) {
-			adaptToCellSize(renderStack.peek().getModel().getCellSize());
-		}
-		return buffer;
-	}
-
 	public Graphics2D getDrawGraphics() {
 		return getDrawingBuffer().createGraphics();
 	}
 
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.drawImage(getDrawingBuffer(), 0, 0, null);
+	public BufferedImage getDrawingBuffer() {
+		if (!readyForDrawing) {
+			createDrawingBuffer();
+		}
+		return buffer;
+	}
+
+	private void createDrawingBuffer() {
+		if (renderStack.isEmpty()) {
+			throw new IllegalStateException("Cannot create drawing buffer, no renderer available");
+		}
+		int cellSize = renderStack.peek().getModel().getCellSize();
+		Dimension dimension = new Dimension(grid.numCols() * cellSize, grid.numRows() * cellSize);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setPreferredSize(dimension);
+		setSize(dimension);
+		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration().createCompatibleImage(dimension.width, dimension.height);
+		readyForDrawing = true;
 	}
 
 	public void clear() {
@@ -123,15 +126,18 @@ public class GridCanvas extends JComponent {
 		return oldRenderer;
 	}
 
-	private void adaptToCellSize(int cellSize) {
-		int width = grid.numCols() * cellSize, height = grid.numRows() * cellSize;
-		Dimension dimension = new Dimension(width, height);
-		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-				.getDefaultConfiguration().createCompatibleImage(width, height);
-		setMinimumSize(dimension);
-		setMaximumSize(dimension);
-		setPreferredSize(dimension);
-		setSize(dimension);
-		readyForDrawing = true;
+	public GridGraph2D<?, ?> getGrid() {
+		return grid;
+	}
+
+	public void setGrid(GridGraph<?, ?> grid) {
+		if (grid == null) {
+			throw new IllegalArgumentException("No grid specified");
+		}
+		GridGraph2D<?, ?> oldGrid = this.grid;
+		if (oldGrid != null && (oldGrid.numCols() != grid.numCols() || oldGrid.numRows() != grid.numRows())) {
+			readyForDrawing = false;
+		}
+		this.grid = grid;
 	}
 }
