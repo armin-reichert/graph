@@ -70,10 +70,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	protected final StopWatch watch = new StopWatch();
 
-	@Override
-	public void run() {
-	}
-
 	public SwingGridSampleApp(int width, int height, int cellSize) {
 		this.cellSize = cellSize;
 		canvasSize = new Dimension(width, height);
