@@ -25,8 +25,8 @@ import de.amr.graph.pathfinder.api.VertexQueue;
 /**
  * Base class for graph search algorithms.
  * <p>
- * Stores the traversal state and parent link for each vertex and supports registration of observers
- * for vertex and edge traversals.
+ * Stores the traversal state, parent link and cost for each vertex. Also supports registration of
+ * observers for vertex and edge traversals and for changes of the search queue (frontier).
  * 
  * @author Armin Reichert
  */
@@ -35,9 +35,9 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	protected final Graph<V, E> graph;
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
+	protected final Map<Integer, Double> costMap;
 	protected final Set<GraphSearchObserver> observers;
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
-	protected final Map<Integer, Double> cost;
 	protected double maxCost;
 	protected Q frontier;
 
@@ -49,8 +49,8 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 		this.graph = Objects.requireNonNull(graph);
 		this.parentMap = new HashMap<>();
 		this.stateMap = new HashMap<>();
+		this.costMap = new HashMap<>();
 		this.observers = new HashSet<>(5);
-		this.cost = new HashMap<>();
 		this.fnEdgeCost = fnEdgeCost;
 	}
 
@@ -60,8 +60,8 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	public void init() {
 		parentMap.clear();
 		stateMap.clear();
+		costMap.clear();
 		frontier.clear();
-		cost.clear();
 		maxCost = 0;
 	}
 
@@ -106,7 +106,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	 * Expands the frontier at the given vertex.
 	 * 
 	 * @param v
-	 *            vertex
+	 *            vertex to be expanded
 	 */
 	protected void expandFrontier(int v) {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
@@ -118,8 +118,8 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	}
 
 	/**
-	 * Returns the path (list of vertices) between the given source and the given target vertex. If no
-	 * such path exists, an empty list is returned.
+	 * Returns the path from the source vertex to the target vertex as an immutable list of vertices. If
+	 * no such path exists, an empty list is returned.
 	 * 
 	 * @param source
 	 *                 source vertex
@@ -134,8 +134,8 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	}
 
 	/**
-	 * Creates the path from the source vertex to the target vertex as a list of vertices. Before
-	 * calling this method, the graph search must have been executed.
+	 * Creates the path from the source vertex to the target vertex as an immutable list of vertices.
+	 * Before calling this method, the graph search must have been executed.
 	 * 
 	 * @param source
 	 *                 source vertex
@@ -144,14 +144,13 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	 * @return path as list of vertices
 	 */
 	public List<Integer> buildPath(int source, int target) {
-		List<Integer> path = new LinkedList<>();
-		if (source == target) {
-			path.add(source);
-			return path;
-		}
 		if (getParent(target) == -1) {
-			return Collections.emptyList();
+			return Collections.emptyList(); // no path to target
 		}
+		if (source == target) {
+			return Collections.singletonList(source); // trivial path
+		}
+		List<Integer> path = new LinkedList<>();
 		for (int v = target; v != -1; v = getParent(v)) {
 			path.add(0, v);
 		}
@@ -225,7 +224,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	 * @return vertex cost
 	 */
 	public double getCost(int v) {
-		return cost.getOrDefault(v, PathFinder.INFINITE_COST);
+		return costMap.getOrDefault(v, PathFinder.INFINITE_COST);
 	}
 
 	/**
@@ -237,7 +236,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFi
 	 *                cost value
 	 */
 	public void setCost(int v, double value) {
-		cost.put(v, value);
+		costMap.put(v, value);
 	}
 
 	/**
