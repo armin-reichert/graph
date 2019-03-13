@@ -14,7 +14,7 @@ import de.amr.graph.pathfinder.impl.GraphSearch;
  */
 public class PathFinderRun {
 
-	private final GraphSearch<Tile, Double> pathFinder;
+	private final GraphSearch<Tile, Double, ?> pathFinder;
 	private final List<Integer> path;
 	private final BitSet pathCells;
 	private final float runningTimeMillis;
@@ -22,7 +22,7 @@ public class PathFinderRun {
 	private final long numOpenVertices;
 	private final long numClosedVertices;
 
-	PathFinderRun(GraphSearch<Tile, Double> pathFinder) {
+	PathFinderRun(GraphSearch<Tile, Double, ?> pathFinder) {
 		this.pathFinder = pathFinder;
 		this.path = Collections.emptyList();
 		this.pathCells = new BitSet();
@@ -32,7 +32,7 @@ public class PathFinderRun {
 		this.numClosedVertices = 0;
 	}
 
-	PathFinderRun(GraphSearch<Tile, Double> pathFinder, List<Integer> path, float runningTimeMillis,
+	PathFinderRun(GraphSearch<Tile, Double, ?> pathFinder, List<Integer> path, float runningTimeMillis,
 			double cost, long numOpenVertices, long numClosedVertices) {
 		this.pathFinder = pathFinder;
 		this.path = path;
@@ -44,7 +44,7 @@ public class PathFinderRun {
 		this.numClosedVertices = numClosedVertices;
 	}
 
-	public GraphSearch<Tile, Double> getPathFinder() {
+	public GraphSearch<Tile, Double, ?> getPathFinder() {
 		return pathFinder;
 	}
 

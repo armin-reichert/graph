@@ -19,10 +19,11 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * 
  * @author Armin Reichert
  */
-public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
+public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 
 	/**
-	 * Creates a best-first traversal instance for the given graph and vertex cost function.
+	 * Creates a best-first traversal instance for the given graph and vertex priority function and
+	 * uniform edge cost.
 	 * 
 	 * @param graph
 	 *                           a graph
@@ -31,12 +32,11 @@ public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 *                           priority.
 	 */
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
-		super(graph);
-		frontier = new MinPQ_VertexQueue(fnVertexPriority);
+		this(graph, fnVertexPriority, (u, v) -> 1);
 	}
 
 	/**
-	 * Creates a best-first traversal instance for the given graph and vertex cost function.
+	 * Creates a best-first traversal instance for the given graph and vertex priority function.
 	 * 
 	 * @param graph
 	 *                           a graph

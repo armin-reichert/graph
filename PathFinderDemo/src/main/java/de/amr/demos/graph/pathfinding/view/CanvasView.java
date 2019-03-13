@@ -23,8 +23,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
 import de.amr.demos.graph.pathfinding.controller.Controller;
-import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.PathFinderAlgorithm;
+import de.amr.demos.graph.pathfinding.model.PathFinderModel;
 import de.amr.demos.graph.pathfinding.model.Tile;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
@@ -322,6 +322,7 @@ public class CanvasView extends GridCanvas {
 			return g.getFontMetrics().getStringBounds(text, g);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 
@@ -339,7 +340,7 @@ public class CanvasView extends GridCanvas {
 				return;
 			}
 
-			GraphSearch<Tile, Double> pf = model.getPathFinder(controller.getSelectedAlgorithm());
+			GraphSearch<Tile, Double, ?> pf = model.getPathFinder(controller.getSelectedAlgorithm());
 
 			// cell text color
 			if (cell == model.getSource() || cell == model.getTarget() || partOfSolution(cell)) {

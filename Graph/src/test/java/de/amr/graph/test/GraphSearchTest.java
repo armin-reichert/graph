@@ -15,7 +15,6 @@ import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
-import de.amr.graph.pathfinder.impl.GraphSearch;
 
 public class GraphSearchTest {
 
@@ -53,7 +52,7 @@ public class GraphSearchTest {
 	@Test
 	public void testInitialization() {
 		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
+		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		g.vertices().forEach(v -> {
 			assertEquals(-1, search.getParent(v));
 		});
@@ -62,7 +61,7 @@ public class GraphSearchTest {
 	@Test
 	public void testExploreIsolatedGraph() {
 		Graph<Void, Void> g = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
+		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		g.vertices().forEach(v -> {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
@@ -78,7 +77,7 @@ public class GraphSearchTest {
 		GridGraph<Void, Void> g = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null,
 				UndirectedEdge::new);
 		g.fill();
-		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
+		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		g.vertices().forEach(v -> {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
@@ -91,7 +90,7 @@ public class GraphSearchTest {
 	@Test
 	public void testExploreCircleGraph() {
 		GridGraph<Void, Void> g = circle3();
-		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
+		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		g.vertices().forEach(v -> {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
@@ -104,7 +103,7 @@ public class GraphSearchTest {
 	@Test
 	public void testBFS() {
 		GridGraph<Void, Void> g = circle3();
-		GraphSearch<Void, Void> search = new BreadthFirstSearch<>(g);
+		BreadthFirstSearch<Void, Void> search = new BreadthFirstSearch<>(g);
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
 		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
@@ -113,10 +112,9 @@ public class GraphSearchTest {
 	@Test
 	public void testDFS() {
 		GridGraph<Void, Void> g = circle3();
-		GraphSearch<Void, Void> search = new DepthFirstSearch<>(g);
+		DepthFirstSearch<Void, Void> search = new DepthFirstSearch<>(g);
 		List<Integer> path = search.findPath(0, 8);
 		assertEquals(5, path.size());
 		assertTrue(Arrays.asList(0, 1, 2, 5, 8).equals(path) || Arrays.asList(0, 3, 6, 7, 8).equals(path));
 	}
-
 }

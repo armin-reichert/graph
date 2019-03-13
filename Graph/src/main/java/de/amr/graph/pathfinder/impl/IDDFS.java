@@ -7,6 +7,7 @@ import java.util.Set;
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 
 /**
  * Iterative deepening depth-first search (IDDFS).
@@ -18,7 +19,7 @@ import de.amr.graph.pathfinder.api.TraversalState;
  * @param <E>
  *          edge label type
  */
-public class IDDFS<V, E> extends GraphSearch<V, E> {
+public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 
 	private DepthLimitedDFS<V, E> dls;
 

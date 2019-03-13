@@ -33,7 +33,7 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
-public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
+public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 
 	public static final TraversalState OPEN = VISITED;
 	public static final TraversalState CLOSED = COMPLETED;

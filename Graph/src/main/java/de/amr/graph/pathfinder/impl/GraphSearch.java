@@ -5,19 +5,22 @@ import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
 import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.VertexQueue;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.pathfinder.api.VertexQueue;
 
 /**
  * Base class for graph search algorithms.
@@ -27,19 +30,28 @@ import de.amr.graph.pathfinder.api.TraversalState;
  * 
  * @author Armin Reichert
  */
-public abstract class GraphSearch<V, E> implements PathFinder {
+public abstract class GraphSearch<V, E, Q extends VertexQueue> implements PathFinder {
 
 	protected final Graph<V, E> graph;
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
 	protected final Set<GraphSearchObserver> observers;
-	protected VertexQueue frontier;
+	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
+	protected final Map<Integer, Double> cost;
+	protected double maxCost;
+	protected Q frontier;
 
 	protected GraphSearch(Graph<V, E> graph) {
+		this(graph, (u, v) -> 1);
+	}
+
+	protected GraphSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		this.graph = Objects.requireNonNull(graph);
-		parentMap = new HashMap<>();
-		stateMap = new HashMap<>();
-		observers = new HashSet<>(5);
+		this.parentMap = new HashMap<>();
+		this.stateMap = new HashMap<>();
+		this.observers = new HashSet<>(5);
+		this.cost = new HashMap<>();
+		this.fnEdgeCost = fnEdgeCost;
 	}
 
 	/**
@@ -49,6 +61,8 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 		parentMap.clear();
 		stateMap.clear();
 		frontier.clear();
+		cost.clear();
+		maxCost = 0;
 	}
 
 	/**
@@ -181,6 +195,13 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected void setParent(int child, int parent) {
 		parentMap.put(child, parent);
 		if (parent != -1) {
+			setCost(child, getCost(parent) + fnEdgeCost.applyAsDouble(parent, child));
+			maxCost = Math.max(maxCost, getCost(child));
+		} else {
+			setCost(child, 0);
+			maxCost = 0;
+		}
+		if (parent != -1) {
 			fireEdgeTraversed(parent, child);
 		}
 	}
@@ -197,14 +218,44 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	}
 
 	/**
-	 * Returns the cost computed for this vertex.
+	 * Returns the cost of the given vertex.
 	 * 
 	 * @param v
-	 *            a vertex
-	 * @return the vertex cost
+	 *            vertex
+	 * @return vertex cost
 	 */
 	public double getCost(int v) {
-		return INFINITE_COST;
+		return cost.getOrDefault(v, PathFinder.INFINITE_COST);
+	}
+
+	/**
+	 * Sets the cost for the given vertex.
+	 * 
+	 * @param v
+	 *                vertex
+	 * @param value
+	 *                cost value
+	 */
+	public void setCost(int v, double value) {
+		cost.put(v, value);
+	}
+
+	/**
+	 * Returns the maximum cost/distance of any vertex reachable from the source.
+	 * 
+	 * @return the maximum distance
+	 */
+	public double getMaxCost() {
+		return maxCost;
+	}
+
+	/**
+	 * Returns a vertex with maximum distance encountered in this traversal.
+	 * 
+	 * @return a vertex with maximum distance or empty
+	 */
+	public Optional<Integer> getMaxCostVertex() {
+		return graph.vertices().boxed().max(Comparator.comparing(this::getCost));
 	}
 
 	// Observer related stuff

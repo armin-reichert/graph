@@ -147,7 +147,7 @@ public class PathFinderModel {
 		return map.euclidean(u, v);
 	}
 
-	private GraphSearch<Tile, Double> newPathFinder(PathFinderAlgorithm algorithm) {
+	private GraphSearch<Tile, Double, ?> newPathFinder(PathFinderAlgorithm algorithm) {
 		switch (algorithm) {
 		case AStar:
 			return new AStarSearch<>(map, e -> e, this::distance);
@@ -161,7 +161,7 @@ public class PathFinderModel {
 		throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
 	}
 
-	public GraphSearch<Tile, Double> getPathFinder(PathFinderAlgorithm algorithm) {
+	public GraphSearch<Tile, Double, ?> getPathFinder(PathFinderAlgorithm algorithm) {
 		return runs.get(algorithm).getPathFinder();
 	}
 
@@ -183,7 +183,7 @@ public class PathFinderModel {
 	}
 
 	public void runPathFinder(PathFinderAlgorithm algorithm) {
-		GraphSearch<Tile, Double> pf = getPathFinder(algorithm);
+		GraphSearch<Tile, Double, ?> pf = getPathFinder(algorithm);
 		StopWatch watch = new StopWatch();
 		watch.start();
 		List<Integer> path = pf.findPath(source, target);

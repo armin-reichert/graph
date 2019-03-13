@@ -53,7 +53,7 @@ public class DFSAnimation extends AbstractAnimation {
 		return new Builder();
 	}
 
-	private GraphSearch<?, ?> dfs;
+	private GraphSearch<?, ?, ?> dfs;
 	private GridCanvas canvas;
 	private Color pathColor = Color.RED;
 	private BitSet inPath = new BitSet();
@@ -110,7 +110,7 @@ public class DFSAnimation extends AbstractAnimation {
 		return r;
 	}
 
-	public void run(GraphSearch<?, ?> dfs, int source, int target) {
+	public void run(GraphSearch<?, ?, ?> dfs, int source, int target) {
 		this.dfs = dfs;
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			canvas.pushRenderer(createPathRenderer(canvasRenderer));

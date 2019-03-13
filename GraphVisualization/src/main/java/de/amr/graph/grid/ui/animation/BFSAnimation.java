@@ -86,7 +86,7 @@ public class BFSAnimation extends AbstractAnimation {
 		public void vertexRemovedFromFrontier(int vertex) {
 			delayed(() -> canvas.drawGridCell(vertex));
 		}
-		
+
 		@Override
 		public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
 			delayed(() -> canvas.drawGridCell(vertex));
@@ -96,7 +96,7 @@ public class BFSAnimation extends AbstractAnimation {
 	private BFSAnimation() {
 		pathColor = Color.RED;
 	}
-	
+
 	/**
 	 * Runs an animation of a BFS from the given source vertex to the given target vertex. Cells are
 	 * colored according to their distance from the source. Optionally the distance value is displayed.
@@ -108,7 +108,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 * @param target
 	 *                 target vertex
 	 */
-	public void run(GraphSearch<?, ?> bfs, int source, int target) {
+	public void run(GraphSearch<?, ?, ?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. explore graph to measure distances of all vertices reachable from source
 			BreadthFirstSearch<?, ?> distMeasurer = new BreadthFirstSearch<>(canvas.getGrid());
