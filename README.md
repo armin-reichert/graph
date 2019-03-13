@@ -7,7 +7,7 @@ This library has been written as the foundation of my [maze generation library](
 The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). I tried to achieve "text book quality" in the code, for example:
 
 ```java
-public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
+public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
