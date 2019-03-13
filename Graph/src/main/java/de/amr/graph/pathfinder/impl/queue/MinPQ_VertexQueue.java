@@ -1,16 +1,21 @@
-package de.amr.graph.pathfinder.impl.frontier;
+package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.function.ToDoubleFunction;
 
-import de.amr.graph.pathfinder.api.Frontier;
+import de.amr.graph.pathfinder.api.VertexQueue;
 
-public class PQFrontier implements Frontier {
+/**
+ * (Min-)Priority queue of vertices.  
+ * 
+ * @author Armin Reichert
+ */
+public class MinPQ_VertexQueue implements VertexQueue {
 
 	private final PriorityQueue<Integer> pq;
 
-	public PQFrontier(ToDoubleFunction<Integer> fnVertexPriority) {
+	public MinPQ_VertexQueue(ToDoubleFunction<Integer> fnVertexPriority) {
 		pq = new PriorityQueue<>(Comparator.comparingDouble(fnVertexPriority));
 	}
 

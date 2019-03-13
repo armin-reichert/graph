@@ -1,7 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.impl.frontier.LIFOFrontier;
+import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 
 /**
  * Depth-first traversal of a graph.
@@ -12,6 +12,6 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	public DepthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		frontier = new LIFOFrontier();
+		frontier = new LIFO_VertexQueue();
 	}
 }

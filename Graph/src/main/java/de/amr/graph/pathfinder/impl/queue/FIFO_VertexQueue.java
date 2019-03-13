@@ -1,11 +1,16 @@
-package de.amr.graph.pathfinder.impl.frontier;
+package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import de.amr.graph.pathfinder.api.Frontier;
+import de.amr.graph.pathfinder.api.VertexQueue;
 
-public class FIFOFrontier implements Frontier {
+/**
+ * FIFO vertex queue.
+ * 
+ * @author Armin Reichert
+ */
+public class FIFO_VertexQueue implements VertexQueue {
 
 	private final Queue<Integer> q = new ArrayDeque<>();
 

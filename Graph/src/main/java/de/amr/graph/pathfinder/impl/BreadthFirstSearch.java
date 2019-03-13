@@ -8,7 +8,7 @@ import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.PathFinder;
-import de.amr.graph.pathfinder.impl.frontier.FIFOFrontier;
+import de.amr.graph.pathfinder.impl.queue.FIFO_VertexQueue;
 
 /**
  * Breadth-first search in undirected graph, starting from a given source vertex. After being
@@ -30,14 +30,14 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E> {
 
 	public BreadthFirstSearch(Graph<V, E> graph) {
 		super(graph);
-		frontier = new FIFOFrontier();
+		frontier = new FIFO_VertexQueue();
 		cost = new HashMap<>();
 		fnEdgeCost = (u, v) -> 1;
 	}
 
 	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph);
-		frontier = new FIFOFrontier();
+		frontier = new FIFO_VertexQueue();
 		cost = new HashMap<>();
 		this.fnEdgeCost = fnEdgeCost;
 	}

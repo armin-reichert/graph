@@ -10,7 +10,7 @@ import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.TraversalState;
-import de.amr.graph.pathfinder.impl.frontier.PQFrontier;
+import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
 
 /**
  * The A* path finder.
@@ -56,7 +56,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
 		super(graph);
-		frontier = new PQFrontier(this::getScore);
+		frontier = new MinPQ_VertexQueue(this::getScore);
 		score = new HashMap<>();
 		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedPathCost = fnEstimatedPathCost;
@@ -89,7 +89,7 @@ public class AStarSearch<V, E> extends BreadthFirstSearch<V, E> {
 					setCost(child, newCost);
 					setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
 					if (getState(child) == OPEN) {
-						((PQFrontier) frontier).decreaseKey(child);
+						((MinPQ_VertexQueue) frontier).decreaseKey(child);
 					} else {
 						setState(child, OPEN);
 						frontier.add(child);

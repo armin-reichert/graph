@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.Frontier;
+import de.amr.graph.pathfinder.api.VertexQueue;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.PathFinder;
 import de.amr.graph.pathfinder.api.TraversalState;
@@ -33,7 +33,7 @@ public abstract class GraphSearch<V, E> implements PathFinder {
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
 	protected final Set<GraphSearchObserver> observers;
-	protected Frontier frontier;
+	protected VertexQueue frontier;
 
 	protected GraphSearch(Graph<V, E> graph) {
 		this.graph = Objects.requireNonNull(graph);

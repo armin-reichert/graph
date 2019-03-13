@@ -4,7 +4,7 @@ import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.impl.frontier.PQFrontier;
+import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
 
 /**
  * A heuristic variant of breadth-first-search, sorting the entire queue when a vertex is expanded.
@@ -32,7 +32,7 @@ public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
 	 */
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
 		super(graph);
-		frontier = new PQFrontier(fnVertexPriority);
+		frontier = new MinPQ_VertexQueue(fnVertexPriority);
 	}
 
 	/**
@@ -49,6 +49,6 @@ public class BestFirstSearch<V, E> extends BreadthFirstSearch<V, E> {
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
 			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost);
-		frontier = new PQFrontier(fnVertexPriority);
+		frontier = new MinPQ_VertexQueue(fnVertexPriority);
 	}
 }

@@ -1,10 +1,15 @@
-package de.amr.graph.pathfinder.impl.frontier;
+package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.ArrayDeque;
 
-import de.amr.graph.pathfinder.api.Frontier;
+import de.amr.graph.pathfinder.api.VertexQueue;
 
-public class LIFOFrontier implements Frontier {
+/**
+ * Stack of vertices.
+ * 
+ * @author Armin Reichert
+ */
+public class LIFO_VertexQueue implements VertexQueue {
 
 	private final ArrayDeque<Integer> stack = new ArrayDeque<>();
 
