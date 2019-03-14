@@ -6,7 +6,9 @@ This library has been written as the foundation of my [maze generation library](
 
 The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). 
 
-I tried to achieve "text book quality" in the code:
+I tried to achieve "text book quality" in the code. See for example the following implementations:
+
+*** Depth-First Search:
 
 ```java
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
@@ -16,7 +18,11 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> 
 		frontier = new LIFO_VertexQueue();
 	}
 }
+```
 
+*** Breadth-First Search:
+
+```java
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
 
 	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
@@ -28,14 +34,22 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue
 		this(graph, (u, v) -> 1);
 	}
 }
+```
 
+*** Uniform-Cost Search (Dijkstra):
+
+```java
 public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 
 	public DijkstraSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
+```
 
+*** Greedy Best-First Search:
+
+```java
 public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
