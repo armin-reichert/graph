@@ -8,7 +8,7 @@ The library contains a space-efficient implementation for 2D grid graphs and sev
 
 I tried to achieve "text book quality" in the code. See for example the following implementations:
 
-*** Depth-First Search:
+### Depth-First Search:
 
 ```java
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
@@ -20,7 +20,7 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> 
 }
 ```
 
-*** Breadth-First Search:
+### Breadth-First Search:
 
 ```java
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
@@ -36,7 +36,7 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue
 }
 ```
 
-*** Uniform-Cost Search (Dijkstra):
+### Uniform-Cost Search (Dijkstra):
 
 ```java
 public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
@@ -47,7 +47,7 @@ public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 }
 ```
 
-*** Greedy Best-First Search:
+### Greedy Best-First Search:
 
 ```java
 public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
