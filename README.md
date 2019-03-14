@@ -64,7 +64,7 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 }
 ```
 
-The repository [graph-demos]() contains some sample applications:
+The [graph-demos](https://github.com/armin-reichert/graph-demos) repository contains some sample applications:
 
 ### Path Finder Demo Application
 
