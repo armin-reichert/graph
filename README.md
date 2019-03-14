@@ -2,7 +2,7 @@
 
 This library has been written as the foundation of my [maze generation library](https://github.com/armin-reichert/mazes). 
 
-<img width="640" src="https://github.com/armin-reichert/mazes/blob/master/MazeAlgorithms/images/gen/maze_80x60_WilsonUSTRecursiveCrosses.gif"/>
+<img width="640" src="https://github.com/armin-reichert/mazes/wiki/images/gen/maze_80x60_WilsonUSTRecursiveCrosses.gif"/>
 
 The library contains a space-efficient implementation for 2D grid graphs and several pathfinder implementations (BFS, DFS, Hill-Climbing, Best-First Search, A*, Dijkstra). 
 
@@ -64,18 +64,23 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 }
 ```
 
-There is a demo application included where you can add/remove walls in a grid and run different pathfinding algorithms:
+The repository [graph-demos]() contains some sample applications:
+
+### Path Finder Demo Application
+
+In this application you can add/remove walls in a grid and run different path finding algorithms (BFS, Dijkstra, Best-First Search, A*):
 
 ![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/PathFinderDemo/doc/pathfinder.png)
 
 ![Path finding demo application](https://github.com/armin-reichert/graph/blob/master/PathFinderDemo/doc/astar.png)
 
+### Spacing-filling curves
 
-Additional sample apps show graph based implementations of space filling curves (Hilbert, Peano, Moore curves).
+This sample apps show space filling curves (Hilbert, Peano, Moore curves) in a grid graph.
 
 ![Hilbert curve](https://github.com/armin-reichert/graph/blob/master/SpaceFillingCurves/doc/hilbert.png)
 
-This library and path finding is also used by my [Pac-Man game](https://github.com/armin-reichert/pacman) implementation
-to verify its reusability.
+
+The graph library and path finding is also used in my [Pac-Man game](https://github.com/armin-reichert/pacman) implementation:
 
 ![Pac-Man](https://github.com/armin-reichert/pacman/blob/master/doc/pacman-pathfinding.png)
