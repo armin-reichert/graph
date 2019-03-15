@@ -23,7 +23,7 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E, LIFO_VertexQueue>
 	}
 
 	@Override
-	public void exploreGraph(int source, int target) {
+	public boolean exploreGraph(int source, int target) {
 		init();
 
 		setState(source, VISITED);
@@ -31,8 +31,10 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E, LIFO_VertexQueue>
 		fireVertexAddedToFrontier(source);
 
 		int current = source;
+		boolean found = false;
 		while (!frontier.isEmpty()) {
 			if (current == target) {
+				found = true;
 				break;
 			}
 			OptionalInt neighborIfAny = unvisitedChildren(current).findAny();
@@ -60,6 +62,7 @@ public class DepthFirstSearch2<V, E> extends GraphSearch<V, E, LIFO_VertexQueue>
 		while (!frontier.isEmpty()) {
 			setState(frontier.next(), COMPLETED);
 		}
+		return found;
 	}
 
 	private IntStream unvisitedChildren(int v) {

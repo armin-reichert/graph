@@ -28,7 +28,7 @@ public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 	}
 
 	@Override
-	public void exploreGraph(int source, int target) {
+	public boolean exploreGraph(int source, int target) {
 		Set<GraphSearchObserver> observersCopy = new HashSet<>(observers);
 		removeAllObservers();
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
@@ -39,9 +39,10 @@ public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 			Path path = Path.computePath(source, target, dls);
 			observersCopy.forEach(dls::removeObserver);
 			if (path.numVertices() != 0) {
-				return;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override

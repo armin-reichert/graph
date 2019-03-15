@@ -37,6 +37,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected double maxCost;
 	protected Q frontier;
+	private int current;
 
 	protected GraphSearch(Graph<V, E> graph) {
 		this(graph, (u, v) -> 1);
@@ -81,19 +82,43 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 *                 source vertex
 	 * @param target
 	 *                 target vertex
+	 * 
+	 * @return {@code true} if the target has been found
 	 */
-	public void exploreGraph(int source, int target) {
+	public boolean exploreGraph(int source, int target) {
 		init();
 		start(source, target);
-		while (!frontier.isEmpty()) {
-			int current = frontier.next();
-			setState(current, COMPLETED);
-			fireVertexRemovedFromFrontier(current);
-			if (current == target) {
-				return;
+		while (hasNext()) {
+			if (exploreNext(source, target)) {
+				return true;
 			}
-			expand(current, source, target);
 		}
+		return false;
+	}
+
+	/**
+	 * Tells if there is some vertex left to explore.
+	 * 
+	 * @return {@code true} if there is some vertex left to explore
+	 */
+	public boolean hasNext() {
+		return !frontier.isEmpty();
+	}
+
+	/**
+	 * Explores the next vertex.
+	 * 
+	 * @return {@code true} if the target has been found
+	 */
+	public boolean exploreNext(int source, int target) {
+		current = frontier.next();
+		setState(current, COMPLETED);
+		fireVertexRemovedFromFrontier(current);
+		if (current == target) {
+			return true;
+		}
+		expand(current, source, target);
+		return false;
 	}
 
 	/**
