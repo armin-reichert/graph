@@ -8,7 +8,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
- * Grid renderer that can be configured without sub-classing.
+ * Grid renderer that can be configured via function properties.
  * 
  * @author Armin Reichert
  */
@@ -16,22 +16,30 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 
 	/** Function providing the grid cell size. */
 	public IntSupplier fnCellSize;
+
 	/** Function providing the passage width. */
 	public BiFunction<Integer, Integer, Integer> fnPassageWidth;
+
 	/** Function providing the grid background color. */
 	public Supplier<Color> fnGridBgColor;
+
 	/**
 	 * Function {@code (cell, direction) -> color} providing the passage color toward a given direction.
 	 */
 	public BiFunction<Integer, Integer, Color> fnPassageColor;
+
 	/** Function providing the background color for a cell. */
 	public Function<Integer, Color> fnCellBgColor;
+
 	/** Function providing the text for a cell. */
 	public Function<Integer, String> fnText;
-	/** Function providing the minimum font size which is still displayed. */
+
+	/** Function providing the minimum font size still displayed. */
 	public IntSupplier fnMinFontSize;
+
 	/** Function supplying the text font. */
-	public Supplier<Font> fnTextFont;
+	public Function<Integer, Font> fnTextFont;
+
 	/** Function supplying the text color for a cell. */
 	public Function<Integer, Color> fnTextColor;
 
@@ -44,9 +52,9 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 		fnGridBgColor = () -> Color.BLACK;
 		fnPassageColor = (cell, dir) -> getCellBgColor(cell);
 		fnCellBgColor = cell -> Color.WHITE;
-		fnMinFontSize = () -> 6;
+		fnMinFontSize = () -> 5;
 		fnText = cell -> "";
-		fnTextFont = () -> new Font("Sans", Font.PLAIN, getCellSize() / 2);
+		fnTextFont = cell -> new Font("Sans", Font.PLAIN, getCellSize() / 2);
 		fnTextColor = cell -> Color.BLUE;
 	}
 
@@ -91,8 +99,8 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	}
 
 	@Override
-	public final Font getTextFont() {
-		return fnTextFont.get();
+	public final Font getTextFont(int cell) {
+		return fnTextFont.apply(cell);
 	}
 
 	@Override

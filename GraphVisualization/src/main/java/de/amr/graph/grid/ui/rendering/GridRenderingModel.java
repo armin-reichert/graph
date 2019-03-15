@@ -56,7 +56,7 @@ public interface GridRenderingModel {
 	/**
 	 * @return the font for cell texts
 	 */
-	Font getTextFont();
+	Font getTextFont(int cell);
 
 	/**
 	 * @param cell

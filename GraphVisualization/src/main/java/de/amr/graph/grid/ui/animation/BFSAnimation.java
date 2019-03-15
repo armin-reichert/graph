@@ -164,7 +164,7 @@ public class BFSAnimation extends AbstractAnimation {
 		r.fnPassageColor = (u, v) -> cellColorByDistance(u, distance, maxDistance);
 		r.fnPassageWidth = base.getModel()::getPassageWidth;
 		r.fnText = cell -> distanceVisible ? format("%.0f", distance.applyAsDouble(cell)) : "";
-		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth(0, 0) / 2);
+		r.fnTextFont = cell -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth(0, 0) / 2);
 		r.fnTextColor = cell -> Color.BLACK;
 		return r;
 	}
@@ -185,7 +185,7 @@ public class BFSAnimation extends AbstractAnimation {
 		r.fnPassageWidth = (u, v) -> base.getPassageWidth(u, v) > 5 ? base.getPassageWidth(u, v) / 2
 				: base.getPassageWidth(u, v);
 		r.fnText = cell -> distanceVisible ? format("%.0f", distance.applyAsDouble(cell)) : "";
-		r.fnTextFont = () -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth(0, 0) / 2);
+		r.fnTextFont = cell -> new Font(Font.SANS_SERIF, Font.PLAIN, r.getPassageWidth(0, 0) / 2);
 		r.fnTextColor = cell -> Color.WHITE;
 		return r;
 	}

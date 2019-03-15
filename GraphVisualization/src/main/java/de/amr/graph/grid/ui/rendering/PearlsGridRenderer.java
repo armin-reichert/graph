@@ -81,8 +81,8 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	}
 
 	private void drawCellText(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
-		int fontSize = getTextFont().getSize();
-		if (fontSize < getMinFontSize()) {
+		Font font = getTextFont(cell);
+		if (font.getSize() < getMinFontSize()) {
 			return;
 		}
 		String text = getText(cell);
@@ -91,9 +91,9 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 			return;
 		}
 		g.setColor(getTextColor(cell));
-		g.setFont(getTextFont().deriveFont(Font.PLAIN, fontSize));
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setFont(font);
 		Rectangle textBox = g.getFontMetrics().getStringBounds(text, g).getBounds();
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.drawString(text, (getCellSize() - textBox.width) / 2, (getCellSize() + textBox.height / 2) / 2);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
