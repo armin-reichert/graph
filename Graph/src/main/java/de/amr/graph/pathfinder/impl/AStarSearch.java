@@ -69,7 +69,7 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	}
 
 	@Override
-	protected void start(int source, int target) {
+	protected void start() {
 		setState(source, OPEN);
 		// next two lines only included for consistency:
 		setCost(source, 0);
@@ -78,7 +78,7 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	}
 
 	@Override
-	protected void expand(int v, int source, int target) {
+	protected void expand(int v) {
 		graph.adj(v).filter(child -> getState(child) != CLOSED).forEach(child -> {
 			double newCost = getCost(v) + edgeCost(v, child);
 			if (getState(child) != OPEN || newCost < getCost(child)) {

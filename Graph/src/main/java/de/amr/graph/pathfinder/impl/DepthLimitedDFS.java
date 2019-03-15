@@ -27,9 +27,9 @@ public class DepthLimitedDFS<V, E> extends DepthFirstSearch<V, E> {
 	}
 
 	@Override
-	protected void expand(int v, int source, int target) {
+	protected void expand(int v) {
 		if (depth.get(v) < depthLimit) {
-			super.expand(v, source, target);
+			super.expand(v);
 		}
 	}
 

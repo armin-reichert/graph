@@ -37,7 +37,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected double maxCost;
 	protected Q frontier;
-	private int current;
+	protected int current, source, target;
 
 	protected GraphSearch(Graph<V, E> graph) {
 		this(graph, (u, v) -> 1);
@@ -61,6 +61,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 		costMap.clear();
 		frontier.clear();
 		maxCost = 0;
+		current = source = target = -1;
 	}
 
 	/**
@@ -87,9 +88,11 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 */
 	public boolean exploreGraph(int source, int target) {
 		init();
-		start(source, target);
-		while (hasNext()) {
-			if (exploreNext(source, target)) {
+		this.source = source;
+		this.target = target;
+		start();
+		while (canExplore()) {
+			if (exploreVertex()) {
 				return true;
 			}
 		}
@@ -101,7 +104,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 * 
 	 * @return {@code true} if there is some vertex left to explore
 	 */
-	public boolean hasNext() {
+	public boolean canExplore() {
 		return !frontier.isEmpty();
 	}
 
@@ -110,26 +113,21 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 * 
 	 * @return {@code true} if the target has been found
 	 */
-	public boolean exploreNext(int source, int target) {
+	public boolean exploreVertex() {
 		current = frontier.next();
 		setState(current, COMPLETED);
 		fireVertexRemovedFromFrontier(current);
 		if (current == target) {
 			return true;
 		}
-		expand(current, source, target);
+		expand(current);
 		return false;
 	}
 
 	/**
 	 * Start the search. Subclasses may modify this.
-	 * 
-	 * @param source
-	 *                 the source vertex
-	 * @param target
-	 *                 the target vertex
 	 */
-	protected void start(int source, int target) {
+	protected void start() {
 		setState(source, VISITED);
 		setParent(source, -1);
 		frontier.add(source);
@@ -140,13 +138,9 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 * Expands the frontier at the given vertex. Subclasses may modify this.
 	 * 
 	 * @param v
-	 *                 vertex to be expanded
-	 * @param source
-	 *                 the source vertex
-	 * @param target
-	 *                 the target vertex
+	 *            vertex to be expanded
 	 */
-	protected void expand(int v, int source, int target) {
+	protected void expand(int v) {
 		graph.adj(v).filter(neighbor -> getState(neighbor) == UNVISITED).forEach(neighbor -> {
 			setState(neighbor, VISITED);
 			setParent(neighbor, v);
