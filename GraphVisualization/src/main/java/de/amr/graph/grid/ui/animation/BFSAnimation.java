@@ -8,6 +8,7 @@ import java.util.BitSet;
 import java.util.function.IntSupplier;
 import java.util.function.ToDoubleFunction;
 
+import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -95,6 +96,14 @@ public class BFSAnimation extends AbstractAnimation {
 
 	private BFSAnimation() {
 		pathColor = Color.RED;
+	}
+
+	public void floodFill(GridPosition sourcePosition) {
+		floodFill(canvas.getGrid().cell(sourcePosition));
+	}
+
+	public void floodFill(int source) {
+		run(new BreadthFirstSearch<>(canvas.getGrid()), source, -1);
 	}
 
 	/**

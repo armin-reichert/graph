@@ -23,7 +23,7 @@ import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
 import de.amr.graph.grid.impl.ObservableGridGraph;
 import de.amr.graph.grid.impl.OrthogonalGrid;
-import de.amr.graph.grid.ui.animation.Floodfill;
+import de.amr.graph.grid.ui.animation.BFSAnimation;
 import de.amr.graph.grid.ui.animation.GridCanvasAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -264,15 +264,16 @@ public abstract class SwingGridSampleApp implements Runnable {
 		canvasAnimation.fnDelay = () -> millis;
 	}
 
-	public void floodfill() {
-		floodfill(GridPosition.CENTER);
+	public void floodFill() {
+		floodFill(GridPosition.CENTER);
 	}
 
-	public void floodfill(int source) {
-		Floodfill.builder().canvas(canvas).source(source).distanceVisible(false).build().run();
+	public void floodFill(GridPosition sourcePosition) {
+		floodFill(getGrid().cell(sourcePosition));
 	}
 
-	public void floodfill(GridPosition sourcePosition) {
-		Floodfill.builder().canvas(canvas).source(sourcePosition).distanceVisible(false).build().run();
+	public void floodFill(int source) {
+		BFSAnimation.builder().canvas(canvas).distanceVisible(false).build().floodFill(source);
 	}
+
 }
