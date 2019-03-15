@@ -2,6 +2,7 @@ package de.amr.graph.grid.ui.rendering;
 
 import static java.lang.Math.ceil;
 
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -10,22 +11,25 @@ import java.awt.RenderingHints;
 import de.amr.graph.grid.api.GridGraph2D;
 
 public class PearlsGridRenderer extends ConfigurableGridRenderer {
+	
+	static final int PEARL_SIZE_PERCENT = 66; //TODO
 
 	private class DefaultGridCellRenderer implements GridCellRenderer {
 
 		@Override
 		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
-			int cs = getCellSize();
-			int x = grid.col(cell) * cs;
-			int y = grid.row(cell) * cs;
-			int ps = Math.max(1, getCellSize() / 2); // TODO
-			int offset = cs / 4;
-			int arc = ps / 2;
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			int cellSize = getCellSize();
+			int x = grid.col(cell) * cellSize;
+			int y = grid.row(cell) * cellSize;
+			int pearlSize = Math.max(1, cellSize * PEARL_SIZE_PERCENT / 100);
+			int offset = (cellSize - pearlSize) / 2;
+			int arc = pearlSize / 2;
 			g.translate(x + offset, y + offset);
 			g.setColor(getCellBgColor(cell));
 			// g.fillOval(0, 0, ps, ps);
-			g.fillRoundRect(0, 0, ps, ps, arc, arc);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g.fillRoundRect(0, 0, pearlSize, pearlSize, arc, arc);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			g.translate(-x - offset, -y - offset);
 			drawCellContent(g, grid, cell);
 		}
@@ -54,17 +58,19 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 
 	@Override
 	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
-		int cs = getCellSize();
-		int ps = Math.max(1, getCellSize() / 2); // TODO
-		int x1 = grid.col(either) * cs + ps / 2;
-		int y1 = grid.row(either) * cs + ps / 2;
-		int x2 = grid.col(other) * cs + ps / 2;
-		int y2 = grid.row(other) * cs + ps / 2;
-		int offset = cs / 4;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int cellSize = getCellSize();
+		int pearlSize = Math.max(1, cellSize * PEARL_SIZE_PERCENT / 100);
+		int x1 = grid.col(either) * cellSize + pearlSize / 2;
+		int y1 = grid.row(either) * cellSize + pearlSize / 2;
+		int x2 = grid.col(other) * cellSize + pearlSize / 2;
+		int y2 = grid.row(other) * cellSize + pearlSize / 2;
+		int offset = (cellSize - pearlSize) / 2;
 		g.setColor(getPassageColor(either, grid.direction(either, other).getAsInt()));
 		g.translate(offset, offset);
+		g.setStroke(new BasicStroke(getPassageWidth(either, other)));
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.drawLine(x1, y1, x2, y2);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		g.translate(-offset, -offset);
 	}
 
