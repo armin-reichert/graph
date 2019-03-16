@@ -7,7 +7,7 @@ import java.util.function.ToDoubleFunction;
 import de.amr.graph.pathfinder.api.VertexQueue;
 
 /**
- * (Min-)Priority queue of vertices.  
+ * (Min-)Priority queue of vertices.
  * 
  * @author Armin Reichert
  */
@@ -47,5 +47,10 @@ public class MinPQ_VertexQueue implements VertexQueue {
 	@Override
 	public void clear() {
 		pq.clear();
+	}
+
+	@Override
+	public String toString() {
+		return pq.toString();
 	}
 }

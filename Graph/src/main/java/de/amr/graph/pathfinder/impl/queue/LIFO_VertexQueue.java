@@ -37,4 +37,9 @@ public class LIFO_VertexQueue implements VertexQueue {
 	public void clear() {
 		stack.clear();
 	}
+
+	@Override
+	public String toString() {
+		return stack.toString();
+	}
 }

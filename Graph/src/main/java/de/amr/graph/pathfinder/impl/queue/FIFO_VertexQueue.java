@@ -38,4 +38,9 @@ public class FIFO_VertexQueue implements VertexQueue {
 	public void clear() {
 		q.clear();
 	}
+
+	@Override
+	public String toString() {
+		return q.toString();
+	}
 }
