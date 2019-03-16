@@ -88,9 +88,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	 */
 	public boolean exploreGraph(int source, int target) {
 		init();
-		this.source = source;
-		this.target = target;
-		start();
+		start(source, target);
 		while (canExplore()) {
 			if (exploreVertex()) {
 				return true;
@@ -127,7 +125,9 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	/**
 	 * Start the search. Subclasses may modify this.
 	 */
-	protected void start() {
+	protected void start(int source, int target) {
+		this.source = source;
+		this.target = target;
 		setState(source, VISITED);
 		setParent(source, -1);
 		frontier.add(source);

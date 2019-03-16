@@ -66,7 +66,9 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	}
 
 	@Override
-	protected void start() {
+	protected void start(int source, int target) {
+		this.source = source;
+		this.target = target;
 		setState(source, OPEN);
 		// next two lines only included for consistency:
 		setCost(source, 0);
