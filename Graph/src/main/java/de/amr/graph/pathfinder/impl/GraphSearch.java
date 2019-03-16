@@ -125,7 +125,7 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	/**
 	 * Start the search. Subclasses may modify this.
 	 */
-	protected void start(int source, int target) {
+	public void start(int source, int target) {
 		this.source = source;
 		this.target = target;
 		setState(source, VISITED);
