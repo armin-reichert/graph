@@ -6,7 +6,6 @@ import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.ToDoubleBiFunction;
-import java.util.function.ToDoubleFunction;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.TraversalState;
@@ -38,7 +37,6 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	public static final TraversalState OPEN = VISITED;
 	public static final TraversalState CLOSED = COMPLETED;
 
-	private final ToDoubleFunction<E> fnEdgeCost;
 	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost;
 	private final Map<Integer, Double> score;
 
@@ -53,12 +51,11 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	 *                              estimated path cost, for example the Euclidean or Manhattan distance
 	 *                              for a 2D grid. Must be an underestimate of the real cost.
 	 */
-	public AStarSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost,
+	public AStarSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
-		super(graph);
+		super(graph, fnEdgeCost);
 		frontier = new MinPQ_VertexQueue(this::getScore);
 		score = new HashMap<>();
-		this.fnEdgeCost = fnEdgeCost;
 		this.fnEstimatedPathCost = fnEstimatedPathCost;
 	}
 
@@ -80,7 +77,7 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	@Override
 	protected void expand(int v) {
 		graph.adj(v).filter(child -> getState(child) != CLOSED).forEach(child -> {
-			double newCost = getCost(v) + edgeCost(v, child);
+			double newCost = getCost(v) + fnEdgeCost.applyAsDouble(v, child);
 			if (getState(child) != OPEN || newCost < getCost(child)) {
 				setParent(child, v);
 				setCost(child, newCost);
@@ -101,9 +98,5 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 
 	private void setScore(int v, double value) {
 		score.put(v, value);
-	}
-
-	private double edgeCost(int u, int v) {
-		return fnEdgeCost.applyAsDouble(graph.getEdgeLabel(u, v));
 	}
 }
