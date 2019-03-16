@@ -150,6 +150,15 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	}
 
 	/**
+	 * Returns the vertex currently being processed.
+	 * 
+	 * @return the current vertex
+	 */
+	public int getCurrent() {
+		return current;
+	}
+
+	/**
 	 * Sets the traversal state for the given vertex.
 	 * 
 	 * @param v
