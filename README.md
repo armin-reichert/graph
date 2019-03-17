@@ -14,8 +14,7 @@ I tried to achieve "text book quality" in the code. See for example the followin
 public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 
 	public DepthFirstSearch(Graph<V, E> graph) {
-		super(graph);
-		frontier = new LIFO_VertexQueue();
+		super(graph, new LIFO_VertexQueue());
 	}
 }
 ```
@@ -25,13 +24,12 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> 
 ```java
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
 
-	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
-		super(graph, fnEdgeCost);
-		frontier = new FIFO_VertexQueue();
+	public BreadthFirstSearch(Graph<V, E> graph) {
+		super(graph, (u, v) -> 1, new FIFO_VertexQueue());
 	}
 
-	public BreadthFirstSearch(Graph<V, E> graph) {
-		this(graph, (u, v) -> 1);
+	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost, new FIFO_VertexQueue());
 	}
 }
 ```
@@ -41,7 +39,7 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue
 ```java
 public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 
-	public DijkstraSearch(Graph<V, E> graph, ToDoubleFunction<E> fnEdgeCost) {
+	public DijkstraSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
@@ -53,13 +51,12 @@ public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
-		this(graph, fnVertexPriority, (u, v) -> 1);
+		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
-		ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
-		super(graph, fnEdgeCost);
-		frontier = new MinPQ_VertexQueue(fnVertexPriority);
+			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 }
 ```
