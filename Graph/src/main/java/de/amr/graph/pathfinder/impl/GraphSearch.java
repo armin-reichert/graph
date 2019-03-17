@@ -46,7 +46,7 @@ public abstract class GraphSearch<Q extends VertexQueue> {
 	protected GraphSearch(Graph<?, ?> graph, Q frontier) {
 		this(graph, (u, v) -> 1, frontier);
 	}
-	
+
 	protected GraphSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		this(graph, fnEdgeCost, null);
 	}
@@ -292,7 +292,7 @@ public abstract class GraphSearch<Q extends VertexQueue> {
 	}
 
 	protected void fireVertexRemovedFromFrontier(int vertex) {
-		observers.forEach(observer -> observer.vertexAddedToFrontier(vertex));
+		observers.forEach(observer -> observer.vertexRemovedFromFrontier(vertex));
 	}
 
 	protected void fireVertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
