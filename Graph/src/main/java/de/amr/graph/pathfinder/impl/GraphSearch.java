@@ -27,9 +27,9 @@ import de.amr.graph.pathfinder.api.VertexQueue;
  * 
  * @author Armin Reichert
  */
-public abstract class GraphSearch<V, E, Q extends VertexQueue> {
+public abstract class GraphSearch<Q extends VertexQueue> {
 
-	protected final Graph<V, E> graph;
+	protected final Graph<?, ?> graph;
 	protected final Map<Integer, Integer> parentMap;
 	protected final Map<Integer, TraversalState> stateMap;
 	protected final Map<Integer, Double> costMap;
@@ -39,19 +39,19 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 	protected Q frontier;
 	protected int current, source, target;
 
-	protected GraphSearch(Graph<V, E> graph) {
+	protected GraphSearch(Graph<?, ?> graph) {
 		this(graph, (u, v) -> 1);
 	}
 
-	protected GraphSearch(Graph<V, E> graph, Q frontier) {
+	protected GraphSearch(Graph<?, ?> graph, Q frontier) {
 		this(graph, (u, v) -> 1, frontier);
 	}
 	
-	protected GraphSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+	protected GraphSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		this(graph, fnEdgeCost, null);
 	}
 
-	protected GraphSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost, Q frontier) {
+	protected GraphSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost, Q frontier) {
 		this.graph = Objects.requireNonNull(graph);
 		this.parentMap = new HashMap<>();
 		this.stateMap = new HashMap<>();

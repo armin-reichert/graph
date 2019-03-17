@@ -25,11 +25,6 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * Vertex v in closed list: getState(v) == CLOSED
  * </pre>
  * 
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
- * 
  * @author Armin Reichert
  * 
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
@@ -37,7 +32,7 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  *      Blob Games</a>
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
-public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
+public class AStarSearch extends GraphSearch<MinPQ_VertexQueue> {
 
 	public static final TraversalState OPEN = VISITED;
 	public static final TraversalState CLOSED = COMPLETED;
@@ -56,7 +51,7 @@ public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
 	 *                              estimated path cost, for example the Euclidean or Manhattan distance
 	 *                              for a 2D grid. Must be an underestimate of the real cost.
 	 */
-	public AStarSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost,
+	public AStarSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
 		super(graph, fnEdgeCost);
 		frontier = new MinPQ_VertexQueue(this::getScore);

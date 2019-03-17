@@ -16,13 +16,8 @@ import de.amr.graph.core.api.Graph;
  * From: Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984
  * 
  * @author Armin Reichert
- * 
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
  */
-public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
+public class HillClimbingSearch extends DepthFirstSearch {
 
 	private final Comparator<Integer> vertexPushOrder;
 
@@ -32,7 +27,7 @@ public class HillClimbingSearch<V, E> extends DepthFirstSearch<V, E> {
 	 * @param fnVertexCost
 	 *                       cost function for vertices
 	 */
-	public HillClimbingSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexCost) {
+	public HillClimbingSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexCost) {
 		super(graph);
 		// reversed because cheapest vertex has to be added to the frontier (stack) last
 		vertexPushOrder = comparingDouble(fnVertexCost).reversed();

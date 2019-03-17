@@ -12,14 +12,9 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * <p>
  * From: Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984
  * 
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
- * 
  * @author Armin Reichert
  */
-public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
+public class BestFirstSearch extends GraphSearch<MinPQ_VertexQueue> {
 
 	/**
 	 * Creates a best-first traversal instance for the given graph and vertex priority function and
@@ -31,7 +26,7 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 	 *                           vertex priority function. Queue will always be sorted by increasing
 	 *                           priority.
 	 */
-	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority) {
 		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 
@@ -46,7 +41,7 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 	 * @param fnEdgeCost
 	 *                           edge cost function
 	 */
-	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority,
 			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnVertexPriority));
 	}

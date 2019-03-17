@@ -13,17 +13,12 @@ import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
  * Iterative deepening depth-first search (IDDFS).
  * 
  * @author Armin Reichert
- *
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
  */
-public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
+public class IDDFS extends GraphSearch<LIFO_VertexQueue> {
 
-	private DepthLimitedDFS<V, E> dls;
+	private DepthLimitedDFS dls;
 
-	public IDDFS(Graph<V, E> graph) {
+	public IDDFS(Graph<?, ?> graph) {
 		super(graph);
 	}
 
@@ -32,7 +27,7 @@ public class IDDFS<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 		Set<GraphSearchObserver> observersCopy = new HashSet<>(observers);
 		removeAllObservers();
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
-			dls = new DepthLimitedDFS<>(graph, depth);
+			dls = new DepthLimitedDFS(graph, depth);
 			observersCopy.forEach(dls::addObserver);
 			stateMap.clear();
 			parentMap.clear();

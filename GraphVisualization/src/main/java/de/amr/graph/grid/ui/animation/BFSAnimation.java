@@ -103,7 +103,7 @@ public class BFSAnimation extends AbstractAnimation {
 	}
 
 	public void floodFill(int source) {
-		run(new BreadthFirstSearch<>(canvas.getGrid()), source, -1);
+		run(new BreadthFirstSearch(canvas.getGrid()), source, -1);
 	}
 
 	/**
@@ -117,10 +117,10 @@ public class BFSAnimation extends AbstractAnimation {
 	 * @param target
 	 *                 target vertex
 	 */
-	public void run(GraphSearch<?, ?, ?> bfs, int source, int target) {
+	public void run(GraphSearch<?> bfs, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			// 1. explore graph to measure distances of all vertices reachable from source
-			BreadthFirstSearch<?, ?> distMeasurer = new BreadthFirstSearch<>(canvas.getGrid());
+			BreadthFirstSearch distMeasurer = new BreadthFirstSearch(canvas.getGrid());
 			distMeasurer.exploreGraph(source);
 			mapRenderer = deriveMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
 			canvas.pushRenderer(mapRenderer);
@@ -144,7 +144,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 * @param target
 	 *                 target cell
 	 */
-	public void showPath(GraphSearch<?, ?, ?> search, int source, int target) {
+	public void showPath(GraphSearch<?> search, int source, int target) {
 		canvas.getRenderer().ifPresent(canvasRenderer -> {
 			Path path = Path.constructPath(source, target, search);
 			if (path.numVertices() < 2) {

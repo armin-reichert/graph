@@ -67,7 +67,7 @@ public class GridTraversalTest {
 
 	@Test
 	public void testBFS() {
-		BreadthFirstSearch<TraversalState, ?> bfs = new BreadthFirstSearch<>(grid);
+		BreadthFirstSearch bfs = new BreadthFirstSearch(grid);
 		assertState(grid.vertices(), bfs::getState, UNVISITED);
 		bfs.exploreGraph(grid.cell(CENTER));
 		assertState(grid.vertices(), bfs::getState, VISITED, COMPLETED);
@@ -76,7 +76,7 @@ public class GridTraversalTest {
 	@Test
 	public void testDFS() {
 		int source = grid.cell(TOP_LEFT), target = grid.cell(BOTTOM_RIGHT);
-		DepthFirstSearch<?, ?> dfs = new DepthFirstSearch<>(grid);
+		DepthFirstSearch dfs = new DepthFirstSearch(grid);
 		assertState(grid.vertices(), dfs::getState, UNVISITED);
 		Path path = Path.computePath(source, target, dfs);
 		assertState(StreamUtils.toIntStream(path), dfs::getState, VISITED, COMPLETED);
@@ -85,7 +85,7 @@ public class GridTraversalTest {
 	@Test
 	public void testDFS2() {
 		int source = grid.cell(TOP_LEFT), target = grid.cell(BOTTOM_RIGHT);
-		DepthFirstSearch2<?, ?> dfs = new DepthFirstSearch2<>(grid);
+		DepthFirstSearch2 dfs = new DepthFirstSearch2(grid);
 		assertState(grid.vertices(), dfs::getState, UNVISITED);
 		Path path = Path.computePath(source, target, dfs);
 		assertState(StreamUtils.toIntStream(path), dfs::getState, COMPLETED);
@@ -95,7 +95,7 @@ public class GridTraversalTest {
 	public void testHillClimbing() {
 		int source = grid.cell(TOP_LEFT), target = grid.cell(BOTTOM_RIGHT);
 		ToDoubleFunction<Integer> cost = u -> grid.manhattan(u, target);
-		HillClimbingSearch<?, ?> hillClimbing = new HillClimbingSearch<>(grid, cost);
+		HillClimbingSearch hillClimbing = new HillClimbingSearch(grid, cost);
 		assertState(grid.vertices(), hillClimbing::getState, UNVISITED);
 		Path path = Path.computePath(source, target, hillClimbing);
 		path.forEach(cell -> assertTrue(hillClimbing.getState(cell) != UNVISITED));

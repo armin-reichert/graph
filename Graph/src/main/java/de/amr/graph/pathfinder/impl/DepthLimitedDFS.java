@@ -9,21 +9,15 @@ import de.amr.graph.core.api.Graph;
  * Depth-limited depth-first search (DLS).
  * 
  * @author Armin Reichert
- *
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
  */
-public class DepthLimitedDFS<V, E> extends DepthFirstSearch<V, E> {
+public class DepthLimitedDFS extends DepthFirstSearch {
 
 	private int depthLimit;
 	private Map<Integer, Integer> depth = new HashMap<>();
 
-	public DepthLimitedDFS(Graph<V, E> graph, int depthLimit) {
+	public DepthLimitedDFS(Graph<?, ?> graph, int depthLimit) {
 		super(graph);
 		this.depthLimit = depthLimit;
-		// System.out.println("DLS with depth limit " + depthLimit);
 	}
 
 	@Override

@@ -107,7 +107,7 @@ public class LabeledGraphTest {
 	@Test
 	public void testSampleGraphDFS() {
 		UGraph<String, Integer> g = createSampleGraph();
-		DepthFirstSearch<?, ?> dfs = new DepthFirstSearch<>(g);
+		DepthFirstSearch dfs = new DepthFirstSearch(g);
 		DFSTracer tracer = new DFSTracer(g);
 		dfs.addObserver(tracer);
 		dfs.exploreGraph(0);

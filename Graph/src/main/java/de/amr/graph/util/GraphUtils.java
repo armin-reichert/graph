@@ -79,7 +79,7 @@ public class GraphUtils {
 		if (u == v) {
 			return true;
 		}
-		BreadthFirstSearch<V, E> bfs = new BreadthFirstSearch<>(graph);
+		BreadthFirstSearch bfs = new BreadthFirstSearch(graph);
 		Path path = Path.computePath(u, v, bfs);
 		return path.numVertices() != 0;
 	}

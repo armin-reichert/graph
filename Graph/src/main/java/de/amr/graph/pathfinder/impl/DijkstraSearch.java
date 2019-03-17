@@ -9,15 +9,10 @@ import de.amr.graph.core.api.Graph;
  * used for deciding which vertex to expand next.
  * 
  * @author Armin Reichert
- *
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
  */
-public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
+public class DijkstraSearch extends AStarSearch {
 
-	public DijkstraSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+	public DijkstraSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
