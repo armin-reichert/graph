@@ -11,9 +11,9 @@ I tried to achieve "text book quality" in the code. See for example the followin
 ### Depth-First Search:
 
 ```java
-public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
+public class DepthFirstSearch extends GraphSearch<LIFO_VertexQueue> {
 
-	public DepthFirstSearch(Graph<V, E> graph) {
+	public DepthFirstSearch(Graph<?, ?> graph) {
 		super(graph, new LIFO_VertexQueue());
 	}
 }
@@ -22,13 +22,13 @@ public class DepthFirstSearch<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> 
 ### Breadth-First Search:
 
 ```java
-public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
+public class BreadthFirstSearch extends GraphSearch<FIFO_VertexQueue> {
 
-	public BreadthFirstSearch(Graph<V, E> graph) {
+	public BreadthFirstSearch(Graph<?, ?> graph) {
 		super(graph, (u, v) -> 1, new FIFO_VertexQueue());
 	}
 
-	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+	public BreadthFirstSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, new FIFO_VertexQueue());
 	}
 }
@@ -37,9 +37,9 @@ public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue
 ### Uniform-Cost Search (Dijkstra):
 
 ```java
-public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
+public class DijkstraSearch extends AStarSearch {
 
-	public DijkstraSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+	public DijkstraSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, (u, v) -> 0);
 	}
 }
@@ -48,13 +48,13 @@ public class DijkstraSearch<V, E> extends AStarSearch<V, E> {
 ### Greedy Best-First Search:
 
 ```java
-public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
+public class BestFirstSearch extends GraphSearch<MinPQ_VertexQueue> {
 
-	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority) {
 		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 
-	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority,
 			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
 		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnVertexPriority));
 	}
