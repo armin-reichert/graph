@@ -32,7 +32,7 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 	 *                           priority.
 	 */
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority) {
-		this(graph, fnVertexPriority, (u, v) -> 1);
+		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 
 	/**
@@ -48,7 +48,6 @@ public class BestFirstSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> 
 	 */
 	public BestFirstSearch(Graph<V, E> graph, ToDoubleFunction<Integer> fnVertexPriority,
 			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
-		super(graph, fnEdgeCost);
-		frontier = new MinPQ_VertexQueue(fnVertexPriority);
+		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnVertexPriority));
 	}
 }

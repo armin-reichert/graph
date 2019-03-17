@@ -18,8 +18,7 @@ import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 public class DepthFirstSearch2<V, E> extends GraphSearch<V, E, LIFO_VertexQueue> {
 
 	public DepthFirstSearch2(Graph<V, E> graph) {
-		super(graph);
-		frontier = new LIFO_VertexQueue();
+		super(graph, new LIFO_VertexQueue());
 	}
 
 	@Override

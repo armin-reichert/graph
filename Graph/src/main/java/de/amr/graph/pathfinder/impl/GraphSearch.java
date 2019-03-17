@@ -43,13 +43,22 @@ public abstract class GraphSearch<V, E, Q extends VertexQueue> {
 		this(graph, (u, v) -> 1);
 	}
 
+	protected GraphSearch(Graph<V, E> graph, Q frontier) {
+		this(graph, (u, v) -> 1, frontier);
+	}
+	
 	protected GraphSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		this(graph, fnEdgeCost, null);
+	}
+
+	protected GraphSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost, Q frontier) {
 		this.graph = Objects.requireNonNull(graph);
 		this.parentMap = new HashMap<>();
 		this.stateMap = new HashMap<>();
 		this.costMap = new HashMap<>();
 		this.observers = new HashSet<>(5);
 		this.fnEdgeCost = fnEdgeCost;
+		this.frontier = frontier;
 	}
 
 	/**

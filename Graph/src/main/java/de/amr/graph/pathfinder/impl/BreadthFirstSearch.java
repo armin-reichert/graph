@@ -17,12 +17,11 @@ import de.amr.graph.pathfinder.impl.queue.FIFO_VertexQueue;
  */
 public class BreadthFirstSearch<V, E> extends GraphSearch<V, E, FIFO_VertexQueue> {
 
-	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
-		super(graph, fnEdgeCost);
-		frontier = new FIFO_VertexQueue();
+	public BreadthFirstSearch(Graph<V, E> graph) {
+		super(graph, (u, v) -> 1, new FIFO_VertexQueue());
 	}
 
-	public BreadthFirstSearch(Graph<V, E> graph) {
-		this(graph, (u, v) -> 1);
+	public BreadthFirstSearch(Graph<V, E> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
+		super(graph, fnEdgeCost, new FIFO_VertexQueue());
 	}
 }
