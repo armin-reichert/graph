@@ -49,7 +49,7 @@ public class DepthFirstSearch2 extends GraphSearch<LIFO_VertexQueue> {
 			} else {
 				setState(current, COMPLETED);
 				if (!frontier.isEmpty()) {
-					current = frontier.next();
+					current = frontier.poll();
 					fireVertexRemovedFromFrontier(current);
 				}
 				if (getState(current) == VISITED) {
@@ -59,7 +59,7 @@ public class DepthFirstSearch2 extends GraphSearch<LIFO_VertexQueue> {
 			}
 		}
 		while (!frontier.isEmpty()) {
-			setState(frontier.next(), COMPLETED);
+			setState(frontier.poll(), COMPLETED);
 		}
 		return found;
 	}

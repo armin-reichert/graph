@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.ArrayDeque;
+import java.util.OptionalInt;
 
 import de.amr.graph.pathfinder.api.VertexQueue;
 
@@ -19,8 +20,13 @@ public class LIFO_VertexQueue implements VertexQueue {
 	}
 
 	@Override
-	public int next() {
+	public int poll() {
 		return stack.pop();
+	}
+
+	@Override
+	public OptionalInt peek() {
+		return stack.isEmpty() ? OptionalInt.empty() : OptionalInt.of(stack.peek());
 	}
 
 	@Override

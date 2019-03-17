@@ -1,5 +1,7 @@
 package de.amr.graph.pathfinder.api;
 
+import java.util.OptionalInt;
+
 /**
  * Common interface for queues used by graph search implementations.
  * 
@@ -11,16 +13,23 @@ public interface VertexQueue {
 	 * Adds the given vertex to this queue.
 	 * 
 	 * @param vertex
-	 *            vertex
+	 *                 vertex
 	 */
 	void add(int vertex);
 
 	/**
 	 * Removes and returns the next vertex from this queue.
 	 * 
-	 * @return next vertex
+	 * @return the next vertex to be processed
 	 */
-	int next();
+	int poll();
+
+	/**
+	 * Returns the vertex that will be processed next.
+	 * 
+	 * @return the next vertexto be processed
+	 */
+	OptionalInt peek();
 
 	/**
 	 * Tells if the queue is empty.
@@ -33,7 +42,7 @@ public interface VertexQueue {
 	 * Tells if the given vertex is part of the queue.
 	 * 
 	 * @param vertex
-	 *            vertex
+	 *                 vertex
 	 * @return <code>true</code> if the vertex is contained in the queue
 	 */
 	boolean contains(int vertex);

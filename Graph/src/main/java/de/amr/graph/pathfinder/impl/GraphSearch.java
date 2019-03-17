@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.ToDoubleBiFunction;
 
@@ -121,7 +122,7 @@ public abstract class GraphSearch<Q extends VertexQueue> {
 	 * @return {@code true} if the target has been found
 	 */
 	public boolean exploreVertex() {
-		current = frontier.next();
+		current = frontier.poll();
 		setState(current, COMPLETED);
 		fireVertexRemovedFromFrontier(current);
 		if (current == target) {
@@ -159,12 +160,22 @@ public abstract class GraphSearch<Q extends VertexQueue> {
 	}
 
 	/**
-	 * Returns the vertex currently being processed.
+	 * Returns the vertex currently being processed. This vertex has already been removed from the
+	 * frontier.
 	 * 
 	 * @return the current vertex
 	 */
-	public int getCurrent() {
+	public int getCurrentVertex() {
 		return current;
+	}
+
+	/**
+	 * Returns the vertex that will be processed next (if frontier is not changed).
+	 * 
+	 * @return the current vertex
+	 */
+	public OptionalInt getNextVertex() {
+		return frontier.peek();
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.ArrayDeque;
+import java.util.OptionalInt;
 import java.util.Queue;
 
 import de.amr.graph.pathfinder.api.VertexQueue;
@@ -20,8 +21,13 @@ public class FIFO_VertexQueue implements VertexQueue {
 	}
 
 	@Override
-	public int next() {
+	public int poll() {
 		return q.remove();
+	}
+
+	@Override
+	public OptionalInt peek() {
+		return q.isEmpty() ? OptionalInt.empty() : OptionalInt.of(q.peek());
 	}
 
 	@Override

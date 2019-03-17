@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl.queue;
 
 import java.util.Comparator;
+import java.util.OptionalInt;
 import java.util.PriorityQueue;
 import java.util.function.ToDoubleFunction;
 
@@ -30,8 +31,13 @@ public class MinPQ_VertexQueue implements VertexQueue {
 	}
 
 	@Override
-	public int next() {
+	public int poll() {
 		return pq.remove();
+	}
+
+	@Override
+	public OptionalInt peek() {
+		return pq.isEmpty() ? OptionalInt.empty() : OptionalInt.of(pq.peek());
 	}
 
 	@Override
