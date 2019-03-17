@@ -14,12 +14,15 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
 /**
  * The A* path finder.
  * 
+ * <p>
+ * Open/closed list and functions f, g, h are realized as:
+ * 
  * <pre>
- * f(v):             getScore(v)
- * g(v):             getCost(v)
- * h(v):             fnEstimatedCost.apply(v, target)
- * v in open list:   getState(v) == OPEN
- * v in closed list: getState(v) == CLOSED
+ * g(v) = getCost(v)
+ * h(v) = fnEstimatedCost.apply(v, target)
+ * f(v) = g(v) + h(v) = getScore(v)
+ * Vertex v in open list:   getState(v) == OPEN
+ * Vertex v in closed list: getState(v) == CLOSED
  * </pre>
  * 
  * @param <V>
@@ -30,6 +33,8 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * @author Armin Reichert
  * 
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
+ * @see <a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Amit Patel, Red
+ *      Blob Games</a>
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
 public class AStarSearch<V, E> extends GraphSearch<V, E, MinPQ_VertexQueue> {
