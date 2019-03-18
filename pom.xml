@@ -5,7 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-  	<module>Graph</module>
-  	<module>GraphVisualization</module>
+  	<module>graph-core</module>
+  	<module>graph-viz</module>
   </modules>
 </project>
