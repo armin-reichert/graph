@@ -113,7 +113,8 @@ public abstract class SwingGridSampleApp implements Runnable {
 			window.setSize(canvasSize);
 			window.setUndecorated(true);
 			window.setAlwaysOnTop(true);
-		} else {
+		}
+		else {
 			canvas.setPreferredSize(canvasSize);
 			window.pack();
 		}
@@ -150,9 +151,11 @@ public abstract class SwingGridSampleApp implements Runnable {
 		ConfigurableGridRenderer r;
 		if (style == Style.WALL_PASSAGE) {
 			r = new WallPassageGridRenderer();
-		} else if (style == Style.PEARLS) {
+		}
+		else if (style == Style.PEARLS) {
 			r = new PearlsGridRenderer();
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException();
 		}
 		r.fnCellSize = () -> cellSize;

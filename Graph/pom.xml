@@ -5,8 +5,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>Graph</artifactId>
-	<name>Graph</name>
+	<artifactId>graph-core</artifactId>
 	<description>Graph API, implementation and path finders</description>
 	<build>
 		<plugins>
@@ -31,5 +30,6 @@
 		<groupId>de.amr.graph</groupId>
 		<artifactId>graph-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 </project>

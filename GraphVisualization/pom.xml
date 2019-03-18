@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>GraphVisualization</artifactId>
+  <artifactId>graph-viz</artifactId>
   <build>
     <plugins>
       <plugin>
@@ -16,7 +16,7 @@
   <dependencies>
   	<dependency>
   		<groupId>de.amr.graph</groupId>
-  		<artifactId>Graph</artifactId>
+  		<artifactId>graph-core</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
@@ -27,5 +27,6 @@
   	<groupId>de.amr.graph</groupId>
   	<artifactId>graph-parent</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
+  	<relativePath>..</relativePath>
   </parent>
 </project>

@@ -152,10 +152,12 @@ public class BFSAnimation extends AbstractAnimation {
 			}
 			if (mapRenderer != null) {
 				canvas.pushRenderer(derivePathRenderer(mapRenderer, path, search::getCost));
-			} else if (canvasRenderer instanceof ConfigurableGridRenderer) {
+			}
+			else if (canvasRenderer instanceof ConfigurableGridRenderer) {
 				canvas.pushRenderer(
 						derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, search::getCost));
-			} else {
+			}
+			else {
 				throw new IllegalStateException();
 			}
 			path.forEach(canvas::drawGridCell);
