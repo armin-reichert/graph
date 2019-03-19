@@ -16,33 +16,47 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  */
 public class BestFirstSearch extends GraphSearch<MinPQ_VertexQueue> {
 
+	private final ToDoubleFunction<Integer> fnEstimatedCost;
+
 	/**
-	 * Creates a best-first traversal instance for the given graph and vertex priority function and
+	 * Creates a best-first traversal instance for the given graph and vertex cost estimation and
 	 * uniform edge cost.
 	 * 
 	 * @param graph
-	 *                           a graph
-	 * @param fnVertexPriority
-	 *                           vertex priority function. Queue will always be sorted by increasing
-	 *                           priority.
+	 *                          a graph
+	 * @param fnEstimatedCost
+	 *                          estimated vertex cost. Queue will always be sorted by increasing
+	 *                          priority.
 	 */
-	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority) {
-		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnEstimatedCost) {
+		this(graph, fnEstimatedCost, (u, v) -> 1);
 	}
 
 	/**
-	 * Creates a best-first traversal instance for the given graph and vertex priority function.
+	 * Creates a best-first traversal instance for the given graph and vertex cost estimation.
 	 * 
 	 * @param graph
-	 *                           a graph
-	 * @param fnVertexPriority
-	 *                           vertex priority function. Queue will always be sorted by increasing
-	 *                           priority.
+	 *                          a graph
+	 * @param fnEstimatedCost
+	 *                          vertex priority function. Queue will always be sorted by increasing
+	 *                          priority.
 	 * @param fnEdgeCost
-	 *                           edge cost function
+	 *                          edge cost function
 	 */
-	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority,
+	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnEstimatedCost,
 			ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
-		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnVertexPriority));
+		super(graph, fnEdgeCost, new MinPQ_VertexQueue(fnEstimatedCost));
+		this.fnEstimatedCost = fnEstimatedCost;
+	}
+
+	/**
+	 * Returns the estimted cost for a vertex.
+	 * 
+	 * @param v
+	 *            a vertex
+	 * @return the estimated cost (e.g. an heuristic value)
+	 */
+	public double getEstimatedCost(int v) {
+		return fnEstimatedCost.applyAsDouble(v);
 	}
 }
