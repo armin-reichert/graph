@@ -16,24 +16,24 @@ import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.GridGraph;
 
 /**
- * A Swing component for displaying a grid.
+ * A Swing component for displaying a grid. Maintains a stack of grid renderers.
  * 
  * @author Armin Reichert
  */
 public class GridCanvas extends JComponent {
 
-	protected Deque<GridRenderer> renderStack = new ArrayDeque<>();
+	private Deque<GridRenderer> rendererStack = new ArrayDeque<>();
 
 	protected GridGraph2D<?, ?> grid;
 
-	protected BufferedImage buffer;
-
-	private boolean bufferInvalid = false;
+	private BufferedImage buffer;
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(getDrawingBuffer(), 0, 0, null);
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.drawImage(getDrawingBuffer(), 0, 0, null);
+		g2.dispose();
 	}
 
 	public GridCanvas() {
@@ -53,19 +53,17 @@ public class GridCanvas extends JComponent {
 	}
 
 	public BufferedImage getDrawingBuffer() {
-		if (!bufferInvalid) {
-			if (grid != null) {
-				int cellSize = getCellSizeOrDefault(2);
-				createDrawingBuffer(grid.numCols() * cellSize, grid.numRows() * cellSize);
-			} else {
-				createDrawingBuffer(getWidth(), getHeight());
-			}
+		if (buffer != null) {
+			return buffer;
+		}
+		if (grid != null) {
+			int cellSize = getCurrentCellSizeOrDefault(2);
+			createDrawingBuffer(grid.numCols() * cellSize, grid.numRows() * cellSize);
+		}
+		else {
+			createDrawingBuffer(getWidth(), getHeight());
 		}
 		return buffer;
-	}
-
-	private int getCellSizeOrDefault(int defaultSize) {
-		return renderStack.isEmpty() ? defaultSize : renderStack.peek().getModel().getCellSize();
 	}
 
 	private void createDrawingBuffer(int width, int height) {
@@ -76,7 +74,10 @@ public class GridCanvas extends JComponent {
 		setMaximumSize(size);
 		setPreferredSize(size);
 		setSize(size);
-		bufferInvalid = true;
+	}
+
+	private int getCurrentCellSizeOrDefault(int defaultSize) {
+		return rendererStack.isEmpty() ? defaultSize : rendererStack.peek().getModel().getCellSize();
 	}
 
 	public void clear() {
@@ -115,26 +116,28 @@ public class GridCanvas extends JComponent {
 	}
 
 	public Optional<GridRenderer> getRenderer() {
-		return Optional.ofNullable(renderStack.peek());
+		return Optional.ofNullable(rendererStack.peek());
+	}
+
+	public boolean hasRenderer() {
+		return rendererStack.size() > 0;
 	}
 
 	public void pushRenderer(GridRenderer renderer) {
-		if (!renderStack.isEmpty()
-				&& renderStack.peek().getModel().getCellSize() != renderer.getModel().getCellSize()) {
-			bufferInvalid = false;
+		if (!rendererStack.isEmpty()
+				&& rendererStack.peek().getModel().getCellSize() != renderer.getModel().getCellSize()) {
+			buffer = null;
 		}
-		renderStack.push(renderer);
+		rendererStack.push(renderer);
 	}
 
 	public GridRenderer popRenderer() {
-		if (renderStack.size() <= 1) {
-			throw new IllegalStateException("Render stack need at least one element");
+		GridRenderer renderer = rendererStack.pop();
+		if (rendererStack.isEmpty()
+				|| renderer.getModel().getCellSize() != rendererStack.peek().getModel().getCellSize()) {
+			buffer = null;
 		}
-		GridRenderer oldRenderer = renderStack.pop();
-		if (oldRenderer.getModel().getCellSize() != renderStack.peek().getModel().getCellSize()) {
-			bufferInvalid = false;
-		}
-		return oldRenderer;
+		return renderer;
 	}
 
 	public GridGraph2D<?, ?> getGrid() {
@@ -147,7 +150,7 @@ public class GridCanvas extends JComponent {
 		}
 		GridGraph2D<?, ?> oldGrid = this.grid;
 		if (oldGrid != null && (oldGrid.numCols() != grid.numCols() || oldGrid.numRows() != grid.numRows())) {
-			bufferInvalid = false;
+			buffer = null;
 		}
 		this.grid = grid;
 	}
