@@ -22,10 +22,13 @@ import de.amr.graph.grid.impl.GridGraph;
  */
 public class GridCanvas extends JComponent {
 
-	protected final Deque<GridRenderer> renderStack = new ArrayDeque<>();
+	protected Deque<GridRenderer> renderStack = new ArrayDeque<>();
+
 	protected GridGraph2D<?, ?> grid;
+
 	protected BufferedImage buffer;
-	private boolean readyForDrawing;
+
+	private boolean bufferInvalid = false;
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -33,13 +36,16 @@ public class GridCanvas extends JComponent {
 		g.drawImage(getDrawingBuffer(), 0, 0, null);
 	}
 
+	public GridCanvas() {
+		setDoubleBuffered(false);
+	}
+
 	public GridCanvas(GridGraph2D<?, ?> grid) {
 		if (grid == null) {
 			throw new IllegalArgumentException("No grid specified");
 		}
 		this.grid = grid;
-		readyForDrawing = false;
-		setDoubleBuffered(false); // canvas implements double-buffering itself
+		setDoubleBuffered(false);
 	}
 
 	public Graphics2D getDrawGraphics() {
@@ -47,25 +53,30 @@ public class GridCanvas extends JComponent {
 	}
 
 	public BufferedImage getDrawingBuffer() {
-		if (!readyForDrawing) {
-			createDrawingBuffer();
+		if (!bufferInvalid) {
+			if (grid != null) {
+				int cellSize = getCellSizeOrDefault(2);
+				createDrawingBuffer(grid.numCols() * cellSize, grid.numRows() * cellSize);
+			} else {
+				createDrawingBuffer(getWidth(), getHeight());
+			}
 		}
 		return buffer;
 	}
 
-	private void createDrawingBuffer() {
-		if (renderStack.isEmpty()) {
-			throw new IllegalStateException("Cannot create drawing buffer, no renderer available");
-		}
-		int cellSize = renderStack.peek().getModel().getCellSize();
-		Dimension dimension = new Dimension(grid.numCols() * cellSize, grid.numRows() * cellSize);
-		setMinimumSize(dimension);
-		setMaximumSize(dimension);
-		setPreferredSize(dimension);
-		setSize(dimension);
+	private int getCellSizeOrDefault(int defaultSize) {
+		return renderStack.isEmpty() ? defaultSize : renderStack.peek().getModel().getCellSize();
+	}
+
+	private void createDrawingBuffer(int width, int height) {
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-				.getDefaultConfiguration().createCompatibleImage(dimension.width, dimension.height);
-		readyForDrawing = true;
+				.getDefaultConfiguration().createCompatibleImage(width, height);
+		Dimension size = new Dimension(width, height);
+		setMinimumSize(size);
+		setMaximumSize(size);
+		setPreferredSize(size);
+		setSize(size);
+		bufferInvalid = true;
 	}
 
 	public void clear() {
@@ -107,21 +118,21 @@ public class GridCanvas extends JComponent {
 		return Optional.ofNullable(renderStack.peek());
 	}
 
-	public void pushRenderer(GridRenderer newRenderer) {
+	public void pushRenderer(GridRenderer renderer) {
 		if (!renderStack.isEmpty()
-				&& renderStack.peek().getModel().getCellSize() != newRenderer.getModel().getCellSize()) {
-			readyForDrawing = false;
+				&& renderStack.peek().getModel().getCellSize() != renderer.getModel().getCellSize()) {
+			bufferInvalid = false;
 		}
-		renderStack.push(newRenderer);
+		renderStack.push(renderer);
 	}
 
 	public GridRenderer popRenderer() {
 		if (renderStack.size() <= 1) {
-			throw new IllegalStateException("Cannot remove last renderer from stack");
+			throw new IllegalStateException("Render stack need at least one element");
 		}
 		GridRenderer oldRenderer = renderStack.pop();
 		if (oldRenderer.getModel().getCellSize() != renderStack.peek().getModel().getCellSize()) {
-			readyForDrawing = false;
+			bufferInvalid = false;
 		}
 		return oldRenderer;
 	}
@@ -132,11 +143,11 @@ public class GridCanvas extends JComponent {
 
 	public void setGrid(GridGraph<?, ?> grid) {
 		if (grid == null) {
-			throw new IllegalArgumentException("No grid specified");
+			throw new IllegalArgumentException("Grid must not be NULL");
 		}
 		GridGraph2D<?, ?> oldGrid = this.grid;
 		if (oldGrid != null && (oldGrid.numCols() != grid.numCols() || oldGrid.numRows() != grid.numRows())) {
-			readyForDrawing = false;
+			bufferInvalid = false;
 		}
 		this.grid = grid;
 	}
