@@ -37,26 +37,26 @@ public class AStarSearch extends GraphSearch<MinPQ_VertexQueue> {
 	public static final TraversalState OPEN = VISITED;
 	public static final TraversalState CLOSED = COMPLETED;
 
-	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost;
+	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedCost;
 	private final Map<Integer, Double> score;
 
 	/**
 	 * Creates an A* path finder instance.
 	 * 
 	 * @param graph
-	 *                              a graph
+	 *                          a graph
 	 * @param fnEdgeCost
-	 *                              function defining the cost for each edge
-	 * @param fnEstimatedPathCost
-	 *                              estimated path cost, for example the Euclidean or Manhattan distance
-	 *                              for a 2D grid. Must be an underestimate of the real cost.
+	 *                          function defining the cost for each edge
+	 * @param fnEstimatedCost
+	 *                          estimated path cost, for example the Euclidean or Manhattan distance for
+	 *                          a 2D grid. Must be an underestimate of the real cost.
 	 */
 	public AStarSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost,
-			ToDoubleBiFunction<Integer, Integer> fnEstimatedPathCost) {
+			ToDoubleBiFunction<Integer, Integer> fnEstimatedCost) {
 		super(graph, fnEdgeCost);
 		frontier = new MinPQ_VertexQueue(this::getScore);
 		score = new HashMap<>();
-		this.fnEstimatedPathCost = fnEstimatedPathCost;
+		this.fnEstimatedCost = fnEstimatedCost;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class AStarSearch extends GraphSearch<MinPQ_VertexQueue> {
 		setState(source, OPEN);
 		// next two lines only included for consistency:
 		setCost(source, 0);
-		setScore(source, fnEstimatedPathCost.applyAsDouble(source, target));
+		setScore(source, getEstimatedCost(source));
 		frontier.add(source);
 	}
 
@@ -83,15 +83,20 @@ public class AStarSearch extends GraphSearch<MinPQ_VertexQueue> {
 			if (getState(child) != OPEN || newCost < getCost(child)) {
 				setParent(child, v);
 				setCost(child, newCost);
-				setScore(child, newCost + fnEstimatedPathCost.applyAsDouble(child, target));
+				setScore(child, newCost + getEstimatedCost(child));
 				if (getState(child) == OPEN) {
 					frontier.decreaseKey(child);
-				} else {
+				}
+				else {
 					setState(child, OPEN);
 					frontier.add(child);
 				}
 			}
 		});
+	}
+
+	public double getEstimatedCost(int v) {
+		return fnEstimatedCost.applyAsDouble(v, target);
 	}
 
 	public double getScore(int v) {
