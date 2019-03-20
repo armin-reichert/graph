@@ -7,17 +7,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>graph-core</artifactId>
 	<description>Graph API, implementation and path finders</description>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
-	</dependencies>
 	<parent>
 		<groupId>de.amr.graph</groupId>
 		<artifactId>graph-all</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
