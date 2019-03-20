@@ -16,7 +16,7 @@
 	</dependencies>
 	<parent>
 		<groupId>de.amr.graph</groupId>
-		<artifactId>graph-parent</artifactId>
+		<artifactId>graph-all</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
