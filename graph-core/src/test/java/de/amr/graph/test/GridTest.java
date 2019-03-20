@@ -1,5 +1,6 @@
 package de.amr.graph.test;
 
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
@@ -7,8 +8,6 @@ import static de.amr.graph.grid.impl.Top4.E;
 import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.util.GraphUtils.areConnected;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,11 +16,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.ObservableGridGraph;
 import de.amr.graph.grid.impl.Top4;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.util.GraphUtils;
 
 /**
@@ -198,24 +197,6 @@ public class GridTest {
 		// add edge to create cycle:
 		grid.addEdge(d, a);
 		assertTrue(GraphUtils.containsCycle(grid));
-	}
-
-	@Test
-	public void testConnected() {
-		int u = grid.cell(TOP_LEFT);
-		int v = grid.cell(BOTTOM_RIGHT);
-		assertFalse(areConnected(grid, u, v));
-		grid.fill();
-		assertTrue(areConnected(grid, u, v));
-		grid.removeEdges();
-
-		assertFalse(areConnected(grid, 0, 1));
-		grid.addEdge(0, 1);
-		assertTrue(areConnected(grid, 0, 1));
-		grid.removeEdge(0, 1);
-		assertFalse(areConnected(grid, 0, 1));
-
-		assertTrue(areConnected(grid, 0, 0));
 	}
 
 	@Test

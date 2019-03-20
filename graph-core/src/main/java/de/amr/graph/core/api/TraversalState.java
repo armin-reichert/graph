@@ -1,4 +1,4 @@
-package de.amr.graph.pathfinder.api;
+package de.amr.graph.core.api;
 
 /**
  * States of a graph vertex with regards to graph traversal.

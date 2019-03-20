@@ -1,7 +1,7 @@
 package de.amr.graph.grid.ui;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
+import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static java.awt.EventQueue.invokeLater;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
@@ -29,7 +29,7 @@ import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
-import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.core.api.TraversalState;
 import de.amr.util.StopWatch;
 
 /**

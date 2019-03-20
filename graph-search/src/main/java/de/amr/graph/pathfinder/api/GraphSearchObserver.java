@@ -1,5 +1,7 @@
 package de.amr.graph.pathfinder.api;
 
+import de.amr.graph.core.api.TraversalState;
+
 /**
  * Observer interface for graph search algorithms like DFS or BFS.
  * 

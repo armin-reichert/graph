@@ -1,8 +1,8 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
+import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.core.api.TraversalState.VISITED;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,9 +15,9 @@ import java.util.Set;
 import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.api.VertexQueue;
 
 /**

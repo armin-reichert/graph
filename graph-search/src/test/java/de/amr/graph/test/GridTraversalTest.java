@@ -1,5 +1,8 @@
 package de.amr.graph.test;
 
+import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.core.api.TraversalState.VISITED;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
@@ -7,9 +10,6 @@ import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 import static de.amr.graph.grid.api.GridPosition.TOP_RIGHT;
 import static de.amr.graph.grid.curves.CurveUtils.cells;
 import static de.amr.graph.grid.curves.CurveUtils.traverse;
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.datastruct.StreamUtils;
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.grid.curves.HilbertCurve;
 import de.amr.graph.grid.curves.HilbertLCurve;
 import de.amr.graph.grid.curves.HilbertLCurveWirth;
@@ -29,7 +30,6 @@ import de.amr.graph.grid.curves.MooreLCurve;
 import de.amr.graph.grid.curves.PeanoCurve;
 import de.amr.graph.grid.impl.OrthogonalGrid;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch2;
@@ -141,5 +141,23 @@ public class GridTraversalTest {
 	public void testCurveStream() {
 		cells(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT)).forEach(cell -> grid.set(cell, COMPLETED));
 		assertAllCells(COMPLETED);
+	}
+
+	@Test
+	public void testConnected() {
+		// int u = grid.cell(TOP_LEFT);
+		// int v = grid.cell(BOTTOM_RIGHT);
+		// assertFalse(areConnected(grid, u, v));
+		// grid.fill();
+		// assertTrue(areConnected(grid, u, v));
+		// grid.removeEdges();
+		//
+		// assertFalse(areConnected(grid, 0, 1));
+		// grid.addEdge(0, 1);
+		// assertTrue(areConnected(grid, 0, 1));
+		// grid.removeEdge(0, 1);
+		// assertFalse(areConnected(grid, 0, 1));
+		//
+		// assertTrue(areConnected(grid, 0, 0));
 	}
 }

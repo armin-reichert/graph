@@ -1,7 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.UNVISITED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.core.api.TraversalState.VISITED;
 import static java.util.Comparator.comparingDouble;
 
 import java.util.Comparator;

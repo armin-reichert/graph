@@ -11,7 +11,6 @@ import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.Multigraph;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.core.impl.DefaultMultigraph;
-import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 
 /**
  * Some useful graph methods.
@@ -63,19 +62,6 @@ public class GraphUtils {
 			p.union(u, v);
 		}
 		return false;
-	}
-
-	/**
-	 * Checks if the given cells are connected by some path.
-	 * 
-	 * @param u
-	 *            a cell
-	 * @param v
-	 *            a cell
-	 * @return {@code true} if there exists a path connecting the given cells
-	 */
-	public static <V, E> boolean areConnected(Graph<V, E> graph, int u, int v) {
-		return new BreadthFirstSearch(graph).exploreGraph(u, v);
 	}
 
 	/**

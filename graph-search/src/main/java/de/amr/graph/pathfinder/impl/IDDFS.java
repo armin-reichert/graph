@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.pathfinder.api.TraversalState;
 import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 
 /**

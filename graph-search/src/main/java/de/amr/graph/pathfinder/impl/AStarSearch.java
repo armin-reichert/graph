@@ -1,14 +1,14 @@
 package de.amr.graph.pathfinder.impl;
 
-import static de.amr.graph.pathfinder.api.TraversalState.COMPLETED;
-import static de.amr.graph.pathfinder.api.TraversalState.VISITED;
+import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.VISITED;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.pathfinder.api.TraversalState;
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
 
 /**

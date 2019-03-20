@@ -1,7 +1,7 @@
 package de.amr.graph.grid.impl;
 
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
-import de.amr.graph.pathfinder.api.TraversalState;
 
 /**
  * Type of 2D grid used by maze generator implementations.
