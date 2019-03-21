@@ -45,13 +45,8 @@ public class GridCanvas extends JComponent {
 		setOpaque(true);
 		setBackground(Color.BLACK);
 		createBuffer(cellSize * grid.numCols(), cellSize * grid.numRows());
-		// create default renderer
-		defaultRenderer = new WallPassageGridRenderer();
-		defaultRenderer.fnCellSize = () -> cellSize;
-		defaultRenderer.fnPassageWidth = (u, v) -> cellSize - 1;
-		defaultRenderer.fnText = cell -> String.valueOf(cell);
-		rendererStack.push(defaultRenderer);
-		//TODO
+		createDefaultRenderer();
+		// performance issue
 		if (grid.numVertices() < 1000) {
 			defaultRenderer.drawGrid(getDrawGraphics(), grid);
 		}
@@ -59,6 +54,14 @@ public class GridCanvas extends JComponent {
 
 	public GridCanvas() {
 		this(new GridGraph<>(5, 5, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new));
+	}
+
+	private void createDefaultRenderer() {
+		defaultRenderer = new WallPassageGridRenderer();
+		defaultRenderer.fnCellSize = () -> cellSize;
+		defaultRenderer.fnPassageWidth = (u, v) -> cellSize - 1;
+		defaultRenderer.fnText = cell -> String.valueOf(cell);
+		rendererStack.push(defaultRenderer);
 	}
 
 	private void createBuffer(int width, int height) {
@@ -70,7 +73,6 @@ public class GridCanvas extends JComponent {
 		}
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
-
 		Dimension size = new Dimension(width, height);
 		setPreferredSize(size);
 		setSize(size);
