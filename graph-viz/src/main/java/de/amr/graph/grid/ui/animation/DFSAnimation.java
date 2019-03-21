@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.BitSet;
 import java.util.function.IntSupplier;
 
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
@@ -11,7 +12,6 @@ import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
@@ -112,20 +112,19 @@ public class DFSAnimation extends AbstractAnimation {
 
 	public void run(GraphSearch<?> dfs, int source, int target) {
 		this.dfs = dfs;
-		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			canvas.pushRenderer(createPathRenderer(canvasRenderer));
-			dfs.addObserver(canvasUpdater);
-			Path path = Path.computePath(source, target, dfs);
-			dfs.removeObserver(canvasUpdater);
-			canvas.drawGrid();
-			path.forEach(v -> {
-				int w = dfs.getParent(v);
-				canvas.drawGridCell(v);
-				if (w != -1) {
-					canvas.drawGridPassage(v, w, true);
-				}
-			});
-			canvas.popRenderer();
+		GridRenderer canvasRenderer = canvas.getRenderer();
+		canvas.pushRenderer(createPathRenderer(canvasRenderer));
+		dfs.addObserver(canvasUpdater);
+		Path path = Path.computePath(source, target, dfs);
+		dfs.removeObserver(canvasUpdater);
+		canvas.drawGrid();
+		path.forEach(v -> {
+			int w = dfs.getParent(v);
+			canvas.drawGridCell(v);
+			if (w != -1) {
+				canvas.drawGridPassage(v, w, true);
+			}
 		});
+		canvas.popRenderer();
 	}
 }

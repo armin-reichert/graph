@@ -8,12 +8,14 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Optional;
+import java.util.Objects;
 
 import javax.swing.JComponent;
 
+import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.impl.Top4;
 
 /**
  * A Swing component for displaying a grid. Maintains a stack of grid renderers.
@@ -22,136 +24,174 @@ import de.amr.graph.grid.impl.GridGraph;
  */
 public class GridCanvas extends JComponent {
 
-	private Deque<GridRenderer> rendererStack = new ArrayDeque<>();
-
-	protected GridGraph2D<?, ?> grid;
-
 	private BufferedImage buffer;
+	private Deque<GridRenderer> rendererStack = new ArrayDeque<>();
+	private GridGraph2D<?, ?> grid;
+	private int cellSize;
+	private WallPassageGridRenderer defaultRenderer;
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g.create();
-		g2.drawImage(getDrawingBuffer(), 0, 0, null);
-		g2.dispose();
-	}
-
-	public GridCanvas() {
-		setDoubleBuffered(false);
+		g.setColor(getBackground());
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.drawImage(buffer, 0, 0, null);
 	}
 
 	public GridCanvas(GridGraph2D<?, ?> grid) {
-		if (grid == null) {
-			throw new IllegalArgumentException("No grid specified");
-		}
-		this.grid = grid;
+		this.grid = Objects.requireNonNull(grid);
+		cellSize = 32;
 		setDoubleBuffered(false);
+		setOpaque(true);
+		setBackground(Color.BLACK);
+		createBuffer(cellSize * grid.numCols(), cellSize * grid.numRows());
+		// create default renderer
+		defaultRenderer = new WallPassageGridRenderer();
+		defaultRenderer.fnCellSize = () -> cellSize;
+		defaultRenderer.fnPassageWidth = (u, v) -> cellSize - 1;
+		defaultRenderer.fnText = cell -> String.valueOf(cell);
+		rendererStack.push(defaultRenderer);
+		//TODO
+		if (grid.numVertices() < 1000) {
+			defaultRenderer.drawGrid(getDrawGraphics(), grid);
+		}
 	}
 
-	public Graphics2D getDrawGraphics() {
-		return getDrawingBuffer().createGraphics();
+	public GridCanvas() {
+		this(new GridGraph<>(5, 5, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new));
 	}
 
-	public BufferedImage getDrawingBuffer() {
-		if (buffer != null) {
-			return buffer;
+	private void createBuffer(int width, int height) {
+		if (width == 0) {
+			throw new GridCanvasException("Buffer width must be greater than 0");
 		}
-		if (grid != null) {
-			int cellSize = getCurrentCellSizeOrDefault(2);
-			createDrawingBuffer(grid.numCols() * cellSize, grid.numRows() * cellSize);
+		if (height == 0) {
+			throw new GridCanvasException("Buffer height must be greater than 0");
 		}
-		else {
-			createDrawingBuffer(getWidth(), getHeight());
-		}
-		return buffer;
-	}
-
-	private void createDrawingBuffer(int width, int height) {
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
+
 		Dimension size = new Dimension(width, height);
-		setMinimumSize(size);
-		setMaximumSize(size);
 		setPreferredSize(size);
 		setSize(size);
 	}
 
-	private int getCurrentCellSizeOrDefault(int defaultSize) {
-		return rendererStack.isEmpty() ? defaultSize : rendererStack.peek().getModel().getCellSize();
+	public int getCellSize() {
+		return cellSize;
 	}
 
-	public void clear() {
-		getRenderer().ifPresent(r -> fill(r.getModel().getGridBgColor()));
+	public void setCellSize(int newCellSize) {
+		setCellSize(cellSize, true);
 	}
 
-	public void fill(Color bgColor) {
-		Graphics2D g = getDrawGraphics();
-		g.setColor(bgColor);
-		g.fillRect(0, 0, getWidth(), getHeight());
-		repaint();
-	}
-
-	public void drawGridCell(int cell) {
-		getRenderer().ifPresent(r -> {
-			Graphics2D g = getDrawGraphics();
-			r.getCellRenderer(cell).drawCell(g, grid, cell);
-			repaint();
-		});
-	}
-
-	public void drawGridPassage(int either, int other, boolean visible) {
-		getRenderer().ifPresent(r -> {
-			Graphics2D g = getDrawGraphics();
-			r.drawPassage(g, grid, either, other, visible);
-			repaint();
-		});
-	}
-
-	public void drawGrid() {
-		getRenderer().ifPresent(r -> {
-			Graphics2D g = getDrawGraphics();
-			r.drawGrid(g, grid);
-			repaint();
-		});
-	}
-
-	public Optional<GridRenderer> getRenderer() {
-		return Optional.ofNullable(rendererStack.peek());
-	}
-
-	public boolean hasRenderer() {
-		return rendererStack.size() > 0;
-	}
-
-	public void pushRenderer(GridRenderer renderer) {
-		if (!rendererStack.isEmpty()
-				&& rendererStack.peek().getModel().getCellSize() != renderer.getModel().getCellSize()) {
-			buffer = null;
+	public void setCellSize(int newCellSize, boolean redrawGrid) {
+		if (newCellSize < 2) {
+			throw new GridCanvasException("Cell size must be at least 2");
 		}
-		rendererStack.push(renderer);
-	}
-
-	public GridRenderer popRenderer() {
-		GridRenderer renderer = rendererStack.pop();
-		if (rendererStack.isEmpty()
-				|| renderer.getModel().getCellSize() != rendererStack.peek().getModel().getCellSize()) {
-			buffer = null;
+		int oldCellSize = cellSize;
+		if (newCellSize != oldCellSize) {
+			this.cellSize = newCellSize;
+			createBuffer(newCellSize * grid.numCols(), newCellSize * grid.numRows());
+			if (redrawGrid) {
+				clear();
+				drawGrid();
+			}
+			firePropertyChange("cellSize", oldCellSize, newCellSize);
 		}
-		return renderer;
 	}
 
 	public GridGraph2D<?, ?> getGrid() {
 		return grid;
 	}
 
-	public void setGrid(GridGraph<?, ?> grid) {
-		if (grid == null) {
-			throw new IllegalArgumentException("Grid must not be NULL");
+	public void setGrid(GridGraph<?, ?> newGrid) {
+		setGrid(newGrid, true);
+	}
+
+	public void setGrid(GridGraph<?, ?> newGrid, boolean redrawGrid) {
+		if (newGrid == null) {
+			throw new GridCanvasException("Grid must not be NULL");
 		}
-		GridGraph2D<?, ?> oldGrid = this.grid;
-		if (oldGrid != null && (oldGrid.numCols() != grid.numCols() || oldGrid.numRows() != grid.numRows())) {
-			buffer = null;
+		GridGraph2D<?, ?> oldGrid = grid;
+		if (oldGrid != newGrid) {
+			this.grid = newGrid;
+			if (oldGrid.numCols() != newGrid.numCols() || oldGrid.numRows() != newGrid.numRows()) {
+				createBuffer(cellSize * newGrid.numCols(), cellSize * newGrid.numRows());
+			}
+			if (redrawGrid) {
+				clear();
+				drawGrid();
+			}
+			firePropertyChange("grid", oldGrid, newGrid);
 		}
-		this.grid = grid;
+	}
+
+	public Graphics2D getDrawGraphics() {
+		return buffer.createGraphics();
+	}
+
+	public BufferedImage getDrawingBuffer() {
+		return buffer;
+	}
+
+	public GridRenderer getRenderer() {
+		return rendererStack.peek();
+	}
+
+	public void pushRenderer(GridRenderer renderer) {
+		if (renderer == null) {
+			throw new GridCanvasException("Renderer is NULL");
+		}
+		if (renderer.getModel() == null) {
+			throw new GridCanvasException("Renderer has no model");
+		}
+		rendererStack.push(renderer);
+	}
+
+	public GridRenderer popRenderer() {
+		if (rendererStack.isEmpty()) {
+			throw new IllegalStateException("Renderer stack is empty");
+		}
+		GridRenderer r = rendererStack.pop();
+		if (rendererStack.isEmpty()) {
+			rendererStack.push(defaultRenderer);
+		}
+		return r;
+	}
+
+	public void replaceRenderer(GridRenderer r) {
+		rendererStack.pop();
+		rendererStack.push(r);
+	}
+
+	public void clear() {
+		fill(getRenderer().getModel().getGridBgColor());
+	}
+
+	public void fill(Color fillColor) {
+		Graphics2D g = getDrawGraphics();
+		g.setColor(fillColor);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		repaint();
+	}
+
+	public void drawGridCell(int cell) {
+		Graphics2D g = getDrawGraphics();
+		GridCellRenderer cr = getRenderer().getCellRenderer(cell);
+		if (cr == null) {
+			throw new IllegalStateException("No cell renderer");
+		}
+		cr.drawCell(g, grid, cell);
+		repaint();
+	}
+
+	public void drawGridPassage(int either, int other, boolean visible) {
+		getRenderer().drawPassage(getDrawGraphics(), grid, either, other, visible);
+		repaint();
+	}
+
+	public void drawGrid() {
+		getRenderer().drawGrid(getDrawGraphics(), grid);
+		repaint();
 	}
 }

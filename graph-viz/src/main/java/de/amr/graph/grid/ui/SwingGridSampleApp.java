@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
@@ -29,7 +30,6 @@ import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
-import de.amr.graph.core.api.TraversalState;
 import de.amr.util.StopWatch;
 
 /**
@@ -63,7 +63,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 	private GridCanvas canvas;
 	private GridCanvasAnimation<TraversalState, Integer> canvasAnimation;
 	private Style style;
-	private int cellSize;
 	private String appName;
 	private boolean fullscreen;
 	private ObservableGridGraph<TraversalState, Integer> grid;
@@ -71,21 +70,19 @@ public abstract class SwingGridSampleApp implements Runnable {
 	protected final StopWatch watch = new StopWatch();
 
 	public SwingGridSampleApp(int width, int height, int cellSize) {
-		this.cellSize = cellSize;
-		canvasSize = new Dimension(width, height);
-		style = Style.WALL_PASSAGE;
-		setGrid(OrthogonalGrid.emptyGrid(width / cellSize, height / cellSize, UNVISITED));
 		fullscreen = false;
-		createUI();
+		style = Style.WALL_PASSAGE;
+		canvasSize = new Dimension(width, height);
+		grid = OrthogonalGrid.emptyGrid(width / cellSize, height / cellSize, UNVISITED);
+		createUI(cellSize);
 	}
 
 	public SwingGridSampleApp(int cellSize) {
-		this.cellSize = cellSize;
-		canvasSize = getScreenSize();
-		style = Style.WALL_PASSAGE;
-		grid = OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED);
 		fullscreen = true;
-		createUI();
+		style = Style.WALL_PASSAGE;
+		canvasSize = getScreenSize();
+		grid = OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED);
+		createUI(cellSize);
 	}
 
 	protected void addKeyboardAction(String key, Runnable code) {
@@ -100,9 +97,9 @@ public abstract class SwingGridSampleApp implements Runnable {
 		getCanvas().getActionMap().put("action_" + key, action);
 	}
 
-	private void createUI() {
+	private void createUI(int cellSize) {
 		window = new JFrame();
-		canvas = createAnimatedCanvas();
+		createAnimatedCanvas(cellSize);
 		window.add(canvas, BorderLayout.CENTER);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
@@ -122,8 +119,9 @@ public abstract class SwingGridSampleApp implements Runnable {
 		window.setVisible(true);
 	}
 
-	private GridCanvas createAnimatedCanvas() {
-		GridCanvas canvas = new GridCanvas(grid);
+	private void createAnimatedCanvas(int cellSize) {
+		canvas = new GridCanvas(grid);
+		canvas.setCellSize(cellSize, false);
 		canvas.setBackground(Color.BLACK);
 		canvas.pushRenderer(createRenderer());
 		canvas.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
@@ -136,15 +134,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 		});
 		canvasAnimation = new GridCanvasAnimation<>(canvas);
 		grid.addGraphObserver(canvasAnimation);
-		return canvas;
-	}
-
-	private void doResize() {
-		ConfigurableGridRenderer renderer = (ConfigurableGridRenderer) canvas.getRenderer().get();
-		renderer.fnCellSize = () -> cellSize;
-		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED));
-		canvas.setGrid(grid);
-		window.setTitle(getTitleText());
 	}
 
 	protected ConfigurableGridRenderer createRenderer() {
@@ -158,7 +147,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 		else {
 			throw new IllegalArgumentException();
 		}
-		r.fnCellSize = () -> cellSize;
+		r.fnCellSize = () -> canvas.getCellSize();
 		r.fnCellBgColor = cell -> {
 			switch (grid.get(cell)) {
 			case VISITED:
@@ -171,13 +160,14 @@ public abstract class SwingGridSampleApp implements Runnable {
 				return Color.BLACK;
 			}
 		};
-		r.fnPassageWidth = (u, v) -> Math.max(1, cellSize / 4);
+		r.fnPassageWidth = (u, v) -> Math.max(1, canvas.getCellSize() / 4);
 		return r;
 	}
 
 	private String getTitleText() {
 		String pattern = "%s [%d cols %d rows %d cells @%d px]";
-		return String.format(pattern, appName, grid.numCols(), grid.numRows(), grid.numVertices(), cellSize);
+		return String.format(pattern, appName, grid.numCols(), grid.numRows(), grid.numVertices(),
+				canvas.getCellSize());
 	}
 
 	public void sleep(int millis) {
@@ -203,9 +193,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	public void setGrid(ObservableGridGraph<TraversalState, Integer> grid) {
-		if (this.grid == grid) {
-			return;
-		}
 		this.grid = grid;
 		if (canvas != null) {
 			canvas.setGrid(grid);
@@ -236,16 +223,11 @@ public abstract class SwingGridSampleApp implements Runnable {
 				UndirectedEdge::new));
 	}
 
-	public int getCellSize() {
-		return cellSize;
-	}
-
-	public void setCellSize(int newCellSize) {
-		if (this.cellSize == newCellSize) {
-			return;
-		}
-		this.cellSize = newCellSize;
-		doResize();
+	public void setCellSize(int cellSize) {
+		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED));
+		canvas.setCellSize(cellSize, false);
+		canvas.setGrid(grid);
+		window.setTitle(getTitleText());
 	}
 
 	public String getAppName() {
@@ -278,5 +260,4 @@ public abstract class SwingGridSampleApp implements Runnable {
 	public void floodFill(int source) {
 		BFSAnimation.builder().canvas(canvas).distanceVisible(false).build().floodFill(source);
 	}
-
 }

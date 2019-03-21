@@ -8,6 +8,7 @@ import java.util.BitSet;
 import java.util.function.IntSupplier;
 import java.util.function.ToDoubleFunction;
 
+import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
@@ -16,7 +17,6 @@ import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
 
@@ -118,19 +118,18 @@ public class BFSAnimation extends AbstractAnimation {
 	 *                 target vertex
 	 */
 	public void run(GraphSearch<?> bfs, int source, int target) {
-		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			// 1. explore graph to measure distances of all vertices reachable from source
-			BreadthFirstSearch distMeasurer = new BreadthFirstSearch(canvas.getGrid());
-			distMeasurer.exploreGraph(source);
-			mapRenderer = deriveMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
-			canvas.pushRenderer(mapRenderer);
+		GridRenderer canvasRenderer = canvas.getRenderer();
+		// 1. explore graph to measure distances of all vertices reachable from source
+		BreadthFirstSearch distMeasurer = new BreadthFirstSearch(canvas.getGrid());
+		distMeasurer.exploreGraph(source);
+		mapRenderer = deriveMapRenderer(canvasRenderer, distMeasurer::getCost, distMeasurer.getMaxCost());
+		canvas.pushRenderer(mapRenderer);
 
-			// 2. traverse graph with events enabled
-			bfs.addObserver(canvasUpdater);
-			bfs.exploreGraph(source, target);
-			bfs.removeObserver(canvasUpdater);
-			canvas.popRenderer();
-		});
+		// 2. traverse graph with events enabled
+		bfs.addObserver(canvasUpdater);
+		bfs.exploreGraph(source, target);
+		bfs.removeObserver(canvasUpdater);
+		canvas.popRenderer();
 	}
 
 	/**
@@ -145,24 +144,23 @@ public class BFSAnimation extends AbstractAnimation {
 	 *                 target cell
 	 */
 	public void showPath(GraphSearch<?> search, int source, int target) {
-		canvas.getRenderer().ifPresent(canvasRenderer -> {
-			Path path = Path.constructPath(source, target, search);
-			if (path.numVertices() < 2) {
-				return;
-			}
-			if (mapRenderer != null) {
-				canvas.pushRenderer(derivePathRenderer(mapRenderer, path, search::getCost));
-			}
-			else if (canvasRenderer instanceof ConfigurableGridRenderer) {
-				canvas.pushRenderer(
-						derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, search::getCost));
-			}
-			else {
-				throw new IllegalStateException();
-			}
-			path.forEach(canvas::drawGridCell);
-			canvas.popRenderer();
-		});
+		GridRenderer canvasRenderer = canvas.getRenderer();
+		Path path = Path.constructPath(source, target, search);
+		if (path.numVertices() < 2) {
+			return;
+		}
+		if (mapRenderer != null) {
+			canvas.pushRenderer(derivePathRenderer(mapRenderer, path, search::getCost));
+		}
+		else if (canvasRenderer instanceof ConfigurableGridRenderer) {
+			canvas
+					.pushRenderer(derivePathRenderer((ConfigurableGridRenderer) canvasRenderer, path, search::getCost));
+		}
+		else {
+			throw new IllegalStateException();
+		}
+		path.forEach(canvas::drawGridCell);
+		canvas.popRenderer();
 	}
 
 	private ConfigurableGridRenderer deriveMapRenderer(GridRenderer base, ToDoubleFunction<Integer> distance,
