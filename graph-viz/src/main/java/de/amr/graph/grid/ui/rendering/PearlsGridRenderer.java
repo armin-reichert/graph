@@ -74,7 +74,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 		g.translate(-offset, -offset);
 	}
 
-	private void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
+	protected void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 		final int cellX = grid.col(cell) * getCellSize();
 		final int cellY = grid.row(cell) * getCellSize();
 		final int passageWidth = getPassageWidth(cell, cell);// TODO
@@ -86,7 +86,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 		g.translate(-cellX, -cellY);
 	}
 
-	private void drawCellText(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
+	protected void drawCellText(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 		Font font = getTextFont(cell);
 		if (font.getSize() < getMinFontSize()) {
 			return;

@@ -1,5 +1,6 @@
 package de.amr.graph.pathfinder.impl;
 
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -15,6 +16,8 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	private int meetingPoint;
 	private final F fwd;
 	private final B bwd;
+	private int source;
+	private int target;
 
 	public BidiObservableGraphSearch(F fwd, B bwd) {
 		this.fwd = fwd;
@@ -25,12 +28,14 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	public void init() {
 		fwd.init();
 		bwd.init();
-		searchingForward = true;
-		meetingPoint = -1;
 	}
 
 	@Override
 	public void start(int source, int target) {
+		this.source = source;
+		this.target = target;
+		searchingForward = true;
+		meetingPoint = -1;
 		fwd.start(source, target);
 		bwd.start(target, source);
 	}
@@ -43,39 +48,36 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	@Override
 	public boolean exploreVertex() {
 		if (searchingForward) {
-			if (fwd.exploreVertex()) {
+			if (fwd.canExplore() && fwd.exploreVertex()) {
+				meetingPoint = target;
 				return true;
 			}
 			searchingForward = false;
-		} else {
-			if (bwd.exploreVertex()) {
+		}
+		else {
+			if (bwd.canExplore() && bwd.exploreVertex()) {
+				meetingPoint = source;
 				return true;
 			}
 			searchingForward = true;
 		}
-		if (checkCommonVertex()) {
-			return true;
-		}
-		return false;
+		return checkMeetingPoint();
 	}
 
-	private boolean checkCommonVertex() {
-		int fwdCurrent = fwd.getCurrentVertex();
-		int bwdCurrent = bwd.getCurrentVertex();
-		if (fwdCurrent == -1 || bwdCurrent == -1) {
-			return false;
-		}
-		if (fwdCurrent == bwdCurrent) {
-			meetingPoint = fwdCurrent;
-			System.out.println("Meeting point=" + meetingPoint);
-			int v = meetingPoint;
-			int p = bwd.getParent(v);
-			while (p != -1) {
-				int pp = bwd.getParent(p);
-				if (p != -1) {
-					bwd.setParent(p, v);
-					v = p;
-					p = pp;
+	private boolean checkMeetingPoint() {
+		int candidate = fwd.getCurrentVertex();
+		if (fwd.getState(candidate) != TraversalState.UNVISITED
+				&& bwd.getState(candidate) != TraversalState.UNVISITED) {
+			meetingPoint = candidate;
+			System.out.println("Meeting point: " + meetingPoint);
+			// reverse parent links for path from meeting point back to target
+			LinkedList<Integer> backPath = new LinkedList<>();
+			for (int v = meetingPoint; v != -1; v = bwd.getParent(v)) {
+				backPath.add(v);
+			}
+			for (int i = 0; i < backPath.size(); ++i) {
+				if (i + 1 < backPath.size()) {
+					bwd.setParent(backPath.get(i + 1), backPath.get(i));
 				}
 			}
 			return true;
