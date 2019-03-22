@@ -32,7 +32,7 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  *      Blob Games</a>
  * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
-public class AStarSearch extends GraphSearch<MinPQ_VertexQueue> {
+public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 
 	public static final TraversalState OPEN = VISITED;
 	public static final TraversalState CLOSED = COMPLETED;

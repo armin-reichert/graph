@@ -20,6 +20,7 @@ import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.GraphSearch;
+import de.amr.graph.pathfinder.impl.ObservableGraphSearch;
 
 /**
  * Animation of BFS based grid traversals (BFS, A* etc.).
@@ -120,7 +121,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 * @param target
 	 *                 target vertex
 	 */
-	public void run(GraphSearch<?> bfs, int source, int target) {
+	public void run(ObservableGraphSearch bfs, int source, int target) {
 		// 1. explore graph to measure distances of all vertices reachable from source
 		BreadthFirstSearch explorer = new BreadthFirstSearch(canvas.getGrid());
 		explorer.exploreGraph(source);
@@ -145,7 +146,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 * @param target
 	 *                   target cell
 	 */
-	public void showPath(GraphSearch<?> explorer, int source, int target) {
+	public void showPath(GraphSearch explorer, int source, int target) {
 		Path path = Path.constructPath(source, target, explorer);
 		if (path.numEdges() == 0) {
 			return; // nothing to draw
@@ -166,7 +167,7 @@ public class BFSAnimation extends AbstractAnimation {
 		canvas.popRenderer();
 	}
 
-	private ConfigurableGridRenderer deriveMapRenderer(GridRenderer base, GraphSearch<?> explorer) {
+	private ConfigurableGridRenderer deriveMapRenderer(GridRenderer base, GraphSearch explorer) {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellBgColor = cell -> cellColorByDistance(cell, explorer::getCost, explorer.getMaxCost());

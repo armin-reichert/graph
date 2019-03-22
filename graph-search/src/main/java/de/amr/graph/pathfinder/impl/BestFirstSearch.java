@@ -14,7 +14,7 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * 
  * @author Armin Reichert
  */
-public class BestFirstSearch extends GraphSearch<MinPQ_VertexQueue> {
+public class BestFirstSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 
 	private final ToDoubleFunction<Integer> fnEstimatedCost;
 

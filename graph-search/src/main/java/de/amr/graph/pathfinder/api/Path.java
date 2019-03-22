@@ -28,12 +28,12 @@ public class Path implements Iterable<Integer> {
 		this.vertexList = vertexList;
 	}
 
-	public static Path computePath(int source, int target, GraphSearch<?> search) {
+	public static Path computePath(int source, int target, GraphSearch search) {
 		search.exploreGraph(source, target);
 		return constructPath(source, target, search);
 	}
 
-	public static Path constructPath(int source, int target, GraphSearch<?> search) {
+	public static Path constructPath(int source, int target, GraphSearch search) {
 		if (search.getParent(target) == -1) {
 			return new Path(Collections.emptyList()); // no path to target
 		}

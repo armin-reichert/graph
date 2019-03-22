@@ -14,7 +14,7 @@ import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
  * 
  * @author Armin Reichert
  */
-public class IDDFS extends GraphSearch<LIFO_VertexQueue> {
+public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue> {
 
 	private DepthLimitedDFS dls;
 
