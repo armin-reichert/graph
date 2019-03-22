@@ -11,7 +11,7 @@ I tried to achieve "text book quality" in the code. See for example the followin
 ### Depth-First Search:
 
 ```java
-public class DepthFirstSearch extends GraphSearch<LIFO_VertexQueue> {
+public class DepthFirstSearch extends AbstractGraphSearch<LIFO_VertexQueue> {
 
 	public DepthFirstSearch(Graph<?, ?> graph) {
 		super(graph, new LIFO_VertexQueue());
@@ -22,7 +22,7 @@ public class DepthFirstSearch extends GraphSearch<LIFO_VertexQueue> {
 ### Breadth-First Search:
 
 ```java
-public class BreadthFirstSearch extends GraphSearch<FIFO_VertexQueue> {
+public class BreadthFirstSearch extends AbstractGraphSearch<FIFO_VertexQueue> {
 
 	public BreadthFirstSearch(Graph<?, ?> graph) {
 		super(graph, (u, v) -> 1, new FIFO_VertexQueue());
@@ -48,7 +48,7 @@ public class DijkstraSearch extends AStarSearch {
 ### Greedy Best-First Search:
 
 ```java
-public class BestFirstSearch extends GraphSearch<MinPQ_VertexQueue> {
+public class BestFirstSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 
 	public BestFirstSearch(Graph<?, ?> graph, ToDoubleFunction<Integer> fnVertexPriority) {
 		super(graph, (u, v) -> 1, new MinPQ_VertexQueue(fnVertexPriority));
