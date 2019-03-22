@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import de.amr.datastruct.StreamUtils;
-import de.amr.graph.pathfinder.impl.GraphSearch;
 
 /**
  * A path in a graph as list of vertices.

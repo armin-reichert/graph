@@ -11,9 +11,9 @@ import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.AbstractGraphSearch;
-import de.amr.graph.pathfinder.impl.ObservableGraphSearch;
 
 /**
  * Animation of depth-first search based algorithms.

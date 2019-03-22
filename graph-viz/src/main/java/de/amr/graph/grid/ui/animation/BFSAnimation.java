@@ -16,11 +16,11 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.GridRenderer;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.graph.pathfinder.api.GraphSearch;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
-import de.amr.graph.pathfinder.impl.GraphSearch;
-import de.amr.graph.pathfinder.impl.ObservableGraphSearch;
 
 /**
  * Animation of BFS based grid traversals (BFS, A* etc.).

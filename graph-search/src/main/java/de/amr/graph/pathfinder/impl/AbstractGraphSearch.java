@@ -17,6 +17,7 @@ import java.util.function.ToDoubleBiFunction;
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
+import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.api.VertexQueue;
 

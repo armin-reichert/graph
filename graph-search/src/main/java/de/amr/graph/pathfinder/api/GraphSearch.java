@@ -1,4 +1,4 @@
-package de.amr.graph.pathfinder.impl;
+package de.amr.graph.pathfinder.api;
 
 import java.util.Optional;
 import java.util.OptionalInt;

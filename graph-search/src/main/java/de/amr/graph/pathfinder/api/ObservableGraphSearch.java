@@ -1,6 +1,4 @@
-package de.amr.graph.pathfinder.impl;
-
-import de.amr.graph.pathfinder.api.GraphSearchObserver;
+package de.amr.graph.pathfinder.api;
 
 public interface ObservableGraphSearch extends GraphSearch {
 
