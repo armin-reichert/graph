@@ -19,7 +19,9 @@ public interface GraphSearch {
 	 * @param source
 	 *                 source vertex
 	 */
-	void exploreGraph(int source);
+	default void exploreGraph(int source) {
+		exploreGraph(source, -1);
+	}
 
 	/**
 	 * Explores the graph starting from the given source vertex until the given target vertex has been
@@ -32,7 +34,16 @@ public interface GraphSearch {
 	 * 
 	 * @return {@code true} if the target has been found
 	 */
-	boolean exploreGraph(int source, int target);
+	default boolean exploreGraph(int source, int target) {
+		init();
+		start(source, target);
+		while (canExplore()) {
+			if (exploreVertex()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Tells if there is some vertex left to explore.
@@ -86,6 +97,16 @@ public interface GraphSearch {
 	 * @return parent vertex or <code>-1</code>
 	 */
 	int getParent(int v);
+
+	/**
+	 * Set the parent vertex for the given vertex.
+	 * 
+	 * @param child
+	 *            child vertex
+	 * @param p
+	 *            parent vertex
+	 */
+	void setParent(int child, int parent);
 
 	/**
 	 * Returns the cost of the given vertex.

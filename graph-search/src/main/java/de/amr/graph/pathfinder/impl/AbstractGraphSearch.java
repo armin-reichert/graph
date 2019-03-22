@@ -80,23 +80,6 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	}
 
 	@Override
-	public void exploreGraph(int source) {
-		exploreGraph(source, -1);
-	}
-
-	@Override
-	public boolean exploreGraph(int source, int target) {
-		init();
-		start(source, target);
-		while (canExplore()) {
-			if (exploreVertex()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public boolean canExplore() {
 		return !frontier.isEmpty();
 	}
@@ -175,7 +158,8 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	 * @param parent
 	 *                 parent vertex
 	 */
-	protected void setParent(int child, int parent) {
+	@Override
+	public void setParent(int child, int parent) {
 		parentMap.put(child, parent);
 		if (parent != -1) {
 			setCost(child, getCost(parent) + fnEdgeCost.applyAsDouble(parent, child));
