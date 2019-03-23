@@ -122,6 +122,16 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	}
 
 	@Override
+	public int getSource() {
+		return source;
+	}
+
+	@Override
+	public int getTarget() {
+		return target;
+	}
+
+	@Override
 	public int getCurrentVertex() {
 		return current;
 	}

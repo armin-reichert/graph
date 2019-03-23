@@ -16,8 +16,6 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	private int meetingPoint;
 	private final F fwd;
 	private final B bwd;
-	private int source;
-	private int target;
 
 	public BidiObservableGraphSearch(F fwd, B bwd) {
 		this.fwd = fwd;
@@ -32,8 +30,6 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 
 	@Override
 	public void start(int source, int target) {
-		this.source = source;
-		this.target = target;
 		searchingForward = true;
 		meetingPoint = -1;
 		fwd.start(source, target);
@@ -49,18 +45,17 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	public boolean exploreVertex() {
 		if (searchingForward) {
 			if (fwd.canExplore() && fwd.exploreVertex()) {
-				meetingPoint = target;
+				meetingPoint = fwd.getTarget();
 				return true;
 			}
-			searchingForward = false;
 		}
 		else {
 			if (bwd.canExplore() && bwd.exploreVertex()) {
-				meetingPoint = source;
+				meetingPoint = bwd.getTarget();
 				return true;
 			}
-			searchingForward = true;
 		}
+		searchingForward = !searchingForward;
 		return checkMeetingPoint();
 	}
 
@@ -118,6 +113,16 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 	@Override
 	public Optional<Integer> getMaxCostVertex() {
 		return fwd.getMaxCostVertex();
+	}
+
+	@Override
+	public int getSource() {
+		return fwd.getSource();
+	}
+
+	@Override
+	public int getTarget() {
+		return fwd.getTarget();
 	}
 
 	@Override

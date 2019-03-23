@@ -65,6 +65,20 @@ public interface GraphSearch {
 	void start(int source, int target);
 
 	/**
+	 * Returns the source vertex of this search.
+	 * 
+	 * @return the source vertex
+	 */
+	int getSource();
+
+	/**
+	 * Returns the target vertex of this search.
+	 * 
+	 * @return the target vertex
+	 */
+	int getTarget();
+
+	/**
 	 * Returns the vertex currently being processed. This vertex has already been removed from the
 	 * frontier.
 	 * 
@@ -102,9 +116,9 @@ public interface GraphSearch {
 	 * Set the parent vertex for the given vertex.
 	 * 
 	 * @param child
-	 *            child vertex
+	 *                child vertex
 	 * @param p
-	 *            parent vertex
+	 *                parent vertex
 	 */
 	void setParent(int child, int parent);
 
