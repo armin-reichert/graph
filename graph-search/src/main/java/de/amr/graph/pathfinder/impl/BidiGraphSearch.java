@@ -27,6 +27,14 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 		this.bwd = bwd;
 	}
 
+	public ObservableGraphSearch getForwardSearch() {
+		return fwd;
+	}
+
+	public ObservableGraphSearch getBackwardsSearch() {
+		return bwd;
+	}
+
 	public int getMeetingPoint() {
 		return meetingPoint;
 	}
@@ -44,7 +52,7 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 		forward = false;
 		meetingPoint = -1;
 	}
-	
+
 	@Override
 	public boolean exploreGraph(int source, int target) {
 		init();
@@ -65,8 +73,6 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 	@Override
 	public boolean exploreVertex() {
 		forward = !forward;
-		System.out.println("forward=" + forward);
-		System.out.println("explore vertex");
 		if (getSource() == getTarget()) {
 			meetingPoint = fwd.getSource();
 			return true;
