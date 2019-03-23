@@ -15,23 +15,24 @@ import de.amr.graph.pathfinder.api.Path;
  * 
  * @author Armin Reichert
  */
-public class BidiGraphSearch implements ObservableGraphSearch {
+public class BidiGraphSearch<F extends ObservableGraphSearch, B extends ObservableGraphSearch>
+		implements ObservableGraphSearch {
 
-	private final ObservableGraphSearch fwd;
-	private final ObservableGraphSearch bwd;
+	private final F fwd;
+	private final B bwd;
 	private boolean forward;
 	private int meetingPoint = -1;
 
-	public BidiGraphSearch(ObservableGraphSearch fwd, ObservableGraphSearch bwd) {
+	public BidiGraphSearch(F fwd, B bwd) {
 		this.fwd = fwd;
 		this.bwd = bwd;
 	}
 
-	public ObservableGraphSearch getForwardSearch() {
+	public F getForwardSearch() {
 		return fwd;
 	}
 
-	public ObservableGraphSearch getBackwardsSearch() {
+	public B getBackwardsSearch() {
 		return bwd;
 	}
 
