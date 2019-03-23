@@ -28,13 +28,19 @@ public class Path implements Iterable<Integer> {
 	}
 
 	public static Path computePath(int source, int target, GraphSearch search) {
-		search.exploreGraph(source, target);
-		return constructPath(source, target, search);
+		boolean found = search.exploreGraph(source, target);
+		return found ? constructPath(source, target, search) : EMPTY_PATH;
 	}
 
 	public static Path constructPath(int source, int target, GraphSearch search) {
+		if (source == -1) {
+			throw new IllegalArgumentException("Illegal source vertex");
+		}
+		if (target == -1) {
+			throw new IllegalArgumentException("Illegal target vertex");
+		}
 		if (search.getParent(target) == -1) {
-			return new Path(Collections.emptyList()); // no path to target
+			return EMPTY_PATH; // no path to target
 		}
 		if (source == target) {
 			return new Path(Collections.singletonList(source)); // trivial path

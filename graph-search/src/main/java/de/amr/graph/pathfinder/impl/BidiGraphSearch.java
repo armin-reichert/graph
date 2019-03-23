@@ -20,7 +20,7 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 	private final ObservableGraphSearch fwd;
 	private final ObservableGraphSearch bwd;
 	private boolean forward;
-	private int meetingPoint;
+	private int meetingPoint = -1;
 
 	public BidiGraphSearch(ObservableGraphSearch fwd, ObservableGraphSearch bwd) {
 		this.fwd = fwd;
@@ -35,14 +35,26 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 	public void init() {
 		fwd.init();
 		bwd.init();
-		forward = true;
-		meetingPoint = -1;
 	}
 
 	@Override
 	public void start(int source, int target) {
 		fwd.start(source, target);
 		bwd.start(target, source);
+		forward = false;
+		meetingPoint = -1;
+	}
+	
+	@Override
+	public boolean exploreGraph(int source, int target) {
+		init();
+		start(source, target);
+		while (meetingPoint == -1 && canExplore()) {
+			if (exploreVertex()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -52,33 +64,34 @@ public class BidiGraphSearch implements ObservableGraphSearch {
 
 	@Override
 	public boolean exploreVertex() {
-		if (fwd.getSource() == fwd.getTarget()) {
+		forward = !forward;
+		System.out.println("forward=" + forward);
+		System.out.println("explore vertex");
+		if (getSource() == getTarget()) {
 			meetingPoint = fwd.getSource();
 			return true;
 		}
 		if (forward) {
 			if (fwd.canExplore()) {
 				boolean targetReached = fwd.exploreVertex();
-				forward = !forward; // switch direction
 				return targetReached || checkMeetingPoint(fwd.getCurrentVertex());
-			} else {
-				forward = !forward; // switch direction
 			}
 		}
 		else { // explore backwards
 			if (bwd.canExplore()) {
 				boolean sourceReached = bwd.exploreVertex();
-				forward = !forward; // switch direction
 				return sourceReached || checkMeetingPoint(bwd.getCurrentVertex());
-			} else {
-				forward = !forward; // switch direction
 			}
+		}
+		if (checkMeetingPoint(fwd.getCurrentVertex()) || checkMeetingPoint(bwd.getCurrentVertex())) {
+			return true;
 		}
 		return false;
 	}
 
 	private boolean checkMeetingPoint(int candidate) {
-		if (fwd.getParent(candidate) != -1 && bwd.getParent(candidate) != -1) {
+		if (fwd.getState(candidate) == TraversalState.COMPLETED
+				&& bwd.getState(candidate) == TraversalState.COMPLETED) {
 			meetingPoint = candidate;
 			System.out.println("Meeting point: " + meetingPoint);
 			reverseParentLinks(meetingPoint);
