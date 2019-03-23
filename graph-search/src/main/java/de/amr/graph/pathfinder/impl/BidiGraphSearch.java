@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -9,85 +10,96 @@ import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 
-public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extends ObservableGraphSearch>
-		implements ObservableGraphSearch {
+/**
+ * Bidirectional search.
+ * 
+ * @author Armin Reichert
+ */
+public class BidiGraphSearch implements ObservableGraphSearch {
 
-	private boolean searchingForward;
+	private final ObservableGraphSearch fwd;
+	private final ObservableGraphSearch bwd;
+	private boolean forward;
 	private int meetingPoint;
-	private final F fwd;
-	private final B bwd;
 
-	public BidiObservableGraphSearch(F fwd, B bwd) {
+	public BidiGraphSearch(ObservableGraphSearch fwd, ObservableGraphSearch bwd) {
 		this.fwd = fwd;
 		this.bwd = bwd;
+	}
+
+	public int getMeetingPoint() {
+		return meetingPoint;
 	}
 
 	@Override
 	public void init() {
 		fwd.init();
 		bwd.init();
+		forward = true;
+		meetingPoint = -1;
 	}
 
 	@Override
 	public void start(int source, int target) {
-		searchingForward = true;
-		meetingPoint = -1;
 		fwd.start(source, target);
 		bwd.start(target, source);
 	}
 
 	@Override
 	public boolean canExplore() {
-		return meetingPoint == -1 && (fwd.canExplore() || bwd.canExplore());
+		return fwd.canExplore() || bwd.canExplore();
 	}
 
 	@Override
 	public boolean exploreVertex() {
-		if (searchingForward) {
-			if (fwd.canExplore() && fwd.exploreVertex()) {
-				meetingPoint = fwd.getTarget();
-				return true;
+		if (fwd.getSource() == fwd.getTarget()) {
+			meetingPoint = fwd.getSource();
+			return true;
+		}
+		if (forward) {
+			if (fwd.canExplore()) {
+				boolean targetReached = fwd.exploreVertex();
+				forward = !forward; // switch direction
+				return targetReached || checkMeetingPoint(fwd.getCurrentVertex());
+			} else {
+				forward = !forward; // switch direction
 			}
 		}
-		else {
-			if (bwd.canExplore() && bwd.exploreVertex()) {
-				meetingPoint = bwd.getTarget();
-				return true;
+		else { // explore backwards
+			if (bwd.canExplore()) {
+				boolean sourceReached = bwd.exploreVertex();
+				forward = !forward; // switch direction
+				return sourceReached || checkMeetingPoint(bwd.getCurrentVertex());
+			} else {
+				forward = !forward; // switch direction
 			}
 		}
-		searchingForward = !searchingForward;
-		return checkMeetingPoint();
+		return false;
 	}
 
-	private boolean checkMeetingPoint() {
-		int candidate = fwd.getCurrentVertex();
-		if (fwd.getState(candidate) != TraversalState.UNVISITED
-				&& bwd.getState(candidate) != TraversalState.UNVISITED) {
+	private boolean checkMeetingPoint(int candidate) {
+		if (fwd.getParent(candidate) != -1 && bwd.getParent(candidate) != -1) {
 			meetingPoint = candidate;
 			System.out.println("Meeting point: " + meetingPoint);
-			// reverse parent links for path from meeting point back to target
-			LinkedList<Integer> backPath = new LinkedList<>();
-			for (int v = meetingPoint; v != -1; v = bwd.getParent(v)) {
-				backPath.add(v);
-			}
-			for (int i = 0; i < backPath.size(); ++i) {
-				if (i + 1 < backPath.size()) {
-					bwd.setParent(backPath.get(i + 1), backPath.get(i));
-				}
-			}
+			reverseParentLinks(meetingPoint);
 			return true;
 		}
 		return false;
 	}
 
+	private void reverseParentLinks(int meetingPoint) {
+		List<Integer> backPath = new ArrayList<>();
+		for (int v = meetingPoint; v != -1; v = bwd.getParent(v)) {
+			backPath.add(v);
+		}
+		for (int i = 1; i < backPath.size(); ++i) {
+			bwd.setParent(backPath.get(i), backPath.get(i - 1));
+		}
+	}
+
 	@Override
 	public void setParent(int child, int parent) {
-		if (searchingForward) {
-			fwd.setParent(child, parent);
-		}
-		else {
-			bwd.setParent(child, parent);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -97,12 +109,7 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 
 	@Override
 	public void setCost(int v, double value) {
-		if (searchingForward) {
-			fwd.setCost(v, value);
-		}
-		else {
-			bwd.setCost(v, value);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -127,12 +134,12 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 
 	@Override
 	public int getCurrentVertex() {
-		return searchingForward ? fwd.getCurrentVertex() : bwd.getCurrentVertex();
+		return forward ? fwd.getCurrentVertex() : bwd.getCurrentVertex();
 	}
 
 	@Override
 	public OptionalInt getNextVertex() {
-		return searchingForward ? fwd.getNextVertex() : bwd.getNextVertex();
+		return forward ? fwd.getNextVertex() : bwd.getNextVertex();
 	}
 
 	@Override
@@ -142,10 +149,7 @@ public class BidiObservableGraphSearch<F extends ObservableGraphSearch, B extend
 
 	@Override
 	public int getParent(int v) {
-		if (fwd.getParent(v) != -1) {
-			return fwd.getParent(v);
-		}
-		return bwd.getParent(v);
+		return fwd.getParent(v) != -1 ? fwd.getParent(v) : bwd.getParent(v);
 	}
 
 	@Override
