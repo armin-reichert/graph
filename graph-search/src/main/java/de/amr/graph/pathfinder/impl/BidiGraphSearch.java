@@ -99,6 +99,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		if (fwd.getState(candidate) == TraversalState.COMPLETED
 				&& bwd.getState(candidate) == TraversalState.COMPLETED) {
 			meetingPoint = candidate;
+			
 			reverseParentLinks(meetingPoint);
 			return true;
 		}
@@ -110,8 +111,12 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		for (int v = meetingPoint; v != -1; v = bwd.getParent(v)) {
 			backPath.add(v);
 		}
+		// recompute cost for backward path
+		bwd.setCost(meetingPoint, fwd.getCost(meetingPoint));
 		for (int i = 1; i < backPath.size(); ++i) {
 			bwd.setParent(backPath.get(i), backPath.get(i - 1));
+			double edgeCost = bwd.getCost(i-1) - bwd.getCost(i);
+			bwd.setCost(i-1, bwd.getCost(i-1) + edgeCost);
 		}
 	}
 
