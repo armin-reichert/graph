@@ -116,7 +116,7 @@ public class DFSAnimation extends AbstractAnimation {
 		GridRenderer canvasRenderer = canvas.getRenderer();
 		canvas.pushRenderer(createPathRenderer(canvasRenderer));
 		dfs.addObserver(canvasUpdater);
-		Path path = Path.computePath(source, target, dfs);
+		Path path = Path.findPath(source, target, dfs);
 		dfs.removeObserver(canvasUpdater);
 		canvas.drawGrid();
 		path.forEach(v -> {

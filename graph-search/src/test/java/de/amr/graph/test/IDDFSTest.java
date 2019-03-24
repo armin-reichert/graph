@@ -38,7 +38,7 @@ public class IDDFSTest {
 	@Test
 	public void testIterativeDeepening() {
 		IDDFS search = new IDDFS(g);
-		Path path = Path.computePath(0, 7, search);
+		Path path = Path.findPath(0, 7, search);
 		System.out.println("Path=" + path);
 		Assert.assertEquals(5, path.numVertices());
 	}

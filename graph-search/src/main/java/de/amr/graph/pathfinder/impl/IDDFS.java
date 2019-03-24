@@ -31,7 +31,7 @@ public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue> {
 			observersCopy.forEach(dls::addObserver);
 			stateMap.clear();
 			parentMap.clear();
-			Path path = Path.computePath(source, target, dls);
+			Path path = Path.findPath(source, target, dls);
 			observersCopy.forEach(dls::removeObserver);
 			if (path.numVertices() != 0) {
 				return true;

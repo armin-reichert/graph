@@ -102,7 +102,7 @@ public class GraphSearchTest {
 	public void testBFS() {
 		GridGraph<Void, Void> g = circle3();
 		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		Path path = Path.computePath(0, 8, search);
+		Path path = Path.findPath(0, 8, search);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
@@ -111,7 +111,7 @@ public class GraphSearchTest {
 	public void testDFS() {
 		GridGraph<Void, Void> g = circle3();
 		DepthFirstSearch search = new DepthFirstSearch(g);
-		Path path = Path.computePath(0, 8, search);
+		Path path = Path.findPath(0, 8, search);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
