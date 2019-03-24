@@ -58,6 +58,10 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 	public boolean exploreGraph(int source, int target) {
 		init();
 		start(source, target);
+		if (getSource() == getTarget()) {
+			meetingPoint = fwd.getSource();
+			return true;
+		}
 		while (meetingPoint == -1 && canExplore()) {
 			if (exploreVertex()) {
 				return true;
@@ -74,10 +78,6 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 	@Override
 	public boolean exploreVertex() {
 		forward = !forward;
-		if (getSource() == getTarget()) {
-			meetingPoint = fwd.getSource();
-			return true;
-		}
 		if (forward) {
 			if (fwd.canExplore()) {
 				boolean targetReached = fwd.exploreVertex();
@@ -100,7 +100,6 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 		if (fwd.getState(candidate) == TraversalState.COMPLETED
 				&& bwd.getState(candidate) == TraversalState.COMPLETED) {
 			meetingPoint = candidate;
-			System.out.println("Meeting point: " + meetingPoint);
 			reverseParentLinks(meetingPoint);
 			return true;
 		}
@@ -169,7 +168,13 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 
 	@Override
 	public int getParent(int v) {
-		return fwd.getParent(v) != -1 ? fwd.getParent(v) : bwd.getParent(v);
+		if (fwd.getState(v) != TraversalState.UNVISITED) {
+			return fwd.getParent(v);
+		}
+		if (bwd.getState(v) != TraversalState.UNVISITED) {
+			return bwd.getParent(v);
+		}
+		return -1;
 	}
 
 	@Override
