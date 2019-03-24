@@ -28,7 +28,7 @@ public class Path implements Iterable<Integer> {
 	private Path(int initialCapacity) {
 		vertexList = new ArrayList<>(initialCapacity);
 	}
-	
+
 	private Path(List<Integer> vertexList) {
 		this.vertexList = vertexList;
 	}
@@ -104,7 +104,7 @@ public class Path implements Iterable<Integer> {
 	}
 
 	public int numEdges() {
-		return vertexList.size() - 1;
+		return vertexList.isEmpty() ? 0 : vertexList.size() - 1;
 	}
 
 	public Optional<Integer> source() {

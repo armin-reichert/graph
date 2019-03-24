@@ -57,11 +57,11 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	@Override
 	public boolean exploreGraph(int source, int target) {
 		start(source, target);
-		if (getSource() == getTarget()) {
+		if (source == target) {
 			meetingPoint = fwd.getSource();
 			return true;
 		}
-		while (meetingPoint == -1 && canExplore()) {
+		while (canExplore()) {
 			if (exploreVertex()) {
 				return true;
 			}
@@ -71,7 +71,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	@Override
 	public boolean canExplore() {
-		return fwd.canExplore() || bwd.canExplore();
+		return meetingPoint == -1 && (fwd.canExplore() || bwd.canExplore());
 	}
 
 	@Override
