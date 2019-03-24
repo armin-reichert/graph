@@ -60,8 +60,8 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 	}
 
 	@Override
-	public void init() {
-		super.init();
+	protected void clear() {
+		super.clear();
 		score.clear();
 	}
 

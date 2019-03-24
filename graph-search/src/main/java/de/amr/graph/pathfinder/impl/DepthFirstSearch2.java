@@ -23,13 +23,8 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 
 	@Override
 	public boolean exploreGraph(int source, int target) {
-		init();
-
-		setState(source, VISITED);
-		frontier.add(source);
-		fireVertexAddedToFrontier(source);
-
-		int current = source;
+		start(source, target);
+		current = source;
 		boolean found = false;
 		while (!frontier.isEmpty()) {
 			if (current == target) {

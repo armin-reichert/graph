@@ -15,7 +15,7 @@ import de.amr.graph.pathfinder.api.Path;
  * 
  * @author Armin Reichert
  */
-public class BidiGraphSearch<F extends ObservableGraphSearch, B extends ObservableGraphSearch>
+public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends AbstractGraphSearch<?>>
 		implements ObservableGraphSearch {
 
 	private final F fwd;
@@ -40,14 +40,14 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 		return meetingPoint;
 	}
 
-	@Override
-	public void init() {
-		fwd.init();
-		bwd.init();
+	protected void clear() {
+		fwd.clear();
+		bwd.clear();
 	}
 
 	@Override
 	public void start(int source, int target) {
+		clear();
 		fwd.start(source, target);
 		bwd.start(target, source);
 		forward = false;
@@ -56,7 +56,6 @@ public class BidiGraphSearch<F extends ObservableGraphSearch, B extends Observab
 
 	@Override
 	public boolean exploreGraph(int source, int target) {
-		init();
 		start(source, target);
 		if (getSource() == getTarget()) {
 			meetingPoint = fwd.getSource();

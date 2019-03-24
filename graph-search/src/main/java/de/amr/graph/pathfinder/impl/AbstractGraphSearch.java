@@ -64,13 +64,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		this.frontier = frontier;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.amr.graph.pathfinder.impl.GraphSearch#init()
-	 */
-	@Override
-	public void init() {
+	protected void clear() {
 		parentMap.clear();
 		stateMap.clear();
 		costMap.clear();
@@ -98,6 +92,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 
 	@Override
 	public void start(int source, int target) {
+		clear();
 		this.source = source;
 		this.target = target;
 		setState(source, VISITED);

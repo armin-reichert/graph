@@ -8,11 +8,6 @@ import de.amr.graph.core.api.TraversalState;
 public interface GraphSearch {
 
 	/**
-	 * Initializes the search such that {@link #exploreGraph(int, int)} always starts in a clean state.
-	 */
-	void init();
-
-	/**
 	 * Explores the graph starting from the given source vertex until all reachable vertices have been
 	 * visited.
 	 * 
@@ -35,7 +30,6 @@ public interface GraphSearch {
 	 * @return {@code true} if the target has been found
 	 */
 	default boolean exploreGraph(int source, int target) {
-		init();
 		start(source, target);
 		while (canExplore()) {
 			if (exploreVertex()) {
