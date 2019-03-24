@@ -58,6 +58,8 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	public boolean exploreGraph(int source, int target) {
 		start(source, target);
 		if (source == target) {
+			fwd.setState(source, TraversalState.COMPLETED);
+			bwd.setState(source, TraversalState.COMPLETED);
 			meetingPoint = fwd.getSource();
 			return true;
 		}
