@@ -18,90 +18,68 @@ import de.amr.graph.pathfinder.api.Path;
 public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends AbstractGraphSearch<?>>
 		implements ObservableGraphSearch {
 
-	private final F fwd;
-	private final B bwd;
-	private boolean forward;
-	private int meetingPoint = -1;
+	private final F forwardSearch;
+	private final B backwardsSearch;
+	private boolean searchingForward;
+	private int meetingPoint;
 
-	public BidiGraphSearch(F fwd, B bwd) {
-		this.fwd = fwd;
-		this.bwd = bwd;
+	public BidiGraphSearch(F forwardSearch, B backwardsSearch) {
+		this.forwardSearch = forwardSearch;
+		this.backwardsSearch = backwardsSearch;
+		meetingPoint = -1;
 	}
 
 	public F getForwardSearch() {
-		return fwd;
+		return forwardSearch;
 	}
 
 	public B getBackwardsSearch() {
-		return bwd;
+		return backwardsSearch;
 	}
 
 	public int getMeetingPoint() {
 		return meetingPoint;
 	}
 
-	protected void clear() {
-		fwd.clear();
-		bwd.clear();
-	}
-
 	@Override
 	public void start(int source, int target) {
-		clear();
-		fwd.start(source, target);
-		bwd.start(target, source);
-		forward = false;
-		meetingPoint = -1;
-	}
-
-	@Override
-	public boolean exploreGraph(int source, int target) {
-		start(source, target);
 		if (source == target) {
-			fwd.setState(source, TraversalState.COMPLETED);
-			bwd.setState(source, TraversalState.COMPLETED);
-			meetingPoint = fwd.getSource();
-			return true;
+			forwardSearch.setState(source, TraversalState.COMPLETED);
+			forwardSearch.setCost(source, 0);
+			backwardsSearch.setState(source, TraversalState.COMPLETED);
+			backwardsSearch.setCost(source, 0);
+			meetingPoint = source;
 		}
-		while (canExplore()) {
-			if (exploreVertex()) {
-				return true;
-			}
+		else {
+			forwardSearch.start(source, target);
+			backwardsSearch.start(target, source);
+			meetingPoint = -1;
+			searchingForward = false;
 		}
-		return false;
 	}
 
 	@Override
 	public boolean canExplore() {
-		return meetingPoint == -1 && (fwd.canExplore() || bwd.canExplore());
+		return meetingPoint == -1 && (forwardSearch.canExplore() || backwardsSearch.canExplore());
 	}
 
 	@Override
 	public boolean exploreVertex() {
-		forward = !forward;
-		if (forward) {
-			if (fwd.canExplore()) {
-				boolean targetReached = fwd.exploreVertex();
-				return targetReached || checkMeetingPoint(fwd.getCurrentVertex());
-			}
-		}
-		else { // explore backwards
-			if (bwd.canExplore()) {
-				boolean sourceReached = bwd.exploreVertex();
-				return sourceReached || checkMeetingPoint(bwd.getCurrentVertex());
-			}
-		}
-		if (checkMeetingPoint(fwd.getCurrentVertex()) || checkMeetingPoint(bwd.getCurrentVertex())) {
+		searchingForward = !searchingForward;
+		if (searchingForward && forwardSearch.canExplore() && forwardSearch.exploreVertex()) {
 			return true;
 		}
-		return false;
+		else if (!searchingForward && backwardsSearch.canExplore() && backwardsSearch.exploreVertex()) {
+			return true;
+		}
+		return checkMeetingPoint(forwardSearch.getCurrentVertex())
+				|| checkMeetingPoint(backwardsSearch.getCurrentVertex());
 	}
 
 	private boolean checkMeetingPoint(int candidate) {
-		if (fwd.getState(candidate) == TraversalState.COMPLETED
-				&& bwd.getState(candidate) == TraversalState.COMPLETED) {
+		if (forwardSearch.getState(candidate) == TraversalState.COMPLETED
+				&& backwardsSearch.getState(candidate) == TraversalState.COMPLETED) {
 			meetingPoint = candidate;
-			
 			reverseParentLinks(meetingPoint);
 			return true;
 		}
@@ -110,15 +88,15 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	private void reverseParentLinks(int meetingPoint) {
 		List<Integer> backPath = new ArrayList<>();
-		for (int v = meetingPoint; v != -1; v = bwd.getParent(v)) {
+		for (int v = meetingPoint; v != -1; v = backwardsSearch.getParent(v)) {
 			backPath.add(v);
 		}
 		// recompute cost for backward path
-		bwd.setCost(meetingPoint, fwd.getCost(meetingPoint));
+		backwardsSearch.setCost(meetingPoint, forwardSearch.getCost(meetingPoint));
 		for (int i = 1; i < backPath.size(); ++i) {
-			bwd.setParent(backPath.get(i), backPath.get(i - 1));
-			double edgeCost = bwd.getCost(i-1) - bwd.getCost(i);
-			bwd.setCost(i-1, bwd.getCost(i-1) + edgeCost);
+			backwardsSearch.setParent(backPath.get(i), backPath.get(i - 1));
+			double edgeCost = backwardsSearch.getCost(i - 1) - backwardsSearch.getCost(i);
+			backwardsSearch.setCost(i - 1, backwardsSearch.getCost(i - 1) + edgeCost);
 		}
 	}
 
@@ -129,7 +107,8 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	@Override
 	public double getCost(int v) {
-		return fwd.getCost(v) != Path.INFINITE_COST ? fwd.getCost(v) : bwd.getCost(v);
+		return forwardSearch.getCost(v) != Path.INFINITE_COST ? forwardSearch.getCost(v)
+				: backwardsSearch.getCost(v);
 	}
 
 	@Override
@@ -139,65 +118,66 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	@Override
 	public double getMaxCost() {
-		return fwd.getMaxCost();
+		return forwardSearch.getMaxCost();
 	}
 
 	@Override
 	public Optional<Integer> getMaxCostVertex() {
-		return fwd.getMaxCostVertex();
+		return forwardSearch.getMaxCostVertex();
 	}
 
 	@Override
 	public int getSource() {
-		return fwd.getSource();
+		return forwardSearch.getSource();
 	}
 
 	@Override
 	public int getTarget() {
-		return fwd.getTarget();
+		return forwardSearch.getTarget();
 	}
 
 	@Override
 	public int getCurrentVertex() {
-		return forward ? fwd.getCurrentVertex() : bwd.getCurrentVertex();
+		return searchingForward ? forwardSearch.getCurrentVertex() : backwardsSearch.getCurrentVertex();
 	}
 
 	@Override
 	public OptionalInt getNextVertex() {
-		return forward ? fwd.getNextVertex() : bwd.getNextVertex();
+		return searchingForward ? forwardSearch.getNextVertex() : backwardsSearch.getNextVertex();
 	}
 
 	@Override
 	public TraversalState getState(int v) {
-		return fwd.getState(v) != TraversalState.UNVISITED ? fwd.getState(v) : bwd.getState(v);
+		return forwardSearch.getState(v) != TraversalState.UNVISITED ? forwardSearch.getState(v)
+				: backwardsSearch.getState(v);
 	}
 
 	@Override
 	public int getParent(int v) {
-		if (fwd.getState(v) != TraversalState.UNVISITED) {
-			return fwd.getParent(v);
+		if (forwardSearch.getState(v) != TraversalState.UNVISITED) {
+			return forwardSearch.getParent(v);
 		}
-		if (bwd.getState(v) != TraversalState.UNVISITED) {
-			return bwd.getParent(v);
+		if (backwardsSearch.getState(v) != TraversalState.UNVISITED) {
+			return backwardsSearch.getParent(v);
 		}
 		return -1;
 	}
 
 	@Override
 	public void addObserver(GraphSearchObserver observer) {
-		fwd.addObserver(observer);
-		bwd.addObserver(observer);
+		forwardSearch.addObserver(observer);
+		backwardsSearch.addObserver(observer);
 	}
 
 	@Override
 	public void removeObserver(GraphSearchObserver observer) {
-		fwd.removeObserver(observer);
-		bwd.removeObserver(observer);
+		forwardSearch.removeObserver(observer);
+		backwardsSearch.removeObserver(observer);
 	}
 
 	@Override
 	public void removeAllObservers() {
-		fwd.removeAllObservers();
-		bwd.removeAllObservers();
+		forwardSearch.removeAllObservers();
+		backwardsSearch.removeAllObservers();
 	}
 }
