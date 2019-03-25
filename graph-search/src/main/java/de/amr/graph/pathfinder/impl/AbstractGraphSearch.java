@@ -166,6 +166,9 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	 */
 	@Override
 	public void setParent(int child, int parent) {
+		if (child == parent) {
+			throw new IllegalStateException("Cannot set parent to itself");
+		}
 		parentMap.put(child, parent);
 		if (parent != -1) {
 			setCost(child, getCost(parent) + fnEdgeCost.applyAsDouble(parent, child));

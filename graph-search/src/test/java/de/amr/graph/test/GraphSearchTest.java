@@ -11,6 +11,7 @@ import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.pathfinder.api.Path;
+import de.amr.graph.pathfinder.impl.AbstractGraphSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
@@ -28,6 +29,13 @@ public class GraphSearchTest {
 		g.addEdge(6, 7);
 		g.addEdge(7, 8);
 		return g;
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testSetSelfAsParent() {
+		Graph<Void, Void> graph = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		AbstractGraphSearch<?> pf = new BreadthFirstSearch(graph);
+		pf.setParent(0, 0);
 	}
 
 	@Test(expected = NullPointerException.class)
