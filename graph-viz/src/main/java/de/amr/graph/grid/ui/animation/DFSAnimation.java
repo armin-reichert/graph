@@ -13,7 +13,6 @@ import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.pathfinder.impl.AbstractGraphSearch;
 
 /**
  * Animation of depth-first search based algorithms.
@@ -111,7 +110,7 @@ public class DFSAnimation extends AbstractAnimation {
 		return r;
 	}
 
-	public void run(AbstractGraphSearch<?> dfs, int source, int target) {
+	public void run(ObservableGraphSearch dfs, int source, int target) {
 		this.dfs = dfs;
 		GridRenderer canvasRenderer = canvas.getRenderer();
 		canvas.pushRenderer(createPathRenderer(canvasRenderer));
