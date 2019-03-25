@@ -90,10 +90,10 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	private void reverseParentLinks(int meetingPoint) {
 		List<Integer> backPath = new ArrayList<>();
 		BitSet cycleCheck = new BitSet();
-		System.out.println("Create backwards path: ");
+//		System.out.println("Create backwards path: ");
 		for (int v = meetingPoint; v != -1; v = backwardsSearch.getParent(v)) {
 			backPath.add(v);
-			System.out.println("Added to backwards path: " + v);
+//			System.out.println("Added to backwards path: " + v);
 			if (cycleCheck.get(v)) {
 				throw new IllegalStateException("Cycle detected when creating backward path");
 			}
