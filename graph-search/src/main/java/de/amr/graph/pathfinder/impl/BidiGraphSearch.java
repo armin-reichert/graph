@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -88,8 +89,15 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	private void reverseParentLinks(int meetingPoint) {
 		List<Integer> backPath = new ArrayList<>();
+		BitSet cycleCheck = new BitSet();
+		System.out.println("Create backwards path: ");
 		for (int v = meetingPoint; v != -1; v = backwardsSearch.getParent(v)) {
 			backPath.add(v);
+			System.out.println("Added to backwards path: " + v);
+			if (cycleCheck.get(v)) {
+				throw new IllegalStateException("Cycle detected when creating backward path");
+			}
+			cycleCheck.set(v);
 		}
 		// recompute cost for backward path
 		backwardsSearch.setCost(meetingPoint, forwardSearch.getCost(meetingPoint));
