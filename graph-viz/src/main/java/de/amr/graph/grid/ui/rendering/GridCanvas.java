@@ -40,7 +40,7 @@ public class GridCanvas extends JComponent {
 
 	public GridCanvas(GridGraph2D<?, ?> grid) {
 		this.grid = Objects.requireNonNull(grid);
-		cellSize = 32;
+		cellSize = 2;
 		setDoubleBuffered(false);
 		setOpaque(true);
 		setBackground(Color.BLACK);
