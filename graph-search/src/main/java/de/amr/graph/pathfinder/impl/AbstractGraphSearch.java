@@ -70,7 +70,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		costMap.clear();
 		frontier.clear();
 		maxCost = 0;
-		current = source = target = -1;
+		current = source = target = NO_VERTEX;
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		this.current = source;
 		frontier.add(source);
 		setState(source, VISITED);
-		setParent(source, -1);
+		setParent(source, NO_VERTEX);
 		setCost(source, 0);
 		fireVertexAddedToFrontier(source);
 	}
@@ -171,7 +171,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 			throw new IllegalStateException("Cannot set parent to itself");
 		}
 		parentMap.put(child, parent);
-		if (parent != -1) {
+		if (parent != NO_VERTEX) {
 			setCost(child, getCost(parent) + fnEdgeCost.applyAsDouble(parent, child));
 			maxCost = Math.max(maxCost, getCost(child));
 		}
@@ -179,14 +179,14 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 			setCost(child, 0);
 			maxCost = 0;
 		}
-		if (parent != -1) {
+		if (parent != NO_VERTEX) {
 			fireEdgeTraversed(parent, child);
 		}
 	}
 
 	@Override
 	public int getParent(int v) {
-		return parentMap.getOrDefault(v, -1);
+		return parentMap.getOrDefault(v, NO_VERTEX);
 	}
 
 	@Override

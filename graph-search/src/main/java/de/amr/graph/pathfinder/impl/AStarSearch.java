@@ -103,7 +103,7 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 	}
 
 	/**
-	 * Returns the score of the given vertex whih determines its priority in the frontier queue.
+	 * Returns the score of the given vertex which determines its priority in the frontier.
 	 * 
 	 * @param v
 	 *            vertex

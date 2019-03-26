@@ -1,12 +1,13 @@
 package de.amr.graph.pathfinder.api;
 
+import static de.amr.graph.pathfinder.api.GraphSearch.NO_VERTEX;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,7 +22,43 @@ public class Path implements Iterable<Integer> {
 
 	public static final double INFINITE_COST = Double.MAX_VALUE;
 
-	public static final Path EMPTY_PATH = new Path(0);
+	public static final Path NO_PATH = new Path(Collections.emptyList());
+
+	public static Path unit(int v) {
+		return new Path(Collections.singletonList(v));
+	}
+
+	public static Path edge(int u, int v) {
+		List<Integer> vertexList = new ArrayList<>();
+		vertexList.add(u);
+		vertexList.add(v);
+		return new Path(vertexList);
+	}
+
+	public static Path findPath(int source, int target, GraphSearch search) {
+		boolean found = search.exploreGraph(source, target);
+		return found ? extractPath(source, target, search) : NO_PATH;
+	}
+
+	public static Path extractPath(int source, int target, GraphSearch search) {
+		if (source == -1) {
+			throw new IllegalArgumentException("Illegal source vertex");
+		}
+		if (target == -1) {
+			throw new IllegalArgumentException("Illegal target vertex");
+		}
+		if (search.getParent(target) == NO_VERTEX) {
+			return NO_PATH;
+		}
+		if (source == target) {
+			return unit(source); // trivial path
+		}
+		List<Integer> vertexList = new LinkedList<>();
+		for (int v = target; v != -1; v = search.getParent(v)) {
+			vertexList.add(0, v);
+		}
+		return new Path(vertexList);
+	}
 
 	private final List<Integer> vertexList;
 
@@ -50,53 +87,18 @@ public class Path implements Iterable<Integer> {
 		return Objects.equals(vertexList, other.vertexList);
 	}
 
-	public static Path singletonPath(int vertex) {
-		Path p = new Path(1);
-		p.vertexList.add(vertex);
-		return p;
+	public int source() {
+		if (this == NO_PATH) {
+			throw new IllegalArgumentException("NO_PATH has no source");
+		}
+		return vertexList.get(0);
 	}
 
-	public static Path copy(Path p) {
-		Path copy = new Path(p.numVertices());
-		copy.vertexList.addAll(p.vertexList);
-		return copy;
-	}
-
-	public static Path add(Path p, Path q) {
-		Path sum = copy(p);
-		sum.vertexList.addAll(q.vertexList);
-		return sum;
-	}
-
-	public static Path reversed(Path p) {
-		Path result = copy(p);
-		Collections.reverse(p.vertexList);
-		return result;
-	}
-
-	public static Path findPath(int source, int target, GraphSearch search) {
-		boolean found = search.exploreGraph(source, target);
-		return found ? extractPath(source, target, search) : EMPTY_PATH;
-	}
-
-	public static Path extractPath(int source, int target, GraphSearch search) {
-		if (source == -1) {
-			throw new IllegalArgumentException("Illegal source vertex");
+	public int target() {
+		if (this == NO_PATH) {
+			throw new IllegalArgumentException("NO_PATH has no target");
 		}
-		if (target == -1) {
-			throw new IllegalArgumentException("Illegal target vertex");
-		}
-		if (search.getParent(target) == -1) {
-			return EMPTY_PATH; // no path to target
-		}
-		if (source == target) {
-			return singletonPath(source); // trivial path
-		}
-		List<Integer> vertexList = new LinkedList<>();
-		for (int v = target; v != -1; v = search.getParent(v)) {
-			vertexList.add(0, v);
-		}
-		return new Path(vertexList);
+		return vertexList.get(vertexList.size() - 1);
 	}
 
 	public int numVertices() {
@@ -107,18 +109,6 @@ public class Path implements Iterable<Integer> {
 		return vertexList.isEmpty() ? 0 : vertexList.size() - 1;
 	}
 
-	public Optional<Integer> source() {
-		return vertexList.isEmpty() ? Optional.empty() : Optional.of(vertexList.get(0));
-	}
-
-	public Optional<Integer> target() {
-		return vertexList.isEmpty() ? Optional.empty() : Optional.of(vertexList.get(vertexList.size() - 1));
-	}
-
-	public boolean is(int... vertices) {
-		return vertexList.equals(IntStream.of(vertices).boxed().collect(Collectors.toList()));
-	}
-
 	@Override
 	public Iterator<Integer> iterator() {
 		return vertexList.iterator();
@@ -126,5 +116,65 @@ public class Path implements Iterable<Integer> {
 
 	public IntStream vertexStream() {
 		return StreamUtils.toIntStream(vertexList);
+	}
+
+	/**
+	 * Returns a copy of this path.
+	 * 
+	 * @return path copy
+	 */
+	public Path copy() {
+		if (this == NO_PATH) {
+			throw new IllegalArgumentException("NO_PATH cannot be copied");
+		}
+		Path copy = new Path(numVertices());
+		copy.vertexList.addAll(vertexList);
+		return copy;
+	}
+
+	/**
+	 * Appends the given path to this path. The source of <code>p</code> must equals the target of this
+	 * path.
+	 * 
+	 * @param p
+	 *            path to append
+	 * @return concatenation of this path with the given path
+	 */
+	public Path concat(Path p) {
+		Objects.requireNonNull(p);
+		if (this == NO_PATH) {
+			throw new IllegalArgumentException("Cannot append to NO_PATH");
+		}
+		if (p == NO_PATH) {
+			throw new IllegalArgumentException("Cannot append NO_PATH");
+		}
+		if (numVertices() == 1) {
+			return p.copy();
+		}
+		if (p.numVertices() == 1) {
+			return copy();
+		}
+		Path sum = copy();
+		sum.vertexList.remove(sum.vertexList.size() - 1);
+		sum.vertexList.addAll(p.vertexList);
+		return sum;
+	}
+
+	/**
+	 * Returns a reversed copy of this path.
+	 * 
+	 * @return reversed copy
+	 */
+	public Path reversed() {
+		if (this == NO_PATH) {
+			throw new IllegalArgumentException("Cannot reverse NO_PATH");
+		}
+		Path result = copy();
+		Collections.reverse(result.vertexList);
+		return result;
+	}
+
+	public boolean is(int... vertices) {
+		return vertexList.equals(IntStream.of(vertices).boxed().collect(Collectors.toList()));
 	}
 }

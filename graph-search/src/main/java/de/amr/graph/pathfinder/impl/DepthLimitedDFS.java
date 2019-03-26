@@ -29,7 +29,7 @@ public class DepthLimitedDFS extends DepthFirstSearch {
 
 	@Override
 	public void setParent(int child, int parent) {
-		depth.put(child, parent != -1 ? depth.get(parent) + 1 : 0);
+		depth.put(child, parent != NO_VERTEX ? depth.get(parent) + 1 : 0);
 		super.setParent(child, parent);
 	}
 }

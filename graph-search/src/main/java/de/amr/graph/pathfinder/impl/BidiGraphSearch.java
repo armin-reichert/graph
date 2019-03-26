@@ -27,7 +27,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	public BidiGraphSearch(F forwardSearch, B backwardsSearch) {
 		this.forwardSearch = forwardSearch;
 		this.backwardsSearch = backwardsSearch;
-		meetingPoint = -1;
+		meetingPoint = NO_VERTEX;
 	}
 
 	public F getForwardSearch() {
@@ -54,14 +54,14 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		else {
 			forwardSearch.start(source, target);
 			backwardsSearch.start(target, source);
-			meetingPoint = -1;
+			meetingPoint = NO_VERTEX;
 			searchingForward = false;
 		}
 	}
 
 	@Override
 	public boolean canExplore() {
-		return meetingPoint == -1 && (forwardSearch.canExplore() || backwardsSearch.canExplore());
+		return meetingPoint == NO_VERTEX && (forwardSearch.canExplore() || backwardsSearch.canExplore());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	private void reverseParentLinks(int meetingPoint) {
 		List<Integer> backPath = new ArrayList<>();
 		BitSet cycleCheck = new BitSet();
-		for (int v = meetingPoint; v != -1; v = backwardsSearch.getParent(v)) {
+		for (int v = meetingPoint; v != NO_VERTEX; v = backwardsSearch.getParent(v)) {
 			backPath.add(v);
 			if (cycleCheck.get(v)) {
 				System.err.println("Path: " + backPath);
@@ -168,7 +168,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		if (backwardsSearch.getState(v) != TraversalState.UNVISITED) {
 			return backwardsSearch.getParent(v);
 		}
-		return -1;
+		return NO_VERTEX;
 	}
 
 	@Override

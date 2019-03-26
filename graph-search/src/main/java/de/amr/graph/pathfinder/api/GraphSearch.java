@@ -5,7 +5,15 @@ import java.util.OptionalInt;
 
 import de.amr.graph.core.api.TraversalState;
 
+/**
+ * Common interface for all graph search algorithms.
+ * 
+ * @author Armin Reichert
+ */
 public interface GraphSearch {
+
+	/** Constant representing no vertex. */
+	public static final int NO_VERTEX = -1;
 
 	/**
 	 * Explores the graph starting from the given source vertex until all reachable vertices have been
@@ -15,7 +23,7 @@ public interface GraphSearch {
 	 *                 source vertex
 	 */
 	default void exploreGraph(int source) {
-		exploreGraph(source, -1);
+		exploreGraph(source, NO_VERTEX);
 	}
 
 	/**
@@ -40,9 +48,20 @@ public interface GraphSearch {
 	}
 
 	/**
-	 * Tells if there is some vertex left to explore.
+	 * Starts the search from the given source to the given target. Subclasses may modify this.
 	 * 
-	 * @return {@code true} if there is some vertex left to explore
+	 * @param source
+	 *                 the source vertex
+	 * @param target
+	 *                 the target vertex
+	 */
+	void start(int source, int target);
+
+	/**
+	 * Tells if the search can continue, i.e. if there are still unexplored vertices and the target has
+	 * not yet been found.
+	 * 
+	 * @return {@code true} if the search can continue
 	 */
 	boolean canExplore();
 
@@ -52,11 +71,6 @@ public interface GraphSearch {
 	 * @return {@code true} if the target has been found
 	 */
 	boolean exploreVertex();
-
-	/**
-	 * Start the search. Subclasses may modify this.
-	 */
-	void start(int source, int target);
 
 	/**
 	 * Returns the source vertex of this search.
@@ -98,11 +112,11 @@ public interface GraphSearch {
 	TraversalState getState(int v);
 
 	/**
-	 * Returns the parent vertex for the given vertex. Default is <code>-1</code>.
+	 * Returns the parent vertex for the given vertex. Default is <code>{@link #NO_VERTEX}</code>.
 	 * 
 	 * @param v
 	 *            vertex
-	 * @return parent vertex or <code>-1</code>
+	 * @return parent vertex or <code>{@link #NO_VERTEX}</code>
 	 */
 	int getParent(int v);
 

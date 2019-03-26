@@ -50,7 +50,7 @@ public class BestFirstSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 	}
 
 	/**
-	 * Returns the estimted cost for a vertex.
+	 * Returns the estimated cost for a vertex.
 	 * 
 	 * @param v
 	 *            a vertex
