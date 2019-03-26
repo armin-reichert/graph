@@ -40,7 +40,12 @@ public class GridCanvas extends JComponent {
 
 	public GridCanvas(GridGraph2D<?, ?> grid) {
 		this.grid = Objects.requireNonNull(grid);
-		cellSize = 2;
+		// set useful initial size e.g. for use in window builder
+		int prefHeight = 300;
+		if (getPreferredSize() != null && getPreferredSize().height > 0) {
+			prefHeight = getPreferredSize().height;
+		}
+		cellSize = prefHeight / grid.numRows();
 		setDoubleBuffered(false);
 		setOpaque(true);
 		setBackground(Color.BLACK);
