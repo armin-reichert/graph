@@ -3,11 +3,12 @@ package de.amr.graph.grid.api;
 import de.amr.graph.core.api.ObservableGraph;
 
 /**
- * A 2D grid graph that fires events to its observers.
+ * A 2D grid graph that can fire events to its observers.
  * 
  * @author Armin Reichert
  * 
- *         * @param <V> vertex label type
+ * @param <V>
+ *          vertex label type
  * @param <E>
  *          edge label type
  */
