@@ -209,12 +209,13 @@ public class GridTest {
 	}
 
 	@Test
-	public void testEuclidian2Dist() {
+	public void testEuclideanDist() {
 		int r = grid.numRows(), c = grid.numCols();
 		int u = grid.cell(TOP_LEFT);
 		int v = grid.cell(BOTTOM_RIGHT);
-		assertEquals((r - 1) * (r - 1) + (c - 1) * (c - 1), grid.euclidean2(u, v));
-		assertEquals(0, grid.euclidean2(u, u));
+		double expected = Math.sqrt((r - 1) * (r - 1) + (c - 1) * (c - 1));
+		assertEquals(expected, grid.euclidean(u, v), Math.ulp(expected));
+		assertEquals(0, grid.euclidean(u, u), 0);
 	}
 
 	@Test

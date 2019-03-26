@@ -1,6 +1,7 @@
 package de.amr.graph.grid.api;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.hypot;
 import static java.lang.Math.max;
 
 import java.util.OptionalInt;
@@ -9,7 +10,7 @@ import java.util.stream.IntStream;
 import de.amr.graph.core.api.Graph;
 
 /**
- * Interface for 2D grid graph.
+ * Interface for a two-dimensional grid graph.
  * 
  * @param <V>
  *          vertex label type
@@ -40,6 +41,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *              a column index
 	 * @param row
 	 *              a row index
+	 * 
 	 * @return the cell index ("cell") for coordinate (col, row)
 	 */
 	int cell(int col, int row);
@@ -47,6 +49,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	/**
 	 * @param position
 	 *                   a symbolic grid position like TOP_LEFT
+	 * 
 	 * @return the cell index at the given position
 	 */
 	int cell(GridPosition position);
@@ -54,6 +57,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	/**
 	 * @param cell
 	 *               a cell index
+	 * 
 	 * @return the column index of the given cell
 	 */
 	int col(int cell);
@@ -61,69 +65,15 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	/**
 	 * @param cell
 	 *               a cell index
+	 * 
 	 * @return the row index of the given cell
 	 */
 	int row(int cell);
 
 	/**
-	 * Returns the Chebyshev distance between the given grid cells.
-	 * 
-	 * @param u
-	 *            grid cell
-	 * @param v
-	 *            grid cell
-	 * @return Chebyshev distance between cells
-	 */
-	default int chebyshev(int u, int v) {
-		int x1 = col(u), y1 = row(u), x2 = col(v), y2 = row(v);
-		return max(abs(x1 - x2), abs(y1 - y2));
-	}
-
-	/**
-	 * Returns the Manhattan distance between the given grid cells.
-	 * 
-	 * @param u
-	 *            grid cell
-	 * @param v
-	 *            grid cell
-	 * @return Manhattan distance between cells
-	 */
-	default int manhattan(int u, int v) {
-		int x1 = col(u), y1 = row(u), x2 = col(v), y2 = row(v);
-		return abs(x1 - x2) + abs(y1 - y2);
-	}
-
-	/**
-	 * Returns the (squared) Euclidean distance between the given grid cells.
-	 * 
-	 * @param u
-	 *            grid cell
-	 * @param v
-	 *            grid cell
-	 * @return squared Euclidean distance between cells
-	 */
-	default int euclidean2(int u, int v) {
-		int dx = col(u) - col(v), dy = row(u) - row(v);
-		return dx * dx + dy * dy;
-	}
-
-	/**
-	 * Returns the Euclidean distance between the given grid cells.
-	 * 
-	 * @param u
-	 *            grid cell
-	 * @param v
-	 *            grid cell
-	 * @return Euclidean distance between cells
-	 */
-	default double euclidean(int u, int v) {
-		int dx = col(u) - col(v), dy = row(u) - row(v);
-		return Math.hypot(dx, dy);
-	}
-
-	/**
 	 * @param col
 	 *              the column index
+	 * 
 	 * @return {@code true} if the given column index is valid
 	 */
 	boolean isValidCol(int col);
@@ -131,6 +81,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	/**
 	 * @param row
 	 *              the row index
+	 * 
 	 * @return if given row index is valid
 	 */
 	boolean isValidRow(int row);
@@ -142,6 +93,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *               a grid cell
 	 * @param dirs
 	 *               a stream of directions
+	 * 
 	 * @return stream of the neighbor cells in the given directions
 	 */
 	IntStream neighbors(int cell, IntStream dirs);
@@ -152,6 +104,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 * 
 	 * @param cell
 	 *               a grid cell
+	 * 
 	 * @return stream of all neighbor cells
 	 */
 	IntStream neighbors(int cell);
@@ -172,6 +125,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *                 either cell
 	 * @param other
 	 *                 another cell
+	 * 
 	 * @return {@code true} if the cells are neighbors wrt. to the grid's topology
 	 */
 	boolean areNeighbors(int either, int other);
@@ -181,6 +135,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *               a grid cell
 	 * @param dir
 	 *               a direction
+	 * 
 	 * @return {@code true} if the cell is connected to the neighbor in the given direction ("passage",
 	 *         no "wall")
 	 */
@@ -191,12 +146,58 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	 *                 either cell
 	 * @param other
 	 *                 other cell
+	 * 
 	 * @return (optional) direction from either to other (if those cells are neighbors)
 	 */
 	OptionalInt direction(int either, int other);
 
 	/**
-	 * Makes this grid a full grid.
+	 * Makes this grid a full grid by adding all possible edges.
 	 */
 	void fill();
+
+	/**
+	 * Returns the Chebyshev distance (maximum metric) between the given grid cells.
+	 * 
+	 * @param u
+	 *            grid cell
+	 * @param v
+	 *            grid cell
+	 * 
+	 * @return Chebyshev distance between cells
+	 */
+	default int chebyshev(int u, int v) {
+		int dx = abs(col(u) - col(v)), dy = abs(row(u) - row(v));
+		return max(dx, dy);
+	}
+
+	/**
+	 * Returns the Manhattan distance (L1 norm) between the given grid cells.
+	 * 
+	 * @param u
+	 *            grid cell
+	 * @param v
+	 *            grid cell
+	 * 
+	 * @return Manhattan distance between cells
+	 */
+	default int manhattan(int u, int v) {
+		int dx = abs(col(u) - col(v)), dy = abs(row(u) - row(v));
+		return dx + dy;
+	}
+
+	/**
+	 * Returns the Euclidean distance between the given grid cells.
+	 * 
+	 * @param u
+	 *            grid cell
+	 * @param v
+	 *            grid cell
+	 * 
+	 * @return Euclidean distance between cells
+	 */
+	default double euclidean(int u, int v) {
+		int dx = abs(col(u) - col(v)), dy = abs(row(u) - row(v));
+		return hypot(dx, dy);
+	}
 }
