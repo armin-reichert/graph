@@ -95,10 +95,11 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		clear();
 		this.source = source;
 		this.target = target;
+		this.current = source;
+		frontier.add(source);
 		setState(source, VISITED);
 		setParent(source, -1);
 		setCost(source, 0);
-		frontier.add(source);
 		fireVertexAddedToFrontier(source);
 	}
 

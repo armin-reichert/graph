@@ -1,6 +1,7 @@
 package de.amr.graph.pathfinder.impl;
 
 import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static de.amr.graph.core.api.TraversalState.VISITED;
 
 import java.util.HashMap;
@@ -8,21 +9,22 @@ import java.util.Map;
 import java.util.function.ToDoubleBiFunction;
 
 import de.amr.graph.core.api.Graph;
-import de.amr.graph.core.api.TraversalState;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
 
 /**
- * The A* path finder.
+ * The <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">A*</a> pathfinder.
  * 
  * <p>
- * Open/closed list and functions f, g, h are realized as:
+ * Open/closed list and functions f, g, h are realized as follows:
+ * </p>
  * 
  * <pre>
  * g(v) = getCost(v)
  * h(v) = fnEstimatedCost.apply(v, target)
  * f(v) = g(v) + h(v) = getScore(v)
- * Vertex v in open list:   getState(v) == OPEN
- * Vertex v in closed list: getState(v) == CLOSED
+ * v in open list:   getState(v) == VISITED
+ * v in closed list: getState(v) == CLOSED
  * </pre>
  * 
  * @author Armin Reichert
@@ -30,12 +32,8 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @see <a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Amit Patel, Red
  *      Blob Games</a>
- * @see <a href="#">Patrick Henry Winston, Artificial Intelligence, Addison-Wesley, 1984</a>
  */
 public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
-
-	public static final TraversalState OPEN = VISITED;
-	public static final TraversalState CLOSED = COMPLETED;
 
 	private final ToDoubleBiFunction<Integer, Integer> fnEstimatedCost;
 	private final Map<Integer, Double> score;
@@ -44,19 +42,19 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 	 * Creates an A* path finder instance.
 	 * 
 	 * @param graph
-	 *                          a graph
+	 *                          the graph to be searched
 	 * @param fnEdgeCost
-	 *                          function defining the cost for each edge
+	 *                          edge cost function e.g. street length between two cities
 	 * @param fnEstimatedCost
-	 *                          estimated path cost, for example the Euclidean or Manhattan distance for
-	 *                          a 2D grid. Must be an underestimate of the real cost.
+	 *                          estimated path cost e.g. Euclidean distance between two cities. This
+	 *                          must be an <b>underestimate</b> of the real cost.
 	 */
 	public AStarSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost,
 			ToDoubleBiFunction<Integer, Integer> fnEstimatedCost) {
 		super(graph, fnEdgeCost);
-		frontier = new MinPQ_VertexQueue(this::getScore);
-		score = new HashMap<>();
 		this.fnEstimatedCost = fnEstimatedCost;
+		this.score = new HashMap<>();
+		this.frontier = new MinPQ_VertexQueue(this::getScore);
 	}
 
 	@Override
@@ -67,43 +65,51 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 
 	@Override
 	public void start(int source, int target) {
-		this.source = source;
-		this.target = target;
-		setState(source, OPEN);
-		// next two lines only included for consistency:
-		setCost(source, 0);
-		setScore(source, getEstimatedCost(source));
-		frontier.add(source);
+		super.start(source, target);
+		score.put(source, getEstimatedCost(source));
 	}
 
 	@Override
 	protected void expand(int v) {
-		graph.adj(v).filter(child -> getState(child) != CLOSED).forEach(child -> {
-			double newCost = getCost(v) + fnEdgeCost.applyAsDouble(v, child);
-			if (getState(child) != OPEN || newCost < getCost(child)) {
+		graph.adj(v).filter(child -> getState(child) != COMPLETED).forEach(child -> {
+			double tentativeCost = getCost(v) + fnEdgeCost.applyAsDouble(v, child);
+			if (getState(child) == UNVISITED || tentativeCost < getCost(child)) {
 				setParent(child, v);
-				setCost(child, newCost);
-				setScore(child, newCost + getEstimatedCost(child));
-				if (getState(child) == OPEN) {
-					frontier.decreaseKey(child);
+				setCost(child, tentativeCost);
+				score.put(child, tentativeCost + getEstimatedCost(child));
+				if (getState(child) == UNVISITED) {
+					// found first path to the child
+					setState(child, VISITED);
+					frontier.add(child);
+					fireVertexAddedToFrontier(child);
 				}
 				else {
-					setState(child, OPEN);
-					frontier.add(child);
+					// found better path to the child
+					frontier.decreaseKey(child);
 				}
 			}
 		});
 	}
 
+	/**
+	 * Returns the estimated ("heuristic") cost of the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return the estimated cost ("h"-value) of the vertex
+	 */
 	public double getEstimatedCost(int v) {
 		return fnEstimatedCost.applyAsDouble(v, target);
 	}
 
+	/**
+	 * Returns the score of the given vertex whih determines its priority in the frontier queue.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return the score ("f"-value) of the vertex
+	 */
 	public double getScore(int v) {
-		return score.getOrDefault(v, Double.MAX_VALUE);
-	}
-
-	private void setScore(int v, double value) {
-		score.put(v, value);
+		return score.getOrDefault(v, Path.INFINITE_COST);
 	}
 }

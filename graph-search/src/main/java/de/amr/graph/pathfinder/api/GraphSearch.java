@@ -117,7 +117,7 @@ public interface GraphSearch {
 	void setParent(int child, int parent);
 
 	/**
-	 * Returns the cost of the given vertex.
+	 * Returns the cost ("g"-value) of the given vertex.
 	 * 
 	 * @param v
 	 *            vertex
