@@ -35,7 +35,7 @@ public interface GraphSearch {
 	 * @param target
 	 *                 target vertex
 	 * 
-	 * @return {@link Path#NULL} if the target has been found
+	 * @return path from source to target or {@link Path#NULL} if no such path exists
 	 */
 	default Path findPath(int source, int target) {
 		start(source, target);
