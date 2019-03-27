@@ -120,8 +120,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	private void createAnimatedCanvas(int cellSize) {
-		canvas = new GridCanvas(grid);
-		canvas.setCellSize(cellSize, false);
+		canvas = new GridCanvas(grid, cellSize);
 		canvas.setBackground(Color.BLACK);
 		canvas.pushRenderer(createRenderer());
 		canvas.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");

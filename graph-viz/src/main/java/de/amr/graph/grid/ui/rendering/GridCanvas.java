@@ -24,44 +24,48 @@ import de.amr.graph.grid.impl.Top4;
  */
 public class GridCanvas extends JComponent {
 
-	private BufferedImage buffer;
-	private Deque<GridRenderer> rendererStack = new ArrayDeque<>();
+	private static final GridGraph2D<?, ?> DEFAULT_GRID = new GridGraph<>(5, 5, Top4.get(), v -> null,
+			(u, v) -> null, UndirectedEdge::new);
+
+	// data
 	private GridGraph2D<?, ?> grid;
 	private int cellSize;
-	private WallPassageGridRenderer defaultRenderer;
 
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.setColor(getBackground());
-		g.fillRect(0, 0, getWidth(), getHeight());
-		g.drawImage(buffer, 0, 0, null);
+	// rendering
+	private BufferedImage buffer;
+	private WallPassageGridRenderer defaultRenderer;
+	private final Deque<GridRenderer> rendererStack = new ArrayDeque<>();
+
+	/**
+	 * Constructs a default grid canvas.
+	 */
+	public GridCanvas() {
+		this(DEFAULT_GRID, 32);
 	}
 
-	public GridCanvas(GridGraph2D<?, ?> grid) {
+	/**
+	 * Constructs a grid canvas rendering the given grid at the given cell size.
+	 * 
+	 * @param grid
+	 *                   grid to be rendered
+	 * @param cellSize
+	 *                   grid cell size in pixel
+	 */
+	public GridCanvas(GridGraph2D<?, ?> grid, int cellSize) {
 		this.grid = Objects.requireNonNull(grid);
-		// set useful initial size e.g. for use in window builder
-		int prefHeight = 300;
-		if (getPreferredSize() != null && getPreferredSize().height > 0) {
-			prefHeight = getPreferredSize().height;
+		if (cellSize <= 0) {
+			throw new IllegalArgumentException("Grid cell size must be positive");
 		}
-		cellSize = prefHeight / grid.numRows();
-		if (cellSize == 0) {
-			cellSize = 4;
-		}
-		setDoubleBuffered(false);
+		this.cellSize = cellSize;
+		setDoubleBuffered(false); // TODO is this useful?
 		setOpaque(true);
 		setBackground(Color.BLACK);
 		createBuffer(cellSize * grid.numCols(), cellSize * grid.numRows());
 		createDefaultRenderer();
-		// performance issue
+		// avoid initial rendering for large grids
 		if (grid.numVertices() < 1000) {
 			defaultRenderer.drawGrid(getDrawGraphics(), grid);
 		}
-	}
-
-	public GridCanvas() {
-		this(new GridGraph<>(5, 5, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new));
 	}
 
 	private void createDefaultRenderer() {
@@ -84,6 +88,14 @@ public class GridCanvas extends JComponent {
 		Dimension size = new Dimension(width, height);
 		setPreferredSize(size);
 		setSize(size);
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.setColor(getBackground());
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.drawImage(buffer, 0, 0, null);
 	}
 
 	public int getCellSize() {

@@ -18,7 +18,7 @@ import de.amr.graph.grid.impl.Top4;
  */
 public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 
-	private class DefaultCellRenderer implements GridCellRenderer {
+	public class DefaultCellRenderer implements GridCellRenderer {
 
 		private void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 			final int cellX = grid.col(cell) * getCellSize();

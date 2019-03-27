@@ -11,10 +11,10 @@ import java.awt.RenderingHints;
 import de.amr.graph.grid.api.GridGraph2D;
 
 public class PearlsGridRenderer extends ConfigurableGridRenderer {
-	
-	static final int PEARL_SIZE_PERCENT = 66; //TODO
 
-	private class DefaultGridCellRenderer implements GridCellRenderer {
+	static final int PEARL_SIZE_PERCENT = 66; // TODO
+
+	public class DefaultCellRenderer implements GridCellRenderer {
 
 		@Override
 		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
@@ -26,7 +26,6 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 			int arc = pearlSize / 2;
 			g.translate(x + offset, y + offset);
 			g.setColor(getCellBgColor(cell));
-			// g.fillOval(0, 0, ps, ps);
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.fillRoundRect(0, 0, pearlSize, pearlSize, arc, arc);
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -38,7 +37,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	private GridCellRenderer cellRenderer;
 
 	public PearlsGridRenderer() {
-		cellRenderer = new DefaultGridCellRenderer();
+		cellRenderer = new DefaultCellRenderer();
 	}
 
 	public PearlsGridRenderer(GridCellRenderer cellRenderer) {
