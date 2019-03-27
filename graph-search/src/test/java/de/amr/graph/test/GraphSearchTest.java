@@ -3,6 +3,7 @@ package de.amr.graph.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.core.api.Graph;
@@ -17,18 +18,19 @@ import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
 public class GraphSearchTest {
 
-	private GridGraph<Void, Void> circle3() {
-		GridGraph<Void, Void> g = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null,
-				UndirectedEdge::new);
-		g.addEdge(0, 1);
-		g.addEdge(1, 2);
-		g.addEdge(0, 3);
-		g.addEdge(2, 5);
-		g.addEdge(3, 6);
-		g.addEdge(5, 8);
-		g.addEdge(6, 7);
-		g.addEdge(7, 8);
-		return g;
+	private GridGraph<Void, Void> circle3;
+
+	@Before
+	public void createFixture() {
+		circle3 = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		circle3.addEdge(0, 1);
+		circle3.addEdge(1, 2);
+		circle3.addEdge(0, 3);
+		circle3.addEdge(2, 5);
+		circle3.addEdge(3, 6);
+		circle3.addEdge(5, 8);
+		circle3.addEdge(6, 7);
+		circle3.addEdge(7, 8);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -96,31 +98,32 @@ public class GraphSearchTest {
 
 	@Test
 	public void testExploreCircleGraph() {
-		GridGraph<Void, Void> g = circle3();
-		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		g.vertices().forEach(v -> {
+		BreadthFirstSearch search = new BreadthFirstSearch(circle3);
+		circle3.vertices().forEach(v -> {
 			assertEquals(TraversalState.UNVISITED, search.getState(v));
 		});
 		search.exploreGraph(0);
-		g.vertices().filter(v -> v != 4).forEach(v -> {
+		circle3.vertices().filter(v -> v != 4).forEach(v -> {
 			assertEquals(TraversalState.COMPLETED, search.getState(v));
 		});
 	}
 
 	@Test
+	public void testSingletonPath() {
+		Path path = new BreadthFirstSearch(circle3).findPath(0, 0);
+		assertEquals(Path.unit(0), path);
+	}
+
+	@Test
 	public void testBFS() {
-		GridGraph<Void, Void> g = circle3();
-		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		Path path = search.findPath(0, 8);
+		Path path = new BreadthFirstSearch(circle3).findPath(0, 8);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
 
 	@Test
 	public void testDFS() {
-		GridGraph<Void, Void> g = circle3();
-		DepthFirstSearch search = new DepthFirstSearch(g);
-		Path path = search.findPath(0, 8);
+		Path path = new DepthFirstSearch(circle3).findPath(0, 8);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}

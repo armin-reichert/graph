@@ -58,6 +58,9 @@ public interface GraphSearch {
 		if (target == NO_VERTEX) {
 			throw new IllegalArgumentException("Illegal target vertex");
 		}
+		if (getSource() == target) {
+			return Path.unit(target);
+		}
 		if (getParent(target) == NO_VERTEX) {
 			return Path.NULL;
 		}
