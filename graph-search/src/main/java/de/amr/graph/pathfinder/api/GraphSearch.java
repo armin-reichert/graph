@@ -35,16 +35,37 @@ public interface GraphSearch {
 	 * @param target
 	 *                 target vertex
 	 * 
-	 * @return {@link Path#NO_PATH} if the target has been found
+	 * @return {@link Path#NULL} if the target has been found
 	 */
 	default Path findPath(int source, int target) {
 		start(source, target);
 		while (canExplore()) {
 			if (exploreVertex()) {
-				return Path.extractPath(source, target, this);
+				return buildPath(target);
 			}
 		}
-		return Path.NO_PATH;
+		return Path.NULL;
+	}
+
+	/**
+	 * Builds a path to the target using the information from the last exploration.
+	 * 
+	 * @param target
+	 *                 target vertex
+	 * @return path from the source of the last exploration to the target
+	 */
+	default Path buildPath(int target) {
+		if (target == NO_VERTEX) {
+			throw new IllegalArgumentException("Illegal target vertex");
+		}
+		if (getParent(target) == NO_VERTEX) {
+			return Path.NULL;
+		}
+		Path path = Path.unit(target);
+		for (int v = getParent(target); v != NO_VERTEX; v = getParent(v)) {
+			path = Path.edge(v, path.source()).concat(path);
+		}
+		return path;
 	}
 
 	/**

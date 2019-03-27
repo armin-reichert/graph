@@ -37,7 +37,7 @@ public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue> {
 				return path;
 			}
 		}
-		return Path.NO_PATH;
+		return Path.NULL;
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 		while (!frontier.isEmpty()) {
 			setState(frontier.poll(), COMPLETED);
 		}
-		return found ? Path.extractPath(source, target, this) : Path.NO_PATH;
+		return found ? buildPath(target) : Path.NULL;
 	}
 
 	private IntStream unvisitedChildren(int v) {

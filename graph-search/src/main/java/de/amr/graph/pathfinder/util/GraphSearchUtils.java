@@ -16,6 +16,6 @@ public class GraphSearchUtils {
 	 * @return {@code true} if there exists a path connecting the given cells
 	 */
 	public static <V, E> boolean areConnected(Graph<V, E> graph, int u, int v) {
-		return new BreadthFirstSearch(graph).findPath(u, v) != Path.NO_PATH;
+		return new BreadthFirstSearch(graph).findPath(u, v) != Path.NULL;
 	}
 }

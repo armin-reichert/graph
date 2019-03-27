@@ -1,11 +1,8 @@
 package de.amr.graph.pathfinder.api;
 
-import static de.amr.graph.pathfinder.api.GraphSearch.NO_VERTEX;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,60 +11,86 @@ import java.util.stream.IntStream;
 import de.amr.datastruct.StreamUtils;
 
 /**
- * A path in a graph as an immutable list of its vertices.
+ * <p>
+ * A path in a graph. This is an immutable object. Paths are constructed from unit paths and edges
+ * by concatenation.
+ * </p>
  * 
  * @author Armin Reichert
  */
 public class Path implements Iterable<Integer> {
 
+	private static class Null extends Path {
+
+		public Null() {
+			super(Collections.emptyList());
+		}
+
+		@Override
+		public int source() {
+			throw new PathException("Source of NULL path is undefined");
+		}
+
+		@Override
+		public int target() {
+			throw new PathException("Target of NULL path is undefined");
+		}
+
+		@Override
+		public Path concat(Path p) {
+			return this; // 0 * p = 0
+		}
+
+		@Override
+		public Path reversed() {
+			return this;
+		}
+	}
+
+	/** Constant representing an infinite path cost. */
 	public static final double INFINITE_COST = Double.POSITIVE_INFINITY;
 
-	public static final Path NO_PATH = new Path(Collections.emptyList());
+	/** The single NULL path instance. */
+	public static final Path NULL = new Null();
 
+	/**
+	 * Creates the unit path for the given vertex.
+	 * 
+	 * @param v
+	 *            a vertex
+	 * @return the path consisting of the vertex alone without edges. This is a unit wrt to the path
+	 *         concatenation.
+	 */
 	public static Path unit(int v) {
 		return new Path(Collections.singletonList(v));
 	}
 
+	/**
+	 * Creates the elementary path consisting of the single edge from u to v. If such an edge exists in
+	 * the underlying graph is the responsibility of the caller.
+	 * 
+	 * @param u
+	 *            either vertex of the edge
+	 * @param v
+	 *            other vertex of the edge
+	 * @return path consisting of thus edge
+	 */
 	public static Path edge(int u, int v) {
-		List<Integer> vertexList = new ArrayList<>();
-		vertexList.add(u);
-		vertexList.add(v);
-		return new Path(vertexList);
+		List<Integer> edge = new ArrayList<>(2);
+		edge.add(u);
+		edge.add(v);
+		return new Path(edge);
 	}
 
-	public static Path extractPath(int source, int target, GraphSearch search) {
-		if (source == -1) {
-			throw new IllegalArgumentException("Illegal source vertex");
-		}
-		if (target == -1) {
-			throw new IllegalArgumentException("Illegal target vertex");
-		}
-		if (search.getParent(target) == NO_VERTEX) {
-			return NO_PATH;
-		}
-		if (source == target) {
-			return unit(source); // trivial path
-		}
-		List<Integer> vertexList = new LinkedList<>();
-		for (int v = target; v != -1; v = search.getParent(v)) {
-			vertexList.add(0, v);
-		}
-		return new Path(vertexList);
-	}
+	private final List<Integer> vertices;
 
-	private final List<Integer> vertexList;
-
-	private Path(int initialCapacity) {
-		vertexList = new ArrayList<>(initialCapacity);
-	}
-
-	private Path(List<Integer> vertexList) {
-		this.vertexList = vertexList;
+	private Path(List<Integer> vertices) {
+		this.vertices = vertices;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(vertexList);
+		return Objects.hash(vertices);
 	}
 
 	@Override
@@ -79,52 +102,36 @@ public class Path implements Iterable<Integer> {
 		if (getClass() != obj.getClass())
 			return false;
 		Path other = (Path) obj;
-		return Objects.equals(vertexList, other.vertexList);
+		return Objects.equals(vertices, other.vertices);
 	}
 
 	public int source() {
-		if (this == NO_PATH) {
-			throw new IllegalArgumentException("NO_PATH has no source");
-		}
-		return vertexList.get(0);
+		return vertices.get(0);
 	}
 
 	public int target() {
-		if (this == NO_PATH) {
-			throw new IllegalArgumentException("NO_PATH has no target");
-		}
-		return vertexList.get(vertexList.size() - 1);
+		return vertices.get(vertices.size() - 1);
 	}
 
 	public int numVertices() {
-		return vertexList.size();
+		return vertices.size();
 	}
 
 	public int numEdges() {
-		return vertexList.isEmpty() ? 0 : vertexList.size() - 1;
+		return vertices.isEmpty() ? 0 : vertices.size() - 1;
+	}
+
+	public boolean isUnit() {
+		return numVertices() == 1;
 	}
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return vertexList.iterator();
+		return vertices.iterator();
 	}
 
 	public IntStream vertexStream() {
-		return StreamUtils.toIntStream(vertexList);
-	}
-
-	/**
-	 * Returns a copy of this path.
-	 * 
-	 * @return path copy
-	 */
-	public Path copy() {
-		if (this == NO_PATH) {
-			throw new IllegalArgumentException("NO_PATH cannot be copied");
-		}
-		Path copy = new Path(numVertices());
-		copy.vertexList.addAll(vertexList);
-		return copy;
+		return StreamUtils.toIntStream(vertices);
 	}
 
 	/**
@@ -137,39 +144,43 @@ public class Path implements Iterable<Integer> {
 	 */
 	public Path concat(Path p) {
 		Objects.requireNonNull(p);
-		if (this == NO_PATH) {
-			throw new IllegalArgumentException("Cannot append to NO_PATH");
+		if (p == NULL) {
+			return NULL; // p * 0 = 0
 		}
-		if (p == NO_PATH) {
-			throw new IllegalArgumentException("Cannot append NO_PATH");
+		if (p.source() != target()) {
+			throw new PathException("Cannot concat path, source does not match this path's target");
 		}
-		if (numVertices() == 1) {
-			return p.copy();
+		if (isUnit()) {
+			return p; // 1 * p = p
 		}
-		if (p.numVertices() == 1) {
-			return copy();
+		if (p.isUnit()) {
+			return this; // p * 1 = p
 		}
-		Path sum = copy();
-		sum.vertexList.remove(sum.vertexList.size() - 1);
-		sum.vertexList.addAll(p.vertexList);
-		return sum;
+		List<Integer> concat = new ArrayList<Integer>(vertices);
+		concat.remove(concat.size() - 1);
+		concat.addAll(p.vertices);
+		return new Path(concat);
 	}
 
 	/**
-	 * Returns a reversed copy of this path.
+	 * Returns the reversed path.
 	 * 
-	 * @return reversed copy
+	 * @return reversed path
 	 */
 	public Path reversed() {
-		if (this == NO_PATH) {
-			throw new IllegalArgumentException("Cannot reverse NO_PATH");
-		}
-		Path result = copy();
-		Collections.reverse(result.vertexList);
-		return result;
+		List<Integer> reversed = new ArrayList<>(vertices);
+		Collections.reverse(reversed);
+		return new Path(reversed);
 	}
 
-	public boolean is(int... vertices) {
-		return vertexList.equals(IntStream.of(vertices).boxed().collect(Collectors.toList()));
+	/**
+	 * Checks if this path contains exactly the given vertices.
+	 * 
+	 * @param vertexSeq
+	 *                    sequence of vertices
+	 * @return if this path contains exactly the given vertices
+	 */
+	public boolean is(int... vertexSeq) {
+		return vertices.equals(IntStream.of(vertexSeq).boxed().collect(Collectors.toList()));
 	}
 }

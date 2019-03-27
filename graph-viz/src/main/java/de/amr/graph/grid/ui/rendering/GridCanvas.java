@@ -46,6 +46,9 @@ public class GridCanvas extends JComponent {
 			prefHeight = getPreferredSize().height;
 		}
 		cellSize = prefHeight / grid.numRows();
+		if (cellSize == 0) {
+			cellSize = 4;
+		}
 		setDoubleBuffered(false);
 		setOpaque(true);
 		setBackground(Color.BLACK);

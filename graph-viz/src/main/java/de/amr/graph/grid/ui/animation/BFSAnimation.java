@@ -147,7 +147,7 @@ public class BFSAnimation extends AbstractAnimation {
 	 *                   target cell
 	 */
 	public void showPath(GraphSearch explorer, int source, int target) {
-		Path path = Path.extractPath(source, target, explorer);
+		Path path = explorer.buildPath(target);
 		if (path.numEdges() == 0) {
 			return; // nothing to draw
 		}
