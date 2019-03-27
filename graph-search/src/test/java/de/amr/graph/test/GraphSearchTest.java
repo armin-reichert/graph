@@ -1,5 +1,8 @@
 package de.amr.graph.test;
 
+import static de.amr.graph.core.api.TraversalState.COMPLETED;
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.pathfinder.api.Path.edge;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -11,120 +14,115 @@ import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.pathfinder.api.GraphSearch;
+import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
-import de.amr.graph.pathfinder.impl.AbstractGraphSearch;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 
 public class GraphSearchTest {
 
-	private GridGraph<Void, Void> circle3;
+	private Graph<Void, Void> graph;
+	private Path solution1;
+	private Path solution2;
+	private ObservableGraphSearch bfs;
+	private ObservableGraphSearch dfs;
+	private GridGraph<Void, Void> fullGrid;
+	private GridGraph<Void, Void> emptyGrid;
 
 	@Before
 	public void createFixture() {
-		circle3 = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		circle3.addEdge(0, 1);
-		circle3.addEdge(1, 2);
-		circle3.addEdge(0, 3);
-		circle3.addEdge(2, 5);
-		circle3.addEdge(3, 6);
-		circle3.addEdge(5, 8);
-		circle3.addEdge(6, 7);
-		circle3.addEdge(7, 8);
+		graph = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		graph.addEdge(0, 1);
+		graph.addEdge(1, 2);
+		graph.addEdge(0, 3);
+		graph.addEdge(2, 5);
+		graph.addEdge(3, 6);
+		graph.addEdge(5, 8);
+		graph.addEdge(6, 7);
+		graph.addEdge(7, 8);
+
+		bfs = new BreadthFirstSearch(graph);
+		dfs = new DepthFirstSearch(graph);
+
+		solution1 = edge(0, 1).concat(edge(1, 2)).concat(edge(2, 5)).concat(edge(5, 8));
+		solution2 = edge(0, 3).concat(edge(3, 6)).concat(edge(6, 7)).concat(edge(7, 8));
+
+		fullGrid = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		fullGrid.fill();
+
+		emptyGrid = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testSetSelfAsParent() {
-		Graph<Void, Void> graph = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null,
-				UndirectedEdge::new);
-		AbstractGraphSearch<?> pf = new BreadthFirstSearch(graph);
-		pf.setParent(0, 0);
+		bfs.setParent(0, 0);
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNonNullGraph() {
+	public void testNullGraphInSearch() {
 		new BreadthFirstSearch(null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testAddNullObserver() {
-		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		new BreadthFirstSearch(g).addObserver(null);
+		bfs.addObserver(null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testRemoveNullObserver() {
-		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		new BreadthFirstSearch(g).addObserver(null);
+		bfs.removeObserver(null);
 	}
 
 	@Test
 	public void testInitialization() {
-		Graph<Void, Void> g = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		g.vertices().forEach(v -> {
-			assertEquals(-1, search.getParent(v));
+		graph.vertices().forEach(v -> {
+			assertEquals(GraphSearch.NO_VERTEX, bfs.getParent(v));
+			assertEquals(TraversalState.UNVISITED, bfs.getState(v));
+			assertEquals(Path.INFINITE_COST, bfs.getCost(v), Math.ulp(0));
 		});
 	}
 
 	@Test
-	public void testExploreIsolatedGraph() {
-		Graph<Void, Void> g = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
-		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		g.vertices().forEach(v -> {
-			assertEquals(TraversalState.UNVISITED, search.getState(v));
-		});
+	public void testExploreEmptyGrid() {
+		BreadthFirstSearch search = new BreadthFirstSearch(emptyGrid);
+		emptyGrid.vertices().forEach(v -> assertEquals(UNVISITED, search.getState(v)));
 		search.exploreGraph(0);
-		assertEquals(TraversalState.COMPLETED, search.getState(0));
-		g.vertices().filter(v -> v != 0).forEach(v -> {
-			assertEquals(TraversalState.UNVISITED, search.getState(v));
-		});
+		assertEquals(COMPLETED, search.getState(0));
+		emptyGrid.vertices().filter(v -> v != 0).forEach(v -> assertEquals(UNVISITED, search.getState(v)));
 	}
 
 	@Test
-	public void testExploreFullGraph() {
-		GridGraph<Void, Void> g = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null,
-				UndirectedEdge::new);
-		g.fill();
-		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		g.vertices().forEach(v -> {
-			assertEquals(TraversalState.UNVISITED, search.getState(v));
-		});
+	public void testExploreFullGrid() {
+		BreadthFirstSearch search = new BreadthFirstSearch(fullGrid);
+		fullGrid.vertices().forEach(v -> assertEquals(UNVISITED, search.getState(v)));
 		search.exploreGraph(0);
-		g.vertices().forEach(v -> {
-			assertEquals(TraversalState.COMPLETED, search.getState(v));
-		});
+		fullGrid.vertices().forEach(v -> assertEquals(COMPLETED, search.getState(v)));
 	}
 
 	@Test
-	public void testExploreCircleGraph() {
-		BreadthFirstSearch search = new BreadthFirstSearch(circle3);
-		circle3.vertices().forEach(v -> {
-			assertEquals(TraversalState.UNVISITED, search.getState(v));
-		});
-		search.exploreGraph(0);
-		circle3.vertices().filter(v -> v != 4).forEach(v -> {
-			assertEquals(TraversalState.COMPLETED, search.getState(v));
-		});
+	public void testExploreSampleGraph() {
+		graph.vertices().forEach(v -> assertEquals(UNVISITED, bfs.getState(v)));
+		bfs.exploreGraph(0);
+		graph.vertices().filter(v -> v != 4).forEach(v -> assertEquals(COMPLETED, bfs.getState(v)));
 	}
 
 	@Test
 	public void testSingletonPath() {
-		Path path = new BreadthFirstSearch(circle3).findPath(0, 0);
-		assertEquals(Path.unit(0), path);
+		assertEquals(Path.unit(0), bfs.findPath(0, 0));
 	}
 
 	@Test
 	public void testBFS() {
-		Path path = new BreadthFirstSearch(circle3).findPath(0, 8);
+		Path path = bfs.findPath(0, 8);
 		assertEquals(5, path.numVertices());
-		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
+		assertTrue(path.equals(solution1) || path.equals(solution2));
 	}
 
 	@Test
 	public void testDFS() {
-		Path path = new DepthFirstSearch(circle3).findPath(0, 8);
+		Path path = dfs.findPath(0, 8);
 		assertEquals(5, path.numVertices());
-		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
+		assertTrue(path.equals(solution1) || path.equals(solution2));
 	}
 }
