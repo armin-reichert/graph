@@ -130,7 +130,7 @@ public class BFSAnimation extends AbstractAnimation {
 		// 2. traverse graph again animating canvas
 		canvas.pushRenderer(mapRenderer);
 		bfs.addObserver(canvasUpdater);
-		bfs.exploreGraph(source, target);
+		bfs.findPath(source, target);
 		bfs.removeObserver(canvasUpdater);
 		canvas.popRenderer();
 	}

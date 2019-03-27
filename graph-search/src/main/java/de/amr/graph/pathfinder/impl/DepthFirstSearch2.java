@@ -8,6 +8,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import de.amr.graph.core.api.Graph;
+import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
 
 /**
@@ -22,7 +23,7 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 	}
 
 	@Override
-	public boolean exploreGraph(int source, int target) {
+	public Path findPath(int source, int target) {
 		start(source, target);
 		current = source;
 		boolean found = false;
@@ -41,7 +42,8 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 					fireVertexAddedToFrontier(neighbor);
 				}
 				current = neighbor;
-			} else {
+			}
+			else {
 				setState(current, COMPLETED);
 				if (!frontier.isEmpty()) {
 					current = frontier.poll();
@@ -56,7 +58,7 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 		while (!frontier.isEmpty()) {
 			setState(frontier.poll(), COMPLETED);
 		}
-		return found;
+		return found ? Path.extractPath(source, target, this) : Path.NO_PATH;
 	}
 
 	private IntStream unvisitedChildren(int v) {

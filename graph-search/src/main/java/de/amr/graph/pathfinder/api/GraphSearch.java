@@ -23,7 +23,7 @@ public interface GraphSearch {
 	 *                 source vertex
 	 */
 	default void exploreGraph(int source) {
-		exploreGraph(source, NO_VERTEX);
+		findPath(source, NO_VERTEX);
 	}
 
 	/**
@@ -35,16 +35,16 @@ public interface GraphSearch {
 	 * @param target
 	 *                 target vertex
 	 * 
-	 * @return {@code true} if the target has been found
+	 * @return {@link Path#NO_PATH} if the target has been found
 	 */
-	default boolean exploreGraph(int source, int target) {
+	default Path findPath(int source, int target) {
 		start(source, target);
 		while (canExplore()) {
 			if (exploreVertex()) {
-				return true;
+				return Path.extractPath(source, target, this);
 			}
 		}
-		return false;
+		return Path.NO_PATH;
 	}
 
 	/**

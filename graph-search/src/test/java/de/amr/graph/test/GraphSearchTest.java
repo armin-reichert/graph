@@ -30,10 +30,11 @@ public class GraphSearchTest {
 		g.addEdge(7, 8);
 		return g;
 	}
-	
+
 	@Test(expected = IllegalStateException.class)
 	public void testSetSelfAsParent() {
-		Graph<Void, Void> graph = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		Graph<Void, Void> graph = new GridGraph<>(2, 2, Top4.get(), v -> null, (u, v) -> null,
+				UndirectedEdge::new);
 		AbstractGraphSearch<?> pf = new BreadthFirstSearch(graph);
 		pf.setParent(0, 0);
 	}
@@ -110,7 +111,7 @@ public class GraphSearchTest {
 	public void testBFS() {
 		GridGraph<Void, Void> g = circle3();
 		BreadthFirstSearch search = new BreadthFirstSearch(g);
-		Path path = Path.findPath(0, 8, search);
+		Path path = search.findPath(0, 8);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}
@@ -119,7 +120,7 @@ public class GraphSearchTest {
 	public void testDFS() {
 		GridGraph<Void, Void> g = circle3();
 		DepthFirstSearch search = new DepthFirstSearch(g);
-		Path path = Path.findPath(0, 8, search);
+		Path path = search.findPath(0, 8);
 		assertEquals(5, path.numVertices());
 		assertTrue(path.is(0, 1, 2, 5, 8) || path.is(0, 3, 6, 7, 8));
 	}

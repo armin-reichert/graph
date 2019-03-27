@@ -23,7 +23,7 @@ public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue> {
 	}
 
 	@Override
-	public boolean exploreGraph(int source, int target) {
+	public Path findPath(int source, int target) {
 		Set<GraphSearchObserver> observersCopy = new HashSet<>(observers);
 		removeAllObservers();
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
@@ -31,13 +31,13 @@ public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue> {
 			observersCopy.forEach(dls::addObserver);
 			stateMap.clear();
 			parentMap.clear();
-			Path path = Path.findPath(source, target, dls);
+			Path path = dls.findPath(source, target);
 			observersCopy.forEach(dls::removeObserver);
 			if (path.numVertices() != 0) {
-				return true;
+				return path;
 			}
 		}
-		return false;
+		return Path.NO_PATH;
 	}
 
 	@Override

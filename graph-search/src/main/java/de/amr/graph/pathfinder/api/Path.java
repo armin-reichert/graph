@@ -20,7 +20,7 @@ import de.amr.datastruct.StreamUtils;
  */
 public class Path implements Iterable<Integer> {
 
-	public static final double INFINITE_COST = Double.MAX_VALUE;
+	public static final double INFINITE_COST = Double.POSITIVE_INFINITY;
 
 	public static final Path NO_PATH = new Path(Collections.emptyList());
 
@@ -33,11 +33,6 @@ public class Path implements Iterable<Integer> {
 		vertexList.add(u);
 		vertexList.add(v);
 		return new Path(vertexList);
-	}
-
-	public static Path findPath(int source, int target, GraphSearch search) {
-		boolean found = search.exploreGraph(source, target);
-		return found ? extractPath(source, target, search) : NO_PATH;
 	}
 
 	public static Path extractPath(int source, int target, GraphSearch search) {
