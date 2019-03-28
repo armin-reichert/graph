@@ -18,9 +18,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.grid.api.GridGraph2D;
+import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.impl.Top8;
-import de.amr.graph.util.GraphUtils;
 
 public class FullGridTest {
 
@@ -32,8 +32,8 @@ public class FullGridTest {
 
 	@Before
 	public void setUp() {
-		full4 = GraphUtils.<Void, Void> fullGrid(WIDTH, HEIGHT, Top4.get());
-		full8 = GraphUtils.<Void, Void> fullGrid(3, 3, Top8.get());
+		full4 = GridFactory.<Void, Void> fullGrid(WIDTH, HEIGHT, Top4.get());
+		full8 = GridFactory.<Void, Void> fullGrid(3, 3, Top8.get());
 	}
 
 	@After

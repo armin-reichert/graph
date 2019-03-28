@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
-import de.amr.graph.util.GraphUtils;
 
 public class EmptyGridTest {
 
@@ -17,8 +17,8 @@ public class EmptyGridTest {
 
 	@Before
 	public void setUp() {
-		nullGrid = GraphUtils.emptyGrid(0, 0, Top4.get());
-		emptyGrid3x3 = GraphUtils.emptyGrid(3, 3, Top4.get());
+		nullGrid = GridFactory.emptyGrid(0, 0, Top4.get());
+		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Top4.get());
 	}
 
 	@Test
