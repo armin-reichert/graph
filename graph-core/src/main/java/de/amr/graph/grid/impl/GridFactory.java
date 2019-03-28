@@ -22,4 +22,17 @@ public interface GridFactory {
 				UndirectedEdge::new);
 		return g;
 	}
+
+	static <V, E> ObservableGridGraph<V, E> fullObservableGrid(int numCols, int numRows, Topology top) {
+		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top, v -> null, (u, v) -> null,
+				UndirectedEdge::new);
+		g.fill();
+		return g;
+	}
+
+	static <V, E> ObservableGridGraph<V, E> emptyObservableGrid(int numCols, int numRows, Topology top) {
+		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top, v -> null, (u, v) -> null,
+				UndirectedEdge::new);
+		return g;
+	}
 }

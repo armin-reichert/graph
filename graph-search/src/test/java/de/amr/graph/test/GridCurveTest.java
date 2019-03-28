@@ -28,14 +28,16 @@ import de.amr.graph.grid.curves.HilbertLCurve;
 import de.amr.graph.grid.curves.HilbertLCurveWirth;
 import de.amr.graph.grid.curves.MooreLCurve;
 import de.amr.graph.grid.curves.PeanoCurve;
-import de.amr.graph.grid.impl.OrthogonalGrid;
+import de.amr.graph.grid.impl.GridFactory;
+import de.amr.graph.grid.impl.GridGraph;
+import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch2;
 import de.amr.graph.pathfinder.impl.HillClimbingSearch;
 
-public class GridTraversalTest {
+public class GridCurveTest {
 
 	private static final int K = 8;
 	private static final int N = 1 << K; // N = 2^K
@@ -45,24 +47,25 @@ public class GridTraversalTest {
 		cells.forEach(cell -> assertTrue(Arrays.stream(expected).anyMatch(s -> s == fnSupplyState.apply(cell))));
 	}
 
-	private OrthogonalGrid grid;
+	private GridGraph<Boolean, Void> grid;
 
 	@Before
 	public void setUp() {
-		grid = OrthogonalGrid.fullGrid(N, N, UNVISITED);
+		grid = GridFactory.<Boolean, Void> fullGrid(N, N, Top4.get());
+		grid.setDefaultVertexLabel(v -> false);
 	}
 
 	@After
 	public void tearDown() {
 	}
 
-	private void assertAllCells(TraversalState state) {
+	private void assertAllCells(boolean state) {
 		grid.vertices().forEach(cell -> assertTrue(grid.get(cell) == state));
 	}
 
-	private void setCompleted(int from, int to) {
-		grid.set(from, COMPLETED);
-		grid.set(to, COMPLETED);
+	private void markEdge(int u, int v) {
+		grid.set(u, true);
+		grid.set(v, true);
 	}
 
 	@Test
@@ -103,61 +106,44 @@ public class GridTraversalTest {
 
 	@Test
 	public void testHilbertCurve() {
-		assertAllCells(UNVISITED);
-		traverse(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT), this::setCompleted);
-		assertAllCells(COMPLETED);
+		assertAllCells(false);
+		traverse(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT), this::markEdge);
+		assertAllCells(true);
 	}
 
 	@Test
 	public void testHilbertLCurve() {
-		assertAllCells(UNVISITED);
-		traverse(new HilbertLCurve(K), grid, grid.cell(BOTTOM_LEFT), this::setCompleted);
-		assertAllCells(COMPLETED);
+		assertAllCells(false);
+		traverse(new HilbertLCurve(K), grid, grid.cell(BOTTOM_LEFT), this::markEdge);
+		assertAllCells(true);
 	}
 
 	@Test
 	public void testHilbertLCurveWirth() {
-		assertAllCells(UNVISITED);
-		traverse(new HilbertLCurveWirth(K), grid, grid.cell(TOP_RIGHT), this::setCompleted);
-		assertAllCells(COMPLETED);
+		assertAllCells(false);
+		traverse(new HilbertLCurveWirth(K), grid, grid.cell(TOP_RIGHT), this::markEdge);
+		assertAllCells(true);
 	}
 
 	@Test
 	public void testMooreLCurve() {
-		assertAllCells(UNVISITED);
-		traverse(new MooreLCurve(K), grid, grid.cell(N / 2, N - 1), this::setCompleted);
-		assertAllCells(COMPLETED);
+		assertAllCells(false);
+		traverse(new MooreLCurve(K), grid, grid.cell(N / 2, N - 1), this::markEdge);
+		assertAllCells(true);
 	}
 
 	@Test
 	public void testPeanoCurve() {
-		grid = OrthogonalGrid.emptyGrid(243, 243, UNVISITED);
-		assertAllCells(UNVISITED);
-		traverse(new PeanoCurve(5), grid, grid.cell(BOTTOM_LEFT), this::setCompleted);
-		assertAllCells(COMPLETED);
+		grid = GridFactory.emptyGrid(243, 243, Top4.get());
+		grid.setDefaultVertexLabel(v -> false);
+		assertAllCells(false);
+		traverse(new PeanoCurve(5), grid, grid.cell(BOTTOM_LEFT), this::markEdge);
+		assertAllCells(true);
 	}
 
 	@Test
 	public void testCurveStream() {
-		cells(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT)).forEach(cell -> grid.set(cell, COMPLETED));
-		assertAllCells(COMPLETED);
-	}
-
-	@Test
-	public void testConnected() {
-		// int u = grid.cell(TOP_LEFT);
-		// int v = grid.cell(BOTTOM_RIGHT);
-		// assertFalse(areConnected(grid, u, v));
-		// grid.fill();
-		// assertTrue(areConnected(grid, u, v));
-		// grid.removeEdges();
-		//
-		// assertFalse(areConnected(grid, 0, 1));
-		// grid.addEdge(0, 1);
-		// assertTrue(areConnected(grid, 0, 1));
-		// grid.removeEdge(0, 1);
-		// assertFalse(areConnected(grid, 0, 1));
-		//
-		// assertTrue(areConnected(grid, 0, 0));
+		cells(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT)).forEach(cell -> grid.set(cell, true));
+		assertAllCells(true);
 	}
 }

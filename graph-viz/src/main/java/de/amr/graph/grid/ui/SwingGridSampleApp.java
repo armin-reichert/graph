@@ -19,11 +19,11 @@ import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.core.api.TraversalState;
-import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.ObservableGridGraph;
-import de.amr.graph.grid.impl.OrthogonalGrid;
+import de.amr.graph.grid.impl.Top4;
 import de.amr.graph.grid.ui.animation.BFSAnimation;
 import de.amr.graph.grid.ui.animation.GridCanvasAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -69,19 +69,28 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	protected final StopWatch watch = new StopWatch();
 
+	private static ObservableGridGraph<TraversalState, Integer> createGrid(int numCols, int numRows,
+			Topology top) {
+		ObservableGridGraph<TraversalState, Integer> grid = GridFactory
+				.<TraversalState, Integer> emptyObservableGrid(numCols, numRows, top);
+		grid.setDefaultVertexLabel(v -> UNVISITED);
+		return grid;
+	}
+
 	public SwingGridSampleApp(int width, int height, int cellSize) {
 		fullscreen = false;
 		style = Style.WALL_PASSAGE;
 		canvasSize = new Dimension(width, height);
-		grid = OrthogonalGrid.emptyGrid(width / cellSize, height / cellSize, UNVISITED);
+		grid = createGrid(width / cellSize, height / cellSize, Top4.get());
 		createUI(cellSize);
 	}
 
 	public SwingGridSampleApp(int cellSize) {
-		fullscreen = true;
+		fullscreen = false;// TRUE
 		style = Style.WALL_PASSAGE;
 		canvasSize = getScreenSize();
-		grid = OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED);
+		grid = createGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, Top4.get());
+		grid.setDefaultVertexLabel(v -> UNVISITED);
 		createUI(cellSize);
 	}
 
@@ -218,12 +227,13 @@ public abstract class SwingGridSampleApp implements Runnable {
 	}
 
 	public void setGridTopology(Topology topology) {
-		setGrid(new ObservableGridGraph<>(grid.numCols(), grid.numRows(), topology, v -> UNVISITED, (u, v) -> 1,
-				UndirectedEdge::new));
+		int numCols = grid.numCols(), numRows = grid.numRows();
+		setGrid(createGrid(numCols, numRows, topology));
 	}
 
 	public void setCellSize(int cellSize) {
-		setGrid(OrthogonalGrid.emptyGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, UNVISITED));
+		setGrid(createGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, Top4.get()));
+		grid.setDefaultVertexLabel(v -> UNVISITED);
 		canvas.setCellSize(cellSize, false);
 		canvas.setGrid(grid);
 		window.setTitle(getTitleText());
