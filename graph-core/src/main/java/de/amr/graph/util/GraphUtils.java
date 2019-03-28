@@ -11,6 +11,8 @@ import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.Multigraph;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.core.impl.DefaultMultigraph;
+import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.impl.GridGraph;
 
 /**
  * Some useful graph methods.
@@ -18,6 +20,13 @@ import de.amr.graph.core.impl.DefaultMultigraph;
  * @author Armin Reichert
  */
 public class GraphUtils {
+
+	public static <V, E> GridGraph<V, E> fullGrid(int numCols, int numRows, Topology top) {
+		GridGraph<V, E> g = new GridGraph<>(numCols, numRows, top, v -> null, (u, v) -> null,
+				UndirectedEdge::new);
+		g.fill();
+		return g;
+	}
 
 	/**
 	 * Prints the graph content to the given stream.
