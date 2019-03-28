@@ -28,6 +28,12 @@ public class GraphUtils {
 		return g;
 	}
 
+	public static <V, E> GridGraph<V, E> emptyGrid(int numCols, int numRows, Topology top) {
+		GridGraph<V, E> g = new GridGraph<>(numCols, numRows, top, v -> null, (u, v) -> null,
+				UndirectedEdge::new);
+		return g;
+	}
+
 	/**
 	 * Prints the graph content to the given stream.
 	 * 

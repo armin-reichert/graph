@@ -3,58 +3,60 @@ package de.amr.graph.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.util.GraphUtils;
 
 public class EmptyGridTest {
 
-	private GridGraph<Void, Void> grid;
+	private GridGraph<Void, Void> nullGrid;
+	private GridGraph<Void, Void> emptyGrid3x3;
 
 	@Before
 	public void setUp() {
-		grid = new GridGraph<>(0, 0, Top4.get(), null, (u, v) -> null, UndirectedEdge::new);
-	}
-
-	@After
-	public void tearDown() {
-
+		nullGrid = GraphUtils.emptyGrid(0, 0, Top4.get());
+		emptyGrid3x3 = GraphUtils.emptyGrid(3, 3, Top4.get());
 	}
 
 	@Test
 	public void testGridSize() {
-		assertEquals(grid.numEdges(), 0);
-		assertEquals(grid.numVertices(), 0);
-		assertEquals(grid.numCols(), 0);
-		assertEquals(grid.numRows(), 0);
+		assertEquals(0, nullGrid.numEdges());
+		assertEquals(0, nullGrid.numVertices());
+		assertEquals(0, nullGrid.numCols());
+		assertEquals(0, nullGrid.numRows());
+
+		assertEquals(0, emptyGrid3x3.numEdges());
+		assertEquals(9, emptyGrid3x3.numVertices());
+		assertEquals(3, emptyGrid3x3.numCols());
+		assertEquals(3, emptyGrid3x3.numRows());
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridAccessException() {
-		grid.cell(0, 0);
+		nullGrid.cell(0, 0);
 	}
 
 	@Test
 	public void testGridEdgeStream() {
-		assertTrue(grid.edges().count() == 0);
+		assertTrue(nullGrid.edges().count() == 0);
+		assertTrue(emptyGrid3x3.edges().count() == 0);
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridEdgeAccess() {
-		grid.edge(0, 1);
+		nullGrid.edge(0, 1);
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridEdgeAdd() {
-		grid.addEdge(0, 1);
+		nullGrid.addEdge(0, 1);
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridVertexDegree() {
-		grid.degree(0);
+		nullGrid.degree(0);
 	}
 }
