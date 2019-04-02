@@ -42,4 +42,12 @@ public class EdgeLabelsMap<E> implements EdgeLabeling<E> {
 	public E getDefaultEdgeLabel(int u, int v) {
 		return fnDefaultLabel.apply(u, v);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Default label: ").append(fnDefaultLabel.apply(0, 0)).append("\n");
+		sb.append("Labels:\n").append(labels);
+		return sb.toString();
+	}
 }
