@@ -47,4 +47,10 @@ public class VertexLabelsMap<V> implements VertexLabeling<V> {
 	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
 		this.fnDefaultLabel = fnDefaultLabel;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0)).append("'):\n")
+				.append(labels).toString();
+	}
 }
