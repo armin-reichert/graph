@@ -34,7 +34,8 @@ public class RightToLeftSweep implements CellSequence {
 			public Integer next() {
 				if (y > 0) {
 					--y;
-				} else {
+				}
+				else {
 					--x;
 					y = grid.numRows() - 1;
 				}

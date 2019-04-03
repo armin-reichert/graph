@@ -47,18 +47,21 @@ public class CollapsingWalls implements CellSequence {
 					int x = grid.col(nextLeft), y = grid.row(nextLeft);
 					if (y < grid.numRows() - 1) {
 						nextLeft = grid.cell(x, y + 1);
-					} else {
+					}
+					else {
 						nextLeft = grid.cell(x + 1, 0);
 					}
 					left = false;
 					++visited;
 					return cell;
-				} else {
+				}
+				else {
 					int cell = nextRight;
 					int x = grid.col(nextRight), y = grid.row(nextRight);
 					if (y > 0) {
 						nextRight = grid.cell(x, y - 1);
-					} else {
+					}
+					else {
 						nextRight = grid.cell(x - 1, grid.numRows() - 1);
 					}
 					left = true;

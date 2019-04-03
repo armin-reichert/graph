@@ -8,7 +8,6 @@ import de.amr.graph.event.GraphObserver;
 import de.amr.graph.event.VertexEvent;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 
-
 public class GridCanvasAnimation<V, E> implements GraphObserver<V, E> {
 
 	private final GridCanvas canvas;

@@ -158,7 +158,8 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 			cx.parent = cy;
 			cy.elements.addAll(cx.elements);
 			cx.elements = Collections.emptyList();
-		} else {
+		}
+		else {
 			cy.parent = cx;
 			cx.elements.addAll(cy.elements);
 			cy.elements = Collections.emptyList();

@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import de.amr.graph.grid.api.GridGraph2D;
 
 public interface GridCellRenderer {
-	
+
 	/**
 	 * Draws a single grid "cell".
 	 * 

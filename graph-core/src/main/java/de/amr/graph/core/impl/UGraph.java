@@ -217,7 +217,8 @@ public class UGraph<V, E> implements Graph<V, E> {
 		for (Edge e : adjEdges.get(v)) {
 			if (e.either() == v) {
 				result.add(e.other());
-			} else {
+			}
+			else {
 				result.add(e.either());
 			}
 		}
