@@ -4,21 +4,24 @@ import java.util.function.IntSupplier;
 
 public abstract class AbstractAnimation {
 
+	private static final long ONE_MILLION = 1_000_000L;
+
 	private IntSupplier fnDelay = () -> 0;
+	private long lastTime;
 
 	public void setFnDelay(IntSupplier fnDelay) {
 		this.fnDelay = fnDelay;
 	}
 
 	protected void delayed(Runnable code) {
-		long codeNanos = System.nanoTime();
+		long delayNanos = fnDelay.getAsInt() * ONE_MILLION;
 		code.run();
-		codeNanos = System.nanoTime() - codeNanos;
-		int delayMillis = fnDelay.getAsInt();
-		long sleep = Math.max(0, delayMillis - codeNanos / 1000000);
-		if (sleep > 0) {
+		long deltaTime = System.nanoTime() - lastTime;
+		lastTime = System.nanoTime();
+		if (deltaTime < delayNanos) {
+			long sleep = delayNanos - deltaTime;
 			try {
-				Thread.sleep(sleep);
+				Thread.sleep(sleep / ONE_MILLION);
 			} catch (InterruptedException e) {
 				throw new AnimationInterruptedException();
 			}
