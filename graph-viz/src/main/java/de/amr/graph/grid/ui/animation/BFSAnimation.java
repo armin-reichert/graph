@@ -30,7 +30,7 @@ import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
  * 
  * @author Armin Reichert
  */
-public class BFSAnimation extends AbstractAnimation {
+public class BFSAnimation implements GraphSearchObserver {
 
 	public static class Builder {
 
@@ -51,7 +51,7 @@ public class BFSAnimation extends AbstractAnimation {
 		}
 
 		public Builder delay(IntSupplier fnDelay) {
-			animation.setFnDelay(Objects.requireNonNull(fnDelay));
+			animation.delay.setMillis(Objects.requireNonNull(fnDelay));
 			return this;
 		}
 
@@ -73,31 +73,30 @@ public class BFSAnimation extends AbstractAnimation {
 	private Color pathColor;
 	private ConfigurableGridRenderer mapRenderer;
 	private GridCanvas canvas;
+	private final DelayedRunner delay;
 
-	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
+	@Override
+	public void edgeTraversed(int either, int other) {
+		delay.run(() -> canvas.drawGridPassage(either, other, true));
+	}
 
-		@Override
-		public void edgeTraversed(int either, int other) {
-			delayed(() -> canvas.drawGridPassage(either, other, true));
-		}
+	@Override
+	public void vertexAddedToFrontier(int vertex) {
+		delay.run(() -> canvas.drawGridCell(vertex));
+	}
 
-		@Override
-		public void vertexAddedToFrontier(int vertex) {
-			delayed(() -> canvas.drawGridCell(vertex));
-		}
+	@Override
+	public void vertexRemovedFromFrontier(int vertex) {
+		delay.run(() -> canvas.drawGridCell(vertex));
+	}
 
-		@Override
-		public void vertexRemovedFromFrontier(int vertex) {
-			delayed(() -> canvas.drawGridCell(vertex));
-		}
-
-		@Override
-		public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
-			delayed(() -> canvas.drawGridCell(vertex));
-		}
-	};
+	@Override
+	public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
+		delay.run(() -> canvas.drawGridCell(vertex));
+	}
 
 	private BFSAnimation() {
+		delay = new DelayedRunner();
 		distanceVisible = false;
 		pathColor = Color.RED;
 	}
@@ -129,9 +128,9 @@ public class BFSAnimation extends AbstractAnimation {
 
 		// 2. traverse graph again animating canvas
 		canvas.pushRenderer(mapRenderer);
-		bfs.addObserver(canvasUpdater);
+		bfs.addObserver(this);
 		bfs.findPath(source, target);
-		bfs.removeObserver(canvasUpdater);
+		bfs.removeObserver(this);
 		canvas.popRenderer();
 	}
 

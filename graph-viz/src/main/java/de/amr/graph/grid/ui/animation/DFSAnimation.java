@@ -19,7 +19,7 @@ import de.amr.graph.pathfinder.api.Path;
  * 
  * @author Armin Reichert
  */
-public class DFSAnimation extends AbstractAnimation {
+public class DFSAnimation implements GraphSearchObserver {
 
 	public static class Builder {
 
@@ -35,7 +35,7 @@ public class DFSAnimation extends AbstractAnimation {
 		}
 
 		public Builder delay(IntSupplier fnDelay) {
-			anim.setFnDelay(fnDelay);
+			anim.delay.setMillis(fnDelay);
 			return this;
 		}
 
@@ -56,21 +56,22 @@ public class DFSAnimation extends AbstractAnimation {
 	private ObservableGraphSearch dfs;
 	private GridCanvas canvas;
 	private Color pathColor = Color.RED;
-	private BitSet inPath = new BitSet();
-	private GraphSearchObserver canvasUpdater = new GraphSearchObserver() {
-
-		@Override
-		public void vertexAddedToFrontier(int vertex) {
-			delayed(() -> drawPath(vertex));
-		}
-
-		@Override
-		public void vertexRemovedFromFrontier(int vertex) {
-			delayed(() -> drawPath(vertex));
-		}
-	};
+	private final BitSet inPath;
+	private final DelayedRunner delay;
 
 	private DFSAnimation() {
+		delay = new DelayedRunner();
+		inPath = new BitSet();
+	}
+
+	@Override
+	public void vertexAddedToFrontier(int vertex) {
+		delay.run(() -> drawPath(vertex));
+	}
+
+	@Override
+	public void vertexRemovedFromFrontier(int vertex) {
+		delay.run(() -> drawPath(vertex));
 	}
 
 	private void drawPath(int vertex) {
@@ -114,9 +115,9 @@ public class DFSAnimation extends AbstractAnimation {
 		this.dfs = dfs;
 		GridRenderer canvasRenderer = canvas.getRenderer();
 		canvas.pushRenderer(createPathRenderer(canvasRenderer));
-		dfs.addObserver(canvasUpdater);
+		dfs.addObserver(this);
 		Path path = dfs.findPath(source, target);
-		dfs.removeObserver(canvasUpdater);
+		dfs.removeObserver(this);
 		canvas.drawGrid();
 		path.forEach(v -> {
 			int w = dfs.getParent(v);
