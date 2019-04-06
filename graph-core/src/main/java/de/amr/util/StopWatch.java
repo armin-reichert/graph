@@ -52,13 +52,6 @@ public class StopWatch {
 	}
 
 	/**
-	 * @return measured time in milliseconds
-	 */
-	public float getMillis() {
-		return measuredNanos / 1_000_000f;
-	}
-
-	/**
 	 * @return measured time in nanoseconds
 	 */
 	public float getNanos() {
