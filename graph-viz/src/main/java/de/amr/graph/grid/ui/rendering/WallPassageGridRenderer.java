@@ -78,9 +78,6 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		grid.edges().forEach(passage -> drawPassage(g, grid, passage.either(), passage.other(), true));
 		grid.vertices().filter(cell -> grid.degree(cell) == 0)
 				.forEach(cell -> getCellRenderer(cell).drawCell(g, grid, cell));
-		g.setColor(getGridBgColor());
-		// what the heck?
-		g.drawRect(0, 0, getCellSize() * grid.numCols() - 1, getCellSize() * grid.numRows() - 1);
 	}
 
 	@Override
