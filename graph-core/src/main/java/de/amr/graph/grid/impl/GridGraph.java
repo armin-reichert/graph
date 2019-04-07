@@ -263,7 +263,14 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	@Override
 	public int degree(int v) {
-		return (int) adj(v).count();
+		checkCell(v);
+		int degree = 0;
+		for (int dir = 0; dir < top.dirCount(); ++dir) {
+			if (wires.get(bit(v, dir))) {
+				++degree;
+			}
+		}
+		return degree;
 	}
 
 	// Implement {@link BareGridGraph2D} interface
