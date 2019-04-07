@@ -3,6 +3,7 @@ package de.amr.graph.pathfinder.api;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.TraversalState;
 
 /**
@@ -12,9 +13,6 @@ import de.amr.graph.core.api.TraversalState;
  */
 public interface GraphSearch {
 
-	/** Constant representing no vertex. */
-	public static final int NO_VERTEX = -1;
-
 	/**
 	 * Explores the graph starting from the given source vertex until all reachable vertices have been
 	 * visited.
@@ -23,7 +21,7 @@ public interface GraphSearch {
 	 *                 source vertex
 	 */
 	default void exploreGraph(int source) {
-		findPath(source, NO_VERTEX);
+		findPath(source, Graph.NO_VERTEX);
 	}
 
 	/**
@@ -55,17 +53,17 @@ public interface GraphSearch {
 	 * @return path from the source of the last exploration to the target
 	 */
 	default Path buildPath(int target) {
-		if (target == NO_VERTEX) {
+		if (target == Graph.NO_VERTEX) {
 			throw new IllegalArgumentException("Illegal target vertex");
 		}
 		if (getSource() == target) {
 			return Path.unit(target);
 		}
-		if (getParent(target) == NO_VERTEX) {
+		if (getParent(target) == Graph.NO_VERTEX) {
 			return Path.NULL;
 		}
 		Path path = Path.unit(target);
-		for (int v = getParent(target); v != NO_VERTEX; v = getParent(v)) {
+		for (int v = getParent(target); v != Graph.NO_VERTEX; v = getParent(v)) {
 			path = Path.edge(v, path.source()).concat(path);
 		}
 		return path;
@@ -136,11 +134,11 @@ public interface GraphSearch {
 	TraversalState getState(int v);
 
 	/**
-	 * Returns the parent vertex for the given vertex. Default is <code>{@link #NO_VERTEX}</code>.
+	 * Returns the parent vertex for the given vertex. Default is <code>{@link Graph#NO_VERTEX}</code>.
 	 * 
 	 * @param v
 	 *            vertex
-	 * @return parent vertex or <code>{@link #NO_VERTEX}</code>
+	 * @return parent vertex or <code>{@link Graph#NO_VERTEX}</code>
 	 */
 	int getParent(int v);
 

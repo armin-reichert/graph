@@ -20,6 +20,9 @@ import java.util.stream.Stream;
  */
 public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 
+	/** Constant representing no vertex. */
+	int NO_VERTEX = -1;
+
 	/**
 	 * @return stream of the vertices of this graph
 	 */

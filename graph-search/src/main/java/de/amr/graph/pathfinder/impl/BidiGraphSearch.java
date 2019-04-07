@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.pathfinder.api.GraphSearchObserver;
 import de.amr.graph.pathfinder.api.ObservableGraphSearch;
@@ -27,7 +28,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	public BidiGraphSearch(F forwardSearch, B backwardsSearch) {
 		this.forwardSearch = forwardSearch;
 		this.backwardsSearch = backwardsSearch;
-		meetingPoint = NO_VERTEX;
+		meetingPoint = Graph.NO_VERTEX;
 	}
 
 	public F getForwardSearch() {
@@ -54,14 +55,14 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		else {
 			forwardSearch.start(source, target);
 			backwardsSearch.start(target, source);
-			meetingPoint = NO_VERTEX;
+			meetingPoint = Graph.NO_VERTEX;
 			searchingForward = false;
 		}
 	}
 
 	@Override
 	public boolean canExplore() {
-		return meetingPoint == NO_VERTEX && (forwardSearch.canExplore() || backwardsSearch.canExplore());
+		return meetingPoint == Graph.NO_VERTEX && (forwardSearch.canExplore() || backwardsSearch.canExplore());
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 	private void reverseParentLinks(int meetingPoint) {
 		List<Integer> backPath = new ArrayList<>();
 		BitSet cycleCheck = new BitSet();
-		for (int v = meetingPoint; v != NO_VERTEX; v = backwardsSearch.getParent(v)) {
+		for (int v = meetingPoint; v != Graph.NO_VERTEX; v = backwardsSearch.getParent(v)) {
 			backPath.add(v);
 			if (cycleCheck.get(v)) {
 				System.err.println("Path: " + backPath);
@@ -168,7 +169,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		if (backwardsSearch.getState(v) != TraversalState.UNVISITED) {
 			return backwardsSearch.getParent(v);
 		}
-		return NO_VERTEX;
+		return Graph.NO_VERTEX;
 	}
 
 	@Override

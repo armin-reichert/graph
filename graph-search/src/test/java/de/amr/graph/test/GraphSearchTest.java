@@ -14,7 +14,6 @@ import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Top4;
-import de.amr.graph.pathfinder.api.GraphSearch;
 import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
@@ -77,7 +76,7 @@ public class GraphSearchTest {
 	@Test
 	public void testInitialization() {
 		graph.vertices().forEach(v -> {
-			assertEquals(GraphSearch.NO_VERTEX, bfs.getParent(v));
+			assertEquals(Graph.NO_VERTEX, bfs.getParent(v));
 			assertEquals(TraversalState.UNVISITED, bfs.getState(v));
 			assertEquals(Path.INFINITE_COST, bfs.getCost(v), Math.ulp(0));
 		});
