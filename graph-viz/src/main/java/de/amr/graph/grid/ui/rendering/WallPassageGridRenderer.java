@@ -20,6 +20,13 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 
 	public class DefaultCellRenderer implements GridCellRenderer {
 
+		@Override
+		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
+			grid.getTopology().dirs().filter(dir -> grid.isConnected(cell, dir))
+					.forEach(dir -> drawHalfPassage(g, grid, cell, dir, getPassageColor(cell, dir)));
+			drawCellContent(g, grid, cell);
+		}
+
 		private void drawCellContent(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
 			final int cellX = grid.col(cell) * getCellSize();
 			final int cellY = grid.row(cell) * getCellSize();
@@ -48,13 +55,6 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.drawString(text, (getCellSize() - textBox.width) / 2, (getCellSize() + textBox.height / 2) / 2);
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		}
-
-		@Override
-		public void drawCell(Graphics2D g, GridGraph2D<?, ?> grid, int cell) {
-			grid.getTopology().dirs().filter(dir -> grid.isConnected(cell, dir))
-					.forEach(dir -> drawHalfPassage(g, grid, cell, dir, getPassageColor(cell, dir)));
-			drawCellContent(g, grid, cell);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		drawHalfPassage(g, grid, either, dir, visible ? getPassageColor(either, dir) : getGridBgColor());
 		drawHalfPassage(g, grid, other, inv, visible ? getPassageColor(other, inv) : getGridBgColor());
 		getCellRenderer(either).drawCell(g, grid, either);
-		getCellRenderer(either).drawCell(g, grid, other);
+		getCellRenderer(other).drawCell(g, grid, other);
 	}
 
 	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, int dir, Color passageColor) {
