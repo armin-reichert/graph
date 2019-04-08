@@ -71,9 +71,8 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	private static ObservableGridGraph<TraversalState, Integer> createGrid(int numCols, int numRows,
 			Topology top) {
-		ObservableGridGraph<TraversalState, Integer> grid = GridFactory
-				.<TraversalState, Integer> emptyObservableGrid(numCols, numRows, top);
-		grid.setDefaultVertexLabel(v -> UNVISITED);
+		ObservableGridGraph<TraversalState, Integer> grid = GridFactory.emptyObservableGrid(numCols, numRows, top,
+				UNVISITED, 0);
 		return grid;
 	}
 

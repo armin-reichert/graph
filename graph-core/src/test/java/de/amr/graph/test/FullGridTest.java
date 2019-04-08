@@ -32,8 +32,8 @@ public class FullGridTest {
 
 	@Before
 	public void setUp() {
-		full4 = GridFactory.<Void, Void> fullGrid(WIDTH, HEIGHT, Top4.get());
-		full8 = GridFactory.<Void, Void> fullGrid(3, 3, Top8.get());
+		full4 = GridFactory.fullGrid(WIDTH, HEIGHT, Top4.get(), null, null);
+		full8 = GridFactory.fullGrid(3, 3, Top8.get(), null, null);
 	}
 
 	@After

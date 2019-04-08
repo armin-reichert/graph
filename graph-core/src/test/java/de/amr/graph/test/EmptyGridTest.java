@@ -17,8 +17,8 @@ public class EmptyGridTest {
 
 	@Before
 	public void setUp() {
-		nullGrid = GridFactory.emptyGrid(0, 0, Top4.get());
-		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Top4.get());
+		nullGrid = GridFactory.emptyGrid(0, 0, Top4.get(), null, null);
+		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Top4.get(), null, null);
 	}
 
 	@Test

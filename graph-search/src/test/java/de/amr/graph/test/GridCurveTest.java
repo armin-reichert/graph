@@ -51,8 +51,7 @@ public class GridCurveTest {
 
 	@Before
 	public void setUp() {
-		grid = GridFactory.<Boolean, Void> fullGrid(N, N, Top4.get());
-		grid.setDefaultVertexLabel(v -> false);
+		grid = GridFactory.<Boolean, Void> fullGrid(N, N, Top4.get(), false, null);
 	}
 
 	@After
@@ -134,7 +133,7 @@ public class GridCurveTest {
 
 	@Test
 	public void testPeanoCurve() {
-		grid = GridFactory.emptyGrid(243, 243, Top4.get());
+		grid = GridFactory.emptyGrid(243, 243, Top4.get(), false, null);
 		grid.setDefaultVertexLabel(v -> false);
 		assertAllCells(false);
 		traverse(new PeanoCurve(5), grid, grid.cell(BOTTOM_LEFT), this::markEdge);
