@@ -13,7 +13,7 @@ import de.amr.graph.pathfinder.impl.queue.FIFO_VertexQueue;
 public class BreadthFirstSearch extends AbstractGraphSearch<FIFO_VertexQueue> {
 
 	public BreadthFirstSearch(Graph<?, ?> graph) {
-		super(graph, (u, v) -> 1, new FIFO_VertexQueue());
+		this(graph, (u, v) -> 1);
 	}
 
 	public BreadthFirstSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost) {
