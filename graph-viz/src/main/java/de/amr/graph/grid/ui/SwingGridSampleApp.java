@@ -69,26 +69,20 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	protected final StopWatch watch = new StopWatch();
 
-	private static ObservableGridGraph<TraversalState, Integer> createGrid(int numCols, int numRows,
-			Topology top) {
-		ObservableGridGraph<TraversalState, Integer> grid = GridFactory.emptyObservableGrid(numCols, numRows, top,
-				UNVISITED, 0);
-		return grid;
-	}
-
 	public SwingGridSampleApp(int width, int height, int cellSize) {
 		fullscreen = false;
 		style = Style.WALL_PASSAGE;
 		canvasSize = new Dimension(width, height);
-		grid = createGrid(width / cellSize, height / cellSize, Top4.get());
+		grid = GridFactory.emptyObservableGrid(width / cellSize, height / cellSize, Top4.get(), UNVISITED, 0);
 		createUI(cellSize);
 	}
 
 	public SwingGridSampleApp(int cellSize) {
-		fullscreen = false;// TRUE
+		fullscreen = true;
 		style = Style.WALL_PASSAGE;
 		canvasSize = getScreenSize();
-		grid = createGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, Top4.get());
+		grid = GridFactory.emptyObservableGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
+				Top4.get(), UNVISITED, 0);
 		grid.setDefaultVertexLabel(v -> UNVISITED);
 		createUI(cellSize);
 	}
@@ -130,6 +124,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 	private void createAnimatedCanvas(int cellSize) {
 		canvas = new GridCanvas(grid, cellSize);
 		canvas.setBackground(Color.BLACK);
+		canvas.clear();
 		canvas.pushRenderer(createRenderer());
 		canvas.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
 		canvas.getActionMap().put("exit", new AbstractAction() {
@@ -227,11 +222,12 @@ public abstract class SwingGridSampleApp implements Runnable {
 
 	public void setGridTopology(Topology topology) {
 		int numCols = grid.numCols(), numRows = grid.numRows();
-		setGrid(createGrid(numCols, numRows, topology));
+		setGrid(GridFactory.emptyObservableGrid(numCols, numRows, Top4.get(), UNVISITED, 0));
 	}
 
 	public void setCellSize(int cellSize) {
-		setGrid(createGrid(canvasSize.width / cellSize, canvasSize.height / cellSize, Top4.get()));
+		setGrid(GridFactory.emptyObservableGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
+				Top4.get(), UNVISITED, 0));
 		grid.setDefaultVertexLabel(v -> UNVISITED);
 		canvas.setCellSize(cellSize, false);
 		canvas.setGrid(grid);
