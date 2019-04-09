@@ -47,6 +47,14 @@ public class FullGridTest {
 		assertEquals(WIDTH, full4.numCols());
 		assertEquals(HEIGHT, full4.numRows());
 	}
+	
+	@Test
+	public void testIsFullOrEmpty() {
+		assertFalse(full4.isEmpty());
+		assertTrue(full4.isFull());
+		assertFalse(full8.isEmpty());
+		assertTrue(full8.isFull());
+	}
 
 	@Test
 	public void testGridEdgeStream() {

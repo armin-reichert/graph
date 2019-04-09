@@ -39,8 +39,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	private final BiFunction<Integer, Integer, Edge> fnEdgeFactory;
 	private final VertexLabeling<V> vertexLabeling;
 	private final EdgeLabeling<E> edgeLabeling;
-	private Topology top;
-	private BitSet wires;
+	private final Topology top;
+	private final BitSet wires;
 
 	// helper methods
 
@@ -156,6 +156,18 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public int numEdges() {
 		return wires.cardinality() / 2; // two bits are used to store one edge
+	}
+
+	@Override
+	public boolean isFull() {
+		int c = numCols(), r = numRows();
+		if (getTopology() == Top4.get()) {
+			return numEdges() == 2 * c * r - c - r;
+		}
+		if (getTopology() == Top8.get()) {
+			return numEdges() == 4 * c * r - 3 * c - 3 * r + 2;
+		}
+		throw new IllegalStateException("No topology");
 	}
 
 	@Override

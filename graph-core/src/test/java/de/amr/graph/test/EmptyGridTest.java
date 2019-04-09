@@ -1,6 +1,7 @@
 package de.amr.graph.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -58,5 +59,11 @@ public class EmptyGridTest {
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testGridVertexDegree() {
 		nullGrid.degree(0);
+	}
+	
+	@Test
+	public void testIsFullOrEmpty() {
+		assertTrue(emptyGrid3x3.isEmpty());
+		assertFalse(emptyGrid3x3.isFull());
 	}
 }

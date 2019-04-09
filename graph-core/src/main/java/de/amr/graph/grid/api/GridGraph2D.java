@@ -157,6 +157,22 @@ public interface GridGraph2D<V, E> extends Graph<V, E> {
 	void fill();
 
 	/**
+	 * Tells if this grid is empty.
+	 * 
+	 * @return {@code true} if this grid is empty i.e. has no edges
+	 */
+	default boolean isEmpty() {
+		return numEdges() == 0;
+	}
+
+	/**
+	 * Tells if this grid is full.
+	 * 
+	 * @return {@code true} if this grid is full i.e. has all edges
+	 */
+	boolean isFull();
+
+	/**
 	 * Returns the Chebyshev distance (maximum metric) between the given grid cells.
 	 * 
 	 * @param u
