@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -33,8 +31,8 @@ import de.amr.graph.core.api.VertexLabeling;
  */
 public class UGraph<V, E> implements Graph<V, E> {
 
-	protected final VertexLabeling<V> vertexLabels = new VertexLabelsMap<>(null);
-	protected final EdgeLabeling<E> edgeLabels = new EdgeLabelsMap<>((u, v) -> null);
+	protected final VertexLabeling<V> vertexLabeling = new VertexLabelsMap<>(null);
+	protected final EdgeLabeling<E> edgeLabeling = new EdgeLabelsMap<>((u, v) -> null);
 	protected final Set<Integer> vertexSet = new HashSet<>();
 	protected final Map<Integer, Set<Edge>> adjEdges = new HashMap<>();
 	protected int numEdges; // number of undirected edges
@@ -43,56 +41,13 @@ public class UGraph<V, E> implements Graph<V, E> {
 	}
 
 	@Override
-	public V get(int v) {
-		return vertexLabels.get(v);
+	public VertexLabeling<V> getVertexLabeling() {
+		return vertexLabeling;
 	}
 
 	@Override
-	public void set(int v, V label) {
-		if (!vertexSet.contains(v)) {
-			throw new IllegalStateException();
-		}
-		vertexLabels.set(v, label);
-	}
-
-	@Override
-	public void clearVertexLabels() {
-		vertexLabels.clearVertexLabels();
-	}
-
-	@Override
-	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
-		vertexLabels.setDefaultVertexLabel(fnDefaultLabel);
-	}
-
-	@Override
-	public V getDefaultVertexLabel(int v) {
-		return vertexLabels.getDefaultVertexLabel(v);
-	}
-
-	@Override
-	public void clearEdgeLabels() {
-		edgeLabels.clearEdgeLabels();
-	}
-
-	@Override
-	public E getEdgeLabel(int u, int v) {
-		return edgeLabels.getEdgeLabel(u, v);
-	}
-
-	@Override
-	public void setEdgeLabel(int u, int v, E e) {
-		edgeLabels.setEdgeLabel(u, v, e);
-	}
-
-	@Override
-	public void setDefaultEdgeLabel(BiFunction<Integer, Integer, E> fnDefaultLabel) {
-		edgeLabels.setDefaultEdgeLabel(fnDefaultLabel);
-	}
-
-	@Override
-	public E getDefaultEdgeLabel(int u, int v) {
-		return edgeLabels.getDefaultEdgeLabel(u, v);
+	public EdgeLabeling<E> getEdgeLabeling() {
+		return edgeLabeling;
 	}
 
 	@Override
@@ -182,6 +137,11 @@ public class UGraph<V, E> implements Graph<V, E> {
 	@Override
 	public int numVertices() {
 		return vertexSet.size();
+	}
+
+	@Override
+	public boolean containsVertex(int v) {
+		return vertexSet.contains(v);
 	}
 
 	private Set<Edge> createEdgeSet() {

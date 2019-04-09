@@ -1,6 +1,8 @@
 package de.amr.graph.core.api;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -34,6 +36,15 @@ public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 	default int numVertices() {
 		return (int) vertices().count();
 	}
+
+	/**
+	 * Tells if this graph contains the given vertex.
+	 * 
+	 * @param v
+	 *            vertex
+	 * @return {@code true} if the given vertex is contained in this graph
+	 */
+	boolean containsVertex(int v);
 
 	/**
 	 * @return stream of the edges of this graph
@@ -156,4 +167,65 @@ public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 	 * Removes all edges from this graph.
 	 */
 	void removeEdges();
+
+	/* Default implementations for vertex labeling. */
+
+	VertexLabeling<V> getVertexLabeling();
+
+	@Override
+	default void clearVertexLabels() {
+		getVertexLabeling().clearVertexLabels();
+	}
+
+	@Override
+	default V getDefaultVertexLabel(int v) {
+		return getVertexLabeling().getDefaultVertexLabel(v);
+	}
+
+	@Override
+	default void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
+		getVertexLabeling().setDefaultVertexLabel(fnDefaultLabel);
+	}
+
+	@Override
+	default V get(int v) {
+		return getVertexLabeling().get(v);
+	}
+
+	@Override
+	default void set(int v, V vertex) {
+		if (!containsVertex(v)) {
+			throw new IllegalArgumentException("Illegal vertex: " + v);
+		}
+		getVertexLabeling().set(v, vertex);
+	}
+
+	/* Default implementations for edge labeling. */
+
+	EdgeLabeling<E> getEdgeLabeling();
+
+	@Override
+	default void clearEdgeLabels() {
+		getEdgeLabeling().clearEdgeLabels();
+	}
+
+	@Override
+	default E getDefaultEdgeLabel(int u, int v) {
+		return getEdgeLabeling().getDefaultEdgeLabel(u, v);
+	}
+
+	@Override
+	default void setDefaultEdgeLabel(BiFunction<Integer, Integer, E> fnDefaultLabel) {
+		getEdgeLabeling().setDefaultEdgeLabel(fnDefaultLabel);
+	}
+
+	@Override
+	default E getEdgeLabel(int u, int v) {
+		return getEdgeLabeling().getEdgeLabel(u, v);
+	}
+
+	@Override
+	default void setEdgeLabel(int u, int v, E e) {
+		getEdgeLabeling().setEdgeLabel(u, v, e);
+	}
 }

@@ -69,7 +69,7 @@ public class LabeledGraphTest {
 		g = new UGraph<>();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testSetLabelOnNonexistingVertex() {
 		g.set(0, "A");
 	}

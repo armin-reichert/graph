@@ -33,94 +33,38 @@ import de.amr.graph.grid.api.Topology;
  */
 public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
-	protected final int numCols;
-	protected final int numRows;
-	protected final int numCells;
-	protected final BiFunction<Integer, Integer, Edge> fnEdgeFactory;
-	protected Topology top;
-	protected BitSet wires;
-
-	// {@link VertexLabels}
-
-	private final VertexLabeling<V> vertexLabels;
-
-	@Override
-	public void clearVertexLabels() {
-		vertexLabels.clearVertexLabels();
-	}
-
-	@Override
-	public V getDefaultVertexLabel(int v) {
-		return vertexLabels.getDefaultVertexLabel(v);
-	}
-
-	@Override
-	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
-		vertexLabels.setDefaultVertexLabel(fnDefaultLabel);
-	}
-
-	@Override
-	public V get(int v) {
-		return vertexLabels.get(v);
-	}
-
-	@Override
-	public void set(int v, V vertex) {
-		vertexLabels.set(v, vertex);
-	}
-
-	// {@link EdgeLabels}
-
-	private final EdgeLabeling<E> edgeLabels;
-
-	@Override
-	public void clearEdgeLabels() {
-		edgeLabels.clearEdgeLabels();
-	}
-
-	@Override
-	public E getDefaultEdgeLabel(int u, int v) {
-		return edgeLabels.getDefaultEdgeLabel(u, v);
-	}
-
-	@Override
-	public void setDefaultEdgeLabel(BiFunction<Integer, Integer, E> fnDefaultLabel) {
-		edgeLabels.setDefaultEdgeLabel(fnDefaultLabel);
-	}
-
-	@Override
-	public E getEdgeLabel(int u, int v) {
-		return edgeLabels.getEdgeLabel(u, v);
-	}
-
-	@Override
-	public void setEdgeLabel(int u, int v, E e) {
-		edgeLabels.setEdgeLabel(u, v, e);
-	}
+	private final int numCols;
+	private final int numRows;
+	private final int numCells;
+	private final BiFunction<Integer, Integer, Edge> fnEdgeFactory;
+	private final VertexLabeling<V> vertexLabeling;
+	private final EdgeLabeling<E> edgeLabeling;
+	private Topology top;
+	private BitSet wires;
 
 	// helper methods
 
-	protected void checkCell(int cell) {
-		if (cell < 0 || cell >= numCells) {
-			throw new IndexOutOfBoundsException("Invalid cell index: " + cell);
+	private void checkCell(int cell) {
+		if (!containsVertex(cell)) {
+			throw new IndexOutOfBoundsException("Invalid cell: " + cell);
 		}
 	}
 
-	protected void checkDir(int dir) {
+	private void checkDir(int dir) {
 		if (dir < 0 || dir >= top.dirCount()) {
 			throw new IndexOutOfBoundsException("Invalid direction: " + dir);
 		}
 	}
 
-	protected int index(int col, int row) {
+	private int index(int col, int row) {
 		return row * numCols + col;
 	}
 
-	protected int bit(int cell, int dir) {
+	private int bit(int cell, int dir) {
 		return cell * top.dirCount() + dir;
 	}
 
-	protected void wire(int u, int v, int dir, boolean connected) {
+	private void wire(int u, int v, int dir, boolean connected) {
 		wires.set(bit(u, dir), connected);
 		wires.set(bit(v, top.inv(dir)), connected);
 	}
@@ -161,11 +105,21 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		this.top = top;
 		this.wires = new BitSet(top.dirCount() * numCells);
 		this.fnEdgeFactory = fnEdgeFactory;
-		this.vertexLabels = new VertexLabelsMap<>(fnDefaultVertexLabel);
-		this.edgeLabels = new EdgeLabelsMap<>(fnDefaultEdgeLabel);
+		this.vertexLabeling = new VertexLabelsMap<>(fnDefaultVertexLabel);
+		this.edgeLabeling = new EdgeLabelsMap<>(fnDefaultEdgeLabel);
 	}
 
 	// Implement {@link Graph} interface
+
+	@Override
+	public VertexLabeling<V> getVertexLabeling() {
+		return vertexLabeling;
+	}
+
+	@Override
+	public EdgeLabeling<E> getEdgeLabeling() {
+		return edgeLabeling;
+	}
 
 	@Override
 	public IntStream vertices() {
@@ -175,6 +129,11 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public int numVertices() {
 		return numCells;
+	}
+
+	@Override
+	public boolean containsVertex(int v) {
+		return v >= 0 && v < numCells;
 	}
 
 	@Override
