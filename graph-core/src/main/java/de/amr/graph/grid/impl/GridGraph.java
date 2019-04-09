@@ -348,4 +348,12 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 			return neighbor.isPresent() && neighbor.getAsInt() == v;
 		}).findFirst();
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("(").append(numCols).append(" cols, ").append(numRows).append(" rows, ").append(numCells)
+				.append(" cells, ").append(numEdges()).append(" edges").append(")");
+		return sb.toString();
+	}
 }
