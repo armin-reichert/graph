@@ -7,12 +7,15 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.util.function.DoubleSupplier;
 
 import de.amr.graph.grid.api.GridGraph2D;
 
 public class PearlsGridRenderer extends ConfigurableGridRenderer {
 
-	static final int PEARL_SIZE_PERCENT = 66; // TODO
+	private GridCellRenderer cellRenderer;
+
+	public DoubleSupplier fnRelativePearlSize = () -> .66;
 
 	public class DefaultCellRenderer implements GridCellRenderer {
 
@@ -21,7 +24,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 			int cellSize = getCellSize();
 			int x = grid.col(cell) * cellSize;
 			int y = grid.row(cell) * cellSize;
-			int pearlSize = Math.max(1, cellSize * PEARL_SIZE_PERCENT / 100);
+			int pearlSize = getPearlSize();
 			int offset = (cellSize - pearlSize) / 2;
 			int arc = pearlSize / 2;
 			g.translate(x + offset, y + offset);
@@ -34,14 +37,16 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 		}
 	}
 
-	private GridCellRenderer cellRenderer;
-
 	public PearlsGridRenderer() {
 		cellRenderer = new DefaultCellRenderer();
 	}
 
 	public PearlsGridRenderer(GridCellRenderer cellRenderer) {
 		this.cellRenderer = cellRenderer;
+	}
+
+	public int getPearlSize() {
+		return Math.max(1, (int) Math.round(getCellSize() * fnRelativePearlSize.getAsDouble()));
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 	@Override
 	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
 		int cellSize = getCellSize();
-		int pearlSize = Math.max(1, cellSize * PEARL_SIZE_PERCENT / 100);
+		int pearlSize = getPearlSize();
 		int x1 = grid.col(either) * cellSize + pearlSize / 2;
 		int y1 = grid.row(either) * cellSize + pearlSize / 2;
 		int x2 = grid.col(other) * cellSize + pearlSize / 2;
