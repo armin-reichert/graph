@@ -8,11 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,16 +19,18 @@ import de.amr.graph.grid.impl.Top8;
 
 public class FullGridTest {
 
-	private static final int WIDTH = 15;
-	private static final int HEIGHT = 10;
+	private static final int COLS = 15;
+	private static final int ROWS = 10;
+	private static final int NUM_EDGES_FULL_4 = 2 * COLS * ROWS - COLS - ROWS;
+	private static final int NUM_EDGES_FULL_8 = 4 * COLS * ROWS - 3 * COLS - 3 * ROWS + 2;
 
 	private GridGraph2D<Void, Void> full4;
 	private GridGraph2D<Void, Void> full8;
 
 	@Before
 	public void setUp() {
-		full4 = GridFactory.fullGrid(WIDTH, HEIGHT, Top4.get(), null, null);
-		full8 = GridFactory.fullGrid(3, 3, Top8.get(), null, null);
+		full4 = GridFactory.fullGrid(COLS, ROWS, Top4.get(), null, null);
+		full8 = GridFactory.fullGrid(COLS, ROWS, Top8.get(), null, null);
 	}
 
 	@After
@@ -42,48 +39,145 @@ public class FullGridTest {
 
 	@Test
 	public void testGridSize() {
-		assertEquals(2 * WIDTH * HEIGHT - (WIDTH + HEIGHT), full4.numEdges());
-		assertEquals(WIDTH * HEIGHT, full4.numVertices());
-		assertEquals(WIDTH, full4.numCols());
-		assertEquals(HEIGHT, full4.numRows());
+		assertEquals(NUM_EDGES_FULL_4, full4.numEdges());
+		assertEquals(COLS * ROWS, full4.numVertices());
+		assertEquals(COLS, full4.numCols());
+		assertEquals(ROWS, full4.numRows());
+
+		assertEquals(NUM_EDGES_FULL_8, full8.numEdges());
+		assertEquals(COLS * ROWS, full8.numVertices());
+		assertEquals(COLS, full8.numCols());
+		assertEquals(ROWS, full8.numRows());
 	}
-	
+
 	@Test
 	public void testIsFullOrEmpty() {
 		assertFalse(full4.isEmpty());
 		assertTrue(full4.isFull());
+
 		assertFalse(full8.isEmpty());
 		assertTrue(full8.isFull());
 	}
 
 	@Test
-	public void testGridEdgeStream() {
-		assertEquals(2 * WIDTH * HEIGHT - (WIDTH + HEIGHT), full4.edges().count());
-	}
-
-	private void assertEqualElements(IntStream numbers, Integer... cells) {
-		assertEquals(numbers.boxed().collect(Collectors.toSet()), new HashSet<>(Arrays.asList(cells)));
+	public void testGridEdgeStreamSize() {
+		assertEquals(NUM_EDGES_FULL_4, full4.edges().count());
+		assertEquals(NUM_EDGES_FULL_8, full8.edges().count());
 	}
 
 	@Test
-	public void testAdjVertices() {
-		int cell = full4.cell(1, 1);
-		assertEqualElements(full4.adj(cell), full4.cell(1, 0), full4.cell(1, 2), full4.cell(2, 1),
-				full4.cell(0, 1));
+	public void testAdjVerticesInside() {
+
+		for (int row = 1; row < ROWS - 1; ++row) {
+			for (int col = 1; col < COLS - 1; ++col) {
+				int cell = full4.cell(col, row);
+				assertFalse(full4.adjacent(cell, cell - COLS - 1));
+				assertTrue(full4.adjacent(cell, cell - COLS));
+				assertFalse(full4.adjacent(cell, cell - COLS + 1));
+				assertTrue(full4.adjacent(cell, cell - 1));
+				assertTrue(full4.adjacent(cell, cell + 1));
+				assertFalse(full4.adjacent(cell, cell + COLS - 1));
+				assertTrue(full4.adjacent(cell, cell + COLS));
+				assertFalse(full4.adjacent(cell, cell + COLS + 1));
+			}
+		}
+
+		for (int row = 1; row < ROWS - 1; ++row) {
+			for (int col = 1; col < COLS - 1; ++col) {
+				int cell = full8.cell(col, row);
+				assertTrue(full8.adjacent(cell, cell - COLS - 1));
+				assertTrue(full8.adjacent(cell, cell - COLS));
+				assertTrue(full8.adjacent(cell, cell - COLS + 1));
+				assertTrue(full8.adjacent(cell, cell - 1));
+				assertTrue(full8.adjacent(cell, cell + 1));
+				assertTrue(full8.adjacent(cell, cell + COLS - 1));
+				assertTrue(full8.adjacent(cell, cell + COLS));
+				assertTrue(full8.adjacent(cell, cell + COLS + 1));
+			}
+		}
 	}
 
 	@Test
-	public void testAdjVerticesAtCorners() {
-		int cell;
-		cell = full4.cell(TOP_LEFT);
-		assertEqualElements(full4.adj(cell), full4.cell(1, 0), full4.cell(0, 1));
-		cell = full4.cell(TOP_RIGHT);
-		assertEqualElements(full4.adj(cell), full4.cell(WIDTH - 2, 0), full4.cell(WIDTH - 1, 1));
-		cell = full4.cell(BOTTOM_LEFT);
-		assertEqualElements(full4.adj(cell), full4.cell(0, HEIGHT - 2), full4.cell(1, HEIGHT - 1));
-		cell = full4.cell(BOTTOM_RIGHT);
-		assertEqualElements(full4.adj(cell), full4.cell(WIDTH - 1, HEIGHT - 2),
-				full4.cell(WIDTH - 2, HEIGHT - 1));
+	public void testAdjVerticesAtTop() {
+		for (int col = 1; col < COLS - 1; ++col) {
+			int cell = full4.cell(col, 0);
+			assertTrue(full4.adjacent(cell, cell - 1));
+			assertTrue(full4.adjacent(cell, cell + 1));
+			assertFalse(full4.adjacent(cell, cell + COLS - 1));
+			assertTrue(full4.adjacent(cell, cell + COLS));
+			assertFalse(full4.adjacent(cell, cell + COLS + 1));
+		}
+		for (int col = 1; col < COLS - 1; ++col) {
+			int cell = full8.cell(col, 0);
+			assertTrue(full8.adjacent(cell, cell - 1));
+			assertTrue(full8.adjacent(cell, cell + 1));
+			assertTrue(full8.adjacent(cell, cell + COLS - 1));
+			assertTrue(full8.adjacent(cell, cell + COLS));
+			assertTrue(full8.adjacent(cell, cell + COLS + 1));
+		}
+	}
+
+	@Test
+	public void testAdjVerticesAtRight() {
+		for (int row = 1; row < ROWS - 1; ++row) {
+			int cell = full4.cell(COLS - 1, row);
+			assertFalse(full4.adjacent(cell, cell - COLS - 1));
+			assertTrue(full4.adjacent(cell, cell - COLS));
+			assertTrue(full4.adjacent(cell, cell - 1));
+			assertFalse(full4.adjacent(cell, cell + COLS - 1));
+			assertTrue(full4.adjacent(cell, cell + COLS));
+		}
+
+		for (int row = 1; row < ROWS - 1; ++row) {
+			int cell = full8.cell(COLS - 1, row);
+			assertTrue(full8.adjacent(cell, cell - COLS - 1));
+			assertTrue(full8.adjacent(cell, cell - COLS));
+			assertTrue(full8.adjacent(cell, cell - 1));
+			assertTrue(full8.adjacent(cell, cell + COLS - 1));
+			assertTrue(full8.adjacent(cell, cell + COLS));
+		}
+	}
+
+	@Test
+	public void testAdjVerticesAtBottom() {
+		for (int col = 1; col < COLS - 1; ++col) {
+			int cell = full4.cell(col, ROWS - 1);
+			assertFalse(full4.adjacent(cell, cell - COLS - 1));
+			assertTrue(full4.adjacent(cell, cell - COLS));
+			assertFalse(full4.adjacent(cell, cell - COLS + 1));
+			assertTrue(full4.adjacent(cell, cell - 1));
+			assertTrue(full4.adjacent(cell, cell + 1));
+		}
+
+		for (int col = 1; col < COLS - 1; ++col) {
+			int cell = full8.cell(col, ROWS - 1);
+			assertTrue(full8.adjacent(cell, cell - COLS - 1));
+			assertTrue(full8.adjacent(cell, cell - COLS));
+			assertTrue(full8.adjacent(cell, cell - COLS + 1));
+			assertTrue(full8.adjacent(cell, cell - 1));
+			assertTrue(full8.adjacent(cell, cell + 1));
+		}
+	}
+
+	@Test
+	public void testAdjVerticesAtLeft() {
+		for (int row = 1; row < ROWS - 1; ++row) {
+			int cell = full4.cell(0, row);
+			assertTrue(full4.adjacent(cell, cell - COLS));
+			assertFalse(full4.adjacent(cell, cell - COLS + 1));
+			assertTrue(full4.adjacent(cell, cell + 1));
+			assertTrue(full4.adjacent(cell, cell + COLS));
+			assertFalse(full4.adjacent(cell, cell + COLS + 1));
+		}
+
+		for (int row = 1; row < ROWS - 1; ++row) {
+			int cell = full8.cell(0, row);
+			assertTrue(full8.adjacent(cell, cell - COLS));
+			assertTrue(full8.adjacent(cell, cell - COLS + 1));
+			assertTrue(full8.adjacent(cell, cell + 1));
+			assertTrue(full8.adjacent(cell, cell + COLS));
+			assertTrue(full8.adjacent(cell, cell + COLS + 1));
+		}
 	}
 
 	@Test
@@ -96,7 +190,7 @@ public class FullGridTest {
 			for (int y = 0; y < full4.numRows(); ++y) {
 				Integer cell = full4.cell(x, y);
 				assertTrue(full4.degree(cell) >= 2 && full4.degree(cell) <= 4);
-				if (x == 0 || x == WIDTH - 1 || y == 0 || y == HEIGHT - 1) {
+				if (x == 0 || x == COLS - 1 || y == 0 || y == ROWS - 1) {
 					assertTrue(full4.degree(cell) <= 3);
 				}
 			}
@@ -126,36 +220,5 @@ public class FullGridTest {
 				}
 			}
 		}
-	}
-
-	@Test
-	public void testFullGrid4() {
-		int c = full4.numCols(), r = full4.numRows();
-		assertEquals(r * (c - 1) + c * (r - 1), full4.numEdges());
-	}
-
-	@Test
-	public void testFullGrid8() {
-		int c = full8.numCols(), r = full8.numRows();
-		assertEquals(4 * c * r - 3 * c - 3 * r + 2, full8.numEdges());
-
-		assertTrue(full8.adjacent(4, 0));
-		assertTrue(full8.adjacent(4, 1));
-		assertTrue(full8.adjacent(4, 2));
-		assertTrue(full8.adjacent(4, 3));
-		assertFalse(full8.adjacent(4, 4));
-		assertTrue(full8.adjacent(4, 5));
-		assertTrue(full8.adjacent(4, 6));
-		assertTrue(full8.adjacent(4, 7));
-		assertTrue(full8.adjacent(4, 8));
-
-		assertTrue(full8.adjacent(0, 4));
-		assertTrue(full8.adjacent(1, 4));
-		assertTrue(full8.adjacent(2, 4));
-		assertTrue(full8.adjacent(3, 4));
-		assertTrue(full8.adjacent(5, 4));
-		assertTrue(full8.adjacent(6, 4));
-		assertTrue(full8.adjacent(7, 4));
-		assertTrue(full8.adjacent(8, 4));
 	}
 }
