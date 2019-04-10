@@ -68,11 +68,20 @@ public class GridCanvas extends JComponent {
 		}
 	}
 
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.setColor(getBackground());
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.drawImage(buffer, 0, 0, null);
+	}
+
 	private void createDefaultRenderer() {
 		defaultRenderer = new WallPassageGridRenderer();
-		defaultRenderer.fnCellSize = () -> cellSize;
-		defaultRenderer.fnPassageWidth = (u, v) -> cellSize - 1;
+		defaultRenderer.fnCellSize = () -> getCellSize();
+		defaultRenderer.fnPassageWidth = (u, v) -> getCellSize() - 1;
 		defaultRenderer.fnText = cell -> String.valueOf(cell);
+		defaultRenderer.fnTextColor = cell -> Color.BLACK;
 		rendererStack.push(defaultRenderer);
 	}
 
@@ -90,20 +99,12 @@ public class GridCanvas extends JComponent {
 		setSize(size);
 	}
 
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.setColor(getBackground());
-		g.fillRect(0, 0, getWidth(), getHeight());
-		g.drawImage(buffer, 0, 0, null);
-	}
-
 	public int getCellSize() {
 		return cellSize;
 	}
 
 	public void setCellSize(int newCellSize) {
-		setCellSize(cellSize, true);
+		setCellSize(newCellSize, true);
 	}
 
 	public void setCellSize(int newCellSize, boolean redrawGrid) {

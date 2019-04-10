@@ -6,6 +6,7 @@ import java.awt.Color;
 import javax.swing.JFrame;
 
 import de.amr.graph.grid.ui.rendering.GridCanvas;
+import javax.swing.border.LineBorder;
 
 public class GridCanvasTest extends JFrame {
 
@@ -14,7 +15,8 @@ public class GridCanvasTest extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		GridCanvas gridCanvas = new GridCanvas();
-		gridCanvas.setBackground(Color.GRAY);
+		gridCanvas.setBorder(new LineBorder(Color.MAGENTA, 5));
+		gridCanvas.setBackground(Color.BLUE);
 		getContentPane().add(gridCanvas, BorderLayout.CENTER);
 	}
 
