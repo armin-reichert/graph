@@ -92,6 +92,7 @@ public class GridCanvas extends JComponent {
 		if (height == 0) {
 			throw new GridCanvasException("Buffer height must be greater than 0");
 		}
+		// System.out.println("Creating new drawing buffer, width=" + width + ", height=" + height);
 		buffer = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration().createCompatibleImage(width, height);
 		Dimension size = new Dimension(width, height);
@@ -119,8 +120,8 @@ public class GridCanvas extends JComponent {
 				clear();
 				drawGrid();
 			}
-			firePropertyChange("cellSize", oldCellSize, newCellSize);
 		}
+		firePropertyChange("cellSize", oldCellSize, newCellSize);
 	}
 
 	public GridGraph2D<?, ?> getGrid() {
@@ -145,8 +146,24 @@ public class GridCanvas extends JComponent {
 				clear();
 				drawGrid();
 			}
-			firePropertyChange("grid", oldGrid, newGrid);
 		}
+		firePropertyChange("grid", oldGrid, newGrid);
+	}
+
+	public void resize(GridGraph<?, ?> newGrid, int newCellSize) {
+		if (newGrid == null) {
+			throw new GridCanvasException("Grid must not be NULL");
+		}
+		if (newCellSize < 2) {
+			throw new GridCanvasException("Cell size must be at least 2");
+		}
+		GridGraph2D<?, ?> oldGrid = grid;
+		int oldCellSize = cellSize;
+		this.grid = newGrid;
+		this.cellSize = newCellSize;
+		createBuffer(cellSize * grid.numCols(), cellSize * grid.numRows());
+		firePropertyChange("grid", oldGrid, newGrid);
+		firePropertyChange("cellSize", oldCellSize, newCellSize);
 	}
 
 	public Graphics2D getDrawGraphics() {
