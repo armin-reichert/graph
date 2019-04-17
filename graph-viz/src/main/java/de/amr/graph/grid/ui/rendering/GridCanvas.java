@@ -32,6 +32,7 @@ public class GridCanvas extends JComponent {
 	private int cellSize;
 
 	// rendering
+	private boolean centered;
 	private BufferedImage buffer;
 	private WallPassageGridRenderer defaultRenderer;
 	private final Deque<GridRenderer> rendererStack = new ArrayDeque<>();
@@ -73,7 +74,20 @@ public class GridCanvas extends JComponent {
 		super.paintComponent(g);
 		g.setColor(getBackground());
 		g.fillRect(0, 0, getWidth(), getHeight());
+		int gridWidth = grid.numCols() * cellSize;
+		int gridHeight = grid.numRows() * cellSize;
+		int dx = (getWidth() - gridWidth) / 2;
+		int dy = (getHeight() - gridHeight) / 2;
+		if (centered) {
+			g.translate(dx, dy);
+		}
 		g.drawImage(buffer, 0, 0, null);
+		// TODO fixme
+		g.setColor(getRenderer().getModel().getGridBgColor());
+		g.drawRect(0, 0, gridWidth, gridWidth);
+		if (centered) {
+			g.translate(-dx, -dy);
+		}
 	}
 
 	private void createDefaultRenderer() {
@@ -102,6 +116,14 @@ public class GridCanvas extends JComponent {
 
 	public int getCellSize() {
 		return cellSize;
+	}
+
+	public boolean isCentered() {
+		return centered;
+	}
+
+	public void setCentered(boolean centered) {
+		this.centered = centered;
 	}
 
 	public void setCellSize(int newCellSize) {
