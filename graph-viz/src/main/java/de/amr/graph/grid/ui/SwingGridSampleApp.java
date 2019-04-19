@@ -5,7 +5,6 @@ import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static java.awt.EventQueue.invokeLater;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -30,6 +29,7 @@ import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
 import de.amr.graph.grid.ui.rendering.GridCanvas;
 import de.amr.graph.grid.ui.rendering.PearlsGridRenderer;
 import de.amr.graph.grid.ui.rendering.WallPassageGridRenderer;
+import de.amr.swing.Swing;
 import de.amr.util.StopWatch;
 
 /**
@@ -102,14 +102,14 @@ public abstract class SwingGridSampleApp implements Runnable {
 	private void createUI(int cellSize) {
 		window = new JFrame();
 		createAnimatedCanvas(cellSize);
-		window.add(canvas, BorderLayout.CENTER);
+		window.setContentPane(canvas);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 		window.setTitle(getTitleText());
 		window.setBackground(Color.BLACK);
 		if (fullscreen) {
-			window.setPreferredSize(canvasSize);
-			window.setSize(canvasSize);
+			window.setPreferredSize(Swing.getDisplaySize());
+			window.setSize(Swing.getDisplaySize());
 			window.setUndecorated(true);
 			window.setAlwaysOnTop(true);
 		}
@@ -124,6 +124,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 	private void createAnimatedCanvas(int cellSize) {
 		canvas = new GridCanvas(grid, cellSize);
 		canvas.setBackground(Color.BLACK);
+		canvas.setCentered(true);
 		canvas.clear();
 		canvas.pushRenderer(createRenderer());
 		canvas.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
