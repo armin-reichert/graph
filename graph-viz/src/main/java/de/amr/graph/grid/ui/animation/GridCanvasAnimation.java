@@ -10,6 +10,14 @@ import de.amr.graph.grid.ui.rendering.GridCanvas;
 
 public class GridCanvasAnimation<V, E> implements GraphObserver<V, E> {
 
+	public static void pause(float seconds) {
+		try {
+			Thread.sleep(Math.round(seconds * 1000));
+		} catch (InterruptedException e) {
+			throw new AnimationInterruptedException();
+		}
+	}
+
 	private final GridCanvas canvas;
 	private boolean enabled;
 
