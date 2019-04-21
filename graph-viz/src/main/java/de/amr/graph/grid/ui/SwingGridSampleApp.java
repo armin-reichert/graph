@@ -229,7 +229,6 @@ public abstract class SwingGridSampleApp implements Runnable {
 	public void setCellSize(int cellSize) {
 		setGrid(GridFactory.emptyObservableGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
 				Top4.get(), UNVISITED, 0));
-		grid.setDefaultVertexLabel(v -> UNVISITED);
 		canvas.setCellSize(cellSize, false);
 		canvas.setGrid(grid);
 		window.setTitle(getTitleText());
