@@ -75,6 +75,12 @@ public class BFSAnimation implements GraphSearchObserver {
 	private GridCanvas canvas;
 	private final DelayedRunner delay;
 
+	private BFSAnimation() {
+		delay = new DelayedRunner();
+		distanceVisible = false;
+		pathColor = Color.RED;
+	}
+
 	@Override
 	public void edgeTraversed(int either, int other) {
 		delay.run(() -> canvas.drawGridPassage(either, other, true));
@@ -93,12 +99,6 @@ public class BFSAnimation implements GraphSearchObserver {
 	@Override
 	public void vertexStateChanged(int vertex, TraversalState oldState, TraversalState newState) {
 		delay.run(() -> canvas.drawGridCell(vertex));
-	}
-
-	private BFSAnimation() {
-		delay = new DelayedRunner();
-		distanceVisible = false;
-		pathColor = Color.RED;
 	}
 
 	public void floodFill(GridPosition sourcePosition) {

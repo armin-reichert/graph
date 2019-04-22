@@ -55,11 +55,12 @@ public class DFSAnimation implements GraphSearchObserver {
 
 	private ObservableGraphSearch dfs;
 	private GridCanvas canvas;
-	private Color pathColor = Color.RED;
+	private Color pathColor;
 	private final BitSet inPath;
 	private final DelayedRunner delay;
 
 	private DFSAnimation() {
+		pathColor = Color.RED;
 		delay = new DelayedRunner();
 		inPath = new BitSet();
 	}
