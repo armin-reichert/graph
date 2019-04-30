@@ -72,20 +72,21 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * Creates a grid with the given properties.
 	 * 
 	 * @param numCols
-	 *          the number of columns
+	 *                               the number of columns
 	 * @param numRows
-	 *          the number of rows
+	 *                               the number of rows
 	 * @param top
-	 *          the topology of this grid
+	 *                               the topology of this grid
 	 * @param fnDefaultVertexLabel
-	 *          default vertex label
+	 *                               default vertex label
 	 * @param fnDefaultEdgeLabel
-	 *          default edge label
+	 *                               default edge label
 	 * @param fnEdgeFactory
-	 *          function for creating edges of the correct type
+	 *                               function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, Topology top, Function<Integer, V> fnDefaultVertexLabel,
-			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
+	public GridGraph(int numCols, int numRows, Topology top,
+			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
+			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
 			throw new IllegalArgumentException("Illegal number of columns: " + numCols);
 		}
@@ -137,17 +138,32 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public Stream<Edge> edges() {
 		List<Edge> edgeList = new ArrayList<>();
-		/*@formatter:off*/
-		vertices().forEach(cell -> {
-			top.dirs()
-				.filter(dir -> isConnected(cell, dir))
-				.mapToObj(dir -> neighbor(cell, dir))
-				.filter(OptionalInt::isPresent)
-				.map(OptionalInt::getAsInt)
-				.filter(neighbor -> cell < neighbor)
-				.forEach(neighbor -> edgeList.add(fnEdgeFactory.apply(cell, neighbor)));
-		});
-		/*@formatter:on*/
+		if (top == Top4.get()) { // optimized code for 4-direction-topology
+			for (int row = 0; row < numRows; ++row) {
+				for (int col = 0; col < numCols; ++col) {
+					int v = index(col, row);
+					if (wires.get(bit(v, Top4.E))) {
+						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Top4.E)));
+					}
+					if (wires.get(bit(v, Top4.S))) {
+						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Top4.S)));
+					}
+				}
+			}
+		}
+		else {
+			/*@formatter:off*/
+			vertices().forEach(cell -> {
+				top.dirs()
+					.filter(dir -> isConnected(cell, dir))
+					.mapToObj(dir -> neighbor(cell, dir))
+					.filter(OptionalInt::isPresent)
+					.map(OptionalInt::getAsInt)
+					.filter(neighbor -> cell < neighbor)
+					.forEach(neighbor -> edgeList.add(fnEdgeFactory.apply(cell, neighbor)));
+			});
+			/*@formatter:on*/
+		}
 		return edgeList.stream();
 	}
 
@@ -192,7 +208,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 					String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
 		}
 		if (adjacent(u, v)) {
-			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
+			throw new IllegalStateException(
+					String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
 		}
 		direction(u, v).ifPresent(dir -> wire(u, v, dir, true));
 	}
@@ -310,8 +327,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public void fill() {
 		wires.clear();
-		vertices().forEach(cell -> top.dirs()
-				.forEach(dir -> neighbor(cell, dir).ifPresent(neighbor -> wire(cell, neighbor, dir, true))));
+		vertices().forEach(cell -> top.dirs().forEach(
+				dir -> neighbor(cell, dir).ifPresent(neighbor -> wire(cell, neighbor, dir, true))));
 	}
 
 	@Override
@@ -343,9 +360,14 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	public OptionalInt neighbor(int v, int dir) {
 		checkCell(v);
 		checkDir(dir);
+		int neighbor = neighborCell(v, dir);
+		return neighbor != -1 ? OptionalInt.of(neighbor) : OptionalInt.empty();
+	}
+
+	private int neighborCell(int v, int dir) {
 		int col = col(v) + top.dx(dir);
 		int row = row(v) + top.dy(dir);
-		return isValidCol(col) && isValidRow(row) ? OptionalInt.of(index(col, row)) : OptionalInt.empty();
+		return isValidCol(col) && isValidRow(row) ? index(col, row) : NO_VERTEX;
 	}
 
 	@Override
@@ -366,7 +388,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
 		sb.append("(").append(numCols).append(" cols, ").append(numRows).append(" rows, ")
-				.append(numCols * numRows).append(" cells, ").append(numEdges()).append(" edges").append(")");
+				.append(numCols * numRows).append(" cells, ").append(numEdges()).append(" edges")
+				.append(")");
 		return sb.toString();
 	}
 }
