@@ -84,9 +84,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * @param fnEdgeFactory
 	 *                               function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, Topology top,
-			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
-			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
+	public GridGraph(int numCols, int numRows, Topology top, Function<Integer, V> fnDefaultVertexLabel,
+			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
 			throw new IllegalArgumentException("Illegal number of columns: " + numCols);
 		}
@@ -208,8 +207,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 					String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
 		}
 		if (adjacent(u, v)) {
-			throw new IllegalStateException(
-					String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
+			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
 		}
 		direction(u, v).ifPresent(dir -> wire(u, v, dir, true));
 	}
@@ -327,8 +325,14 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public void fill() {
 		wires.clear();
-		vertices().forEach(cell -> top.dirs().forEach(
-				dir -> neighbor(cell, dir).ifPresent(neighbor -> wire(cell, neighbor, dir, true))));
+		//@formatter:off
+		vertices().forEach(cell -> top.dirs().forEach(dir -> {
+			int neighbor = neighborCell(cell, dir);
+			if (neighbor != NO_VERTEX) {
+				wire(cell, neighbor, dir, true);
+			}
+		}));
+		//@formatter:off
 	}
 
 	@Override
@@ -388,8 +392,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
 		sb.append("(").append(numCols).append(" cols, ").append(numRows).append(" rows, ")
-				.append(numCols * numRows).append(" cells, ").append(numEdges()).append(" edges")
-				.append(")");
+				.append(numCols * numRows).append(" cells, ").append(numEdges()).append(" edges").append(")");
 		return sb.toString();
 	}
 }
