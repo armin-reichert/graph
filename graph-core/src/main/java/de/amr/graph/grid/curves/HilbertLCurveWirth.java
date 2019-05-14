@@ -32,86 +32,36 @@ import de.amr.graph.grid.api.CellSequence;
  */
 public class HilbertLCurveWirth implements CellSequence {
 
-	private final List<Integer> dirs = new ArrayList<>();
+	List<Integer> curve = new ArrayList<>();
+
+	/*@formatter:off*/
+	
+	// Terminals
+	void n() {curve.add(N);}
+	void e() {curve.add(E);}
+	void s() {curve.add(S);}
+	void w() {curve.add(W);}
+
+	// Rules
+	void A(int i) {if (i > 0) {D(i - 1); w(); A(i - 1); s(); A(i - 1); e(); B(i - 1); }}
+	void B(int i) {if (i > 0) {C(i - 1); n(); B(i - 1); e(); B(i - 1); s(); A(i - 1); }}
+	void C(int i) {if (i > 0) {B(i - 1); e(); C(i - 1); n(); C(i - 1); w(); D(i - 1); }}
+	void D(int i) {if (i > 0) {A(i - 1); s(); D(i - 1); w(); D(i - 1); n(); C(i - 1); }}
+	
+	/*@formatter:on*/
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return dirs.iterator();
-	}
-
-	public HilbertLCurveWirth(int i) {
-		A(i);
+		return curve.iterator();
 	}
 
 	/**
-	 * <code> A -> D w A s A e B </code>
+	 * Creates a Hilbert curve of depth <code>n</code>.
 	 * 
-	 * @param i
-	 *            the recursion depth
+	 * @param n
+	 *            recursion depth
 	 */
-	private void A(int i) {
-		if (i > 0) {
-			D(i - 1);
-			dirs.add(W);
-			A(i - 1);
-			dirs.add(S);
-			A(i - 1);
-			dirs.add(E);
-			B(i - 1);
-		}
-	}
-
-	/**
-	 * <code> B -> C n B e B s A</code>
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void B(int i) {
-		if (i > 0) {
-			C(i - 1);
-			dirs.add(N);
-			B(i - 1);
-			dirs.add(E);
-			B(i - 1);
-			dirs.add(S);
-			A(i - 1);
-		}
-	}
-
-	/**
-	 * <code> C -> B e C n C w D</code>
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void C(int i) {
-		if (i > 0) {
-			B(i - 1);
-			dirs.add(E);
-			C(i - 1);
-			dirs.add(N);
-			C(i - 1);
-			dirs.add(W);
-			D(i - 1);
-		}
-	}
-
-	/**
-	 * <code> D -> A s D w D n C</code>
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void D(int i) {
-		if (i > 0) {
-			A(i - 1);
-			dirs.add(S);
-			D(i - 1);
-			dirs.add(W);
-			D(i - 1);
-			dirs.add(N);
-			C(i - 1);
-		}
+	public HilbertLCurveWirth(int n) {
+		A(n);
 	}
 }
