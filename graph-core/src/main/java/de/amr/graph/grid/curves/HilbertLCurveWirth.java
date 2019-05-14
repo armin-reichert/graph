@@ -16,14 +16,16 @@ import de.amr.graph.grid.api.CellSequence;
  * "Algorithmen und Datenstrukturen" by Niklaus Wirth, Teubner 1983):
  * <p>
  * <code>
- * A -> D w A s A e B <br/>
- * B -> C n B e B s A <br/>
- * C -> B e C n C w D <br/>
- * D -> A s D w D n C
+ * A -> D w A s A e B <br>
+ * B -> C n B e B s A <br>
+ * C -> B e C n C w D <br>
+ * D -> A s D w D n C <br>
+ * <br>
+ * Axiom (start symbol): A
  * </code>
  * </p>
- * The non-terminals <code>n,e,s,w</code> are interpreted as walking towards the corresponding
- * direction. Axiom: <code>A</code>.
+ * The terminals <code>n,e,s,w</code> are interpreted as walking towards the corresponding
+ * direction.
  * <p>
  * As given, the curve starts at the upper right corner and ends at the lower right corner of the
  * grid.
@@ -37,10 +39,10 @@ public class HilbertLCurveWirth implements CellSequence {
 	/*@formatter:off*/
 	
 	// Terminals
-	void n() {curve.add(N);}
-	void e() {curve.add(E);}
-	void s() {curve.add(S);}
-	void w() {curve.add(W);}
+	void n() { curve.add(N); }
+	void e() { curve.add(E); }
+	void s() { curve.add(S); }
+	void w() { curve.add(W); }
 
 	// Rules
 	void A(int i) {if (i > 0) {D(i - 1); w(); A(i - 1); s(); A(i - 1); e(); B(i - 1); }}
