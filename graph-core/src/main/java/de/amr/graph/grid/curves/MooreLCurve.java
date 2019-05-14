@@ -10,9 +10,9 @@ import de.amr.graph.grid.api.CellSequence;
  * Computes a Moore curve from the following L-system:
  * <p>
  * <code>
- * S -> L f L + f + L f L <br/>
- * L -> - R f + L f L + f R - <br/>
- * R -> + L f - R f R - f L + </br>
+ * S -> L f L l f l L f L <br/>
+ * L -> r R f l L f L l f R r <br/>
+ * R -> l L f r R f R r f L l </br>
  * </code>
  * <p>
  * with nonterminals <code>{S, L, R}</code>, axiom <code>S</code> and terminals
@@ -21,8 +21,8 @@ import de.amr.graph.grid.api.CellSequence;
  * The terminals are interpreted as follows:
  * <ul>
  * <li><code>f</code> = go forward
- * <li><code>+</code> = turn 90&deg; counter-clockwise
- * <li><code>-</code> = turn 90&deg; clockwise.
+ * <li><code>l</code> = turn 90&deg; left (counter-clockwise)
+ * <li><code>r</code> = turn 90&deg; right (clockwise).
  * </ul>
  * <p>
  * On a <code>(n x n)</code>-grid, the curve starts at <code>column = n / 2 - 1, row = n - 1</code>
@@ -35,94 +35,35 @@ import de.amr.graph.grid.api.CellSequence;
  */
 public class MooreLCurve implements CellSequence {
 
-	private final List<Integer> dirs = new ArrayList<>();
+	Compass4 head = new Compass4();
+	List<Integer> curve = new ArrayList<>();
 
-	private final Compass4 compass = new Compass4();
+	/*@formatter:off*/
 
-	// non-terminal symbol interpretations:
+	// non-terminals
+	void l() { head.turnLeft(); }
+	void r() { head.turnRight(); }
+	void f() { curve.add(head.ahead()); }
 
-	private void minus() {
-		compass.turnRight();
-	}
-
-	private void plus() {
-		compass.turnLeft();
-	}
-
-	private void f() {
-		dirs.add(compass.ahead());
-	}
+	// rules
+	void S(int i) {	if (i > 0) { L(i - 1); f(); L(i - 1); l(); f(); l(); L(i - 1); f(); L(i - 1); }}
+	void L(int i) { if (i > 0) { r(); R(i - 1); f(); l(); L(i - 1); f(); L(i - 1); l(); f(); R(i - 1); r(); }}
+	void R(int i) { if (i > 0) { l(); L(i - 1); f(); r(); R(i - 1); f(); R(i - 1); r(); f(); L(i - 1); l(); }}
+	
+	/*@formatter:on*/
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return dirs.iterator();
-	}
-
-	public MooreLCurve(int i) {
-		S(i);
+		return curve.iterator();
 	}
 
 	/**
-	 * {@code S -> L f L + f + L f L}
+	 * Creates a Moore curve of depth <code>n</code>.
 	 * 
-	 * @param i
-	 *            the recursion depth
+	 * @param n
+	 *            recursion depth
 	 */
-	private void S(int i) {
-		if (i > 0) {
-			L(i - 1);
-			f();
-			L(i - 1);
-			plus();
-			f();
-			plus();
-			L(i - 1);
-			f();
-			L(i - 1);
-		}
-	}
-
-	/**
-	 * {@code L -> - R f + L f L + f R -}
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void L(int i) {
-		if (i > 0) {
-			minus();
-			R(i - 1);
-			f();
-			plus();
-			L(i - 1);
-			f();
-			L(i - 1);
-			plus();
-			f();
-			R(i - 1);
-			minus();
-		}
-	}
-
-	/**
-	 * {@code R -> + L f - R f R - f L +}
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void R(int i) {
-		if (i > 0) {
-			plus();
-			L(i - 1);
-			f();
-			minus();
-			R(i - 1);
-			f();
-			R(i - 1);
-			minus();
-			f();
-			L(i - 1);
-			plus();
-		}
+	public MooreLCurve(int n) {
+		S(n);
 	}
 }
