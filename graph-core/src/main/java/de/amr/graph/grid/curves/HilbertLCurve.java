@@ -35,13 +35,13 @@ public class HilbertLCurve implements CellSequence {
 
 	/*@formatter:off*/
 	// terminal symbols:
-	void m() {head.turnRight();}
-	void p() {head.turnLeft();}
-	void f() {dirs.add(head.ahead());}
+	void m() { head.turnRight(); }
+	void p() { head.turnLeft(); }
+	void f() { dirs.add(head.ahead()); }
 	
 	// non-terminal symbols:
 	void A(int i) {if (i > 0) { m();B(i-1);f();p();A(i-1);f();A(i-1);p();f();B(i-1);m(); }}
-	void B(int i) {if (i > 0) {	p();A(i-1);f();m();B(i-1);f();B(i-1);m();f();A(i-1);p(); }}
+	void B(int i) {if (i > 0) { p();A(i-1);f();m();B(i-1);f();B(i-1);m();f();A(i-1);p(); }}
 	/*@formatter:on*/
 
 	@Override
