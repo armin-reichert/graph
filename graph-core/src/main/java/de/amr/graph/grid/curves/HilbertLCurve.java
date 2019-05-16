@@ -30,23 +30,19 @@ import de.amr.graph.grid.api.CellSequence;
  */
 public class HilbertLCurve implements CellSequence {
 
-	private final List<Integer> dirs = new ArrayList<>();
+	List<Integer> dirs = new ArrayList<>();
+	Compass4 head = new Compass4();
 
-	private final Compass4 compass = new Compass4();
-
-	// non-terminal symbol interpretations:
-
-	private void minus() {
-		compass.turnRight();
-	}
-
-	private void plus() {
-		compass.turnLeft();
-	}
-
-	private void f() {
-		dirs.add(compass.ahead());
-	}
+	/*@formatter:off*/
+	// terminal symbols:
+	void m() {head.turnRight();}
+	void p() {head.turnLeft();}
+	void f() {dirs.add(head.ahead());}
+	
+	// non-terminal symbols:
+	void A(int i) {if (i > 0) { m();B(i-1);f();p();A(i-1);f();A(i-1);p();f();B(i-1);m(); }}
+	void B(int i) {if (i > 0) {	p();A(i-1);f();m();B(i-1);f();B(i-1);m();f();A(i-1);p(); }}
+	/*@formatter:on*/
 
 	@Override
 	public Iterator<Integer> iterator() {
@@ -55,49 +51,5 @@ public class HilbertLCurve implements CellSequence {
 
 	public HilbertLCurve(int i) {
 		A(i);
-	}
-
-	/**
-	 * <code>A → − B f + A f A + f B −</code>
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void A(int i) {
-		if (i > 0) {
-			minus();
-			B(i - 1);
-			f();
-			plus();
-			A(i - 1);
-			f();
-			A(i - 1);
-			plus();
-			f();
-			B(i - 1);
-			minus();
-		}
-	}
-
-	/**
-	 * <code>B → + A f − B f B − f A +</code>
-	 * 
-	 * @param i
-	 *            the recursion depth
-	 */
-	private void B(int i) {
-		if (i > 0) {
-			plus();
-			A(i - 1);
-			f();
-			minus();
-			B(i - 1);
-			f();
-			B(i - 1);
-			minus();
-			f();
-			A(i - 1);
-			plus();
-		}
 	}
 }
