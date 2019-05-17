@@ -3,9 +3,7 @@ package de.amr.graph.grid.shapes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.api.GridGraph2D;
 
 /**
@@ -17,7 +15,7 @@ import de.amr.graph.grid.api.GridGraph2D;
  * @author Armin Reichert
  *
  */
-public abstract class AbstractShape implements CellSequence {
+public abstract class AbstractShape implements Iterable<Integer> {
 
 	public final GridGraph2D<?, ?> grid;
 
@@ -36,10 +34,5 @@ public abstract class AbstractShape implements CellSequence {
 	@Override
 	public Iterator<Integer> iterator() {
 		return cells.iterator();
-	}
-
-	@Override
-	public IntStream stream() {
-		return cells.stream().mapToInt(Integer::intValue);
 	}
 }

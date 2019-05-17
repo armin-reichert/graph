@@ -2,7 +2,6 @@ package de.amr.graph.grid.traversals;
 
 import java.util.Iterator;
 
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.api.GridGraph2D;
 
 /**
@@ -11,7 +10,7 @@ import de.amr.graph.grid.api.GridGraph2D;
  * 
  * @author Armin Reichert
  */
-public class CollapsingWalls implements CellSequence {
+public class CollapsingWalls implements Iterable<Integer> {
 
 	private final GridGraph2D<?, ?> grid;
 

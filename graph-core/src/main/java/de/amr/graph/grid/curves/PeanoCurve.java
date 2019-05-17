@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.amr.graph.grid.api.CellSequence;
-
 /**
  * Computes a Peano-curve.
  * 
  * @author Armin Reichert
  */
-public class PeanoCurve implements CellSequence {
+public class PeanoCurve implements Iterable<Integer> {
 
 	private final List<Integer> dirs = new ArrayList<>();
 

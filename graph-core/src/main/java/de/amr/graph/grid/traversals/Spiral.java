@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.amr.graph.core.api.UndirectedEdge;
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.impl.GridGraph;
@@ -18,7 +17,7 @@ import de.amr.graph.grid.shapes.Square;
  * 
  * @author Armin Reichert
  */
-public class Spiral implements CellSequence {
+public class Spiral implements Iterable<Integer> {
 
 	private final List<Integer> cells = new ArrayList<>();
 

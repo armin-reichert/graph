@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.amr.graph.grid.api.CellSequence;
-
 /**
  * Implementation of a Hilbert curve using the following L-system:
  * <p>
@@ -28,7 +26,7 @@ import de.amr.graph.grid.api.CellSequence;
  * 
  * @author Armin Reichert
  */
-public class HilbertLCurve implements CellSequence {
+public class HilbertLCurve implements Iterable<Integer> {
 
 	List<Integer> dirs = new ArrayList<>();
 	Compass4 head = new Compass4();

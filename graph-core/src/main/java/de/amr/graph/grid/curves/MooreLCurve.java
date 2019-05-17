@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.amr.graph.grid.api.CellSequence;
-
 /**
  * Computes a Moore curve from the following L-system:
  * <p>
@@ -33,7 +31,7 @@ import de.amr.graph.grid.api.CellSequence;
  * @see http://cph.phys.spbu.ru/ACOPhys/materials/bader/sfc.pdf
  * @see https://en.wikipedia.org/wiki/Moore_curve
  */
-public class MooreLCurve implements CellSequence {
+public class MooreLCurve implements Iterable<Integer> {
 
 	Compass4 head = new Compass4();
 	List<Integer> curve = new ArrayList<>();

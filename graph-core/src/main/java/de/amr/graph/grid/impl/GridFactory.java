@@ -10,16 +10,16 @@ import de.amr.graph.grid.api.Topology;
  */
 public interface GridFactory {
 
-	static <V, E> GridGraph<V, E> fullGrid(int numCols, int numRows, Topology top, V defaultVertexLabel,
-			E defaultEdgeLabel) {
+	static <V, E> GridGraph<V, E> fullGrid(int numCols, int numRows, Topology top,
+			V defaultVertexLabel, E defaultEdgeLabel) {
 		GridGraph<V, E> g = new GridGraph<>(numCols, numRows, top, v -> defaultVertexLabel,
 				(u, v) -> defaultEdgeLabel, UndirectedEdge::new);
 		g.fill();
 		return g;
 	}
 
-	static <V, E> GridGraph<V, E> emptyGrid(int numCols, int numRows, Topology top, V defaultVertexLabel,
-			E defaultEdgeLabel) {
+	static <V, E> GridGraph<V, E> emptyGrid(int numCols, int numRows, Topology top,
+			V defaultVertexLabel, E defaultEdgeLabel) {
 		GridGraph<V, E> g = new GridGraph<>(numCols, numRows, top, v -> defaultVertexLabel,
 				(u, v) -> defaultEdgeLabel, UndirectedEdge::new);
 		return g;
@@ -27,16 +27,16 @@ public interface GridFactory {
 
 	static <V, E> ObservableGridGraph<V, E> fullObservableGrid(int numCols, int numRows, Topology top,
 			V defaultVertexLabel, E defaultEdgeLabel) {
-		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top, v -> defaultVertexLabel,
-				(u, v) -> defaultEdgeLabel, UndirectedEdge::new);
+		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top,
+				v -> defaultVertexLabel, (u, v) -> defaultEdgeLabel, UndirectedEdge::new);
 		g.fill();
 		return g;
 	}
 
-	static <V, E> ObservableGridGraph<V, E> emptyObservableGrid(int numCols, int numRows, Topology top,
-			V defaultVertexLabel, E defaultEdgeLabel) {
-		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top, v -> defaultVertexLabel,
-				(u, v) -> defaultEdgeLabel, UndirectedEdge::new);
+	static <V, E> ObservableGridGraph<V, E> emptyObservableGrid(int numCols, int numRows,
+			Topology top, V defaultVertexLabel, E defaultEdgeLabel) {
+		ObservableGridGraph<V, E> g = new ObservableGridGraph<>(numCols, numRows, top,
+				v -> defaultVertexLabel, (u, v) -> defaultEdgeLabel, UndirectedEdge::new);
 		return g;
 	}
 }

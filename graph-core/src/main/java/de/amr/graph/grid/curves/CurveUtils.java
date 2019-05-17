@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import de.amr.graph.grid.api.CellSequence;
+import de.amr.datastruct.StreamUtils;
 import de.amr.graph.grid.api.GridGraph2D;
 
 /**
@@ -28,7 +28,7 @@ public class CurveUtils {
 	 * @param action
 	 *                 the action executed for each cell
 	 */
-	public static void traverse(CellSequence curve, GridGraph2D<?, ?> grid, int start,
+	public static void traverse(Iterable<Integer> curve, GridGraph2D<?, ?> grid, int start,
 			BiConsumer<Integer, Integer> action) {
 		int current = start;
 		for (int dir : curve) {
@@ -49,9 +49,9 @@ public class CurveUtils {
 	 *                the start cell
 	 * @return list of cells traversed by {@code curve} on {@code grid} when starting at {@code start}
 	 */
-	public static List<Integer> cells(CellSequence curve, GridGraph2D<?, ?> grid, int start) {
+	public static List<Integer> cells(Iterable<Integer> curve, GridGraph2D<?, ?> grid, int start) {
 		/*@formatter:off*/
-		return curve.stream().collect(
+		return StreamUtils.toStream(curve).collect(
 			() -> new ArrayList<>(Arrays.asList(start)), 
 			(cells, dir) -> cells.add(grid.neighbor(cells.get(cells.size() - 1), dir).getAsInt()),
 			ArrayList<Integer>::addAll
@@ -70,8 +70,9 @@ public class CurveUtils {
 	 *                the start cell
 	 * @return textual representation of the grid cells traversed by the given curve
 	 */
-	public static String cellsAsString(CellSequence curve, GridGraph2D<?, ?> grid, int start) {
+	public static String cellsAsString(Iterable<Integer> curve, GridGraph2D<?, ?> grid, int start) {
 		return cells(curve, grid, start).stream()
-				.map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell))).collect(Collectors.joining());
+				.map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell)))
+				.collect(Collectors.joining());
 	}
 }

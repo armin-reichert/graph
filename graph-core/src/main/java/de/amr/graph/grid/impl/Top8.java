@@ -29,8 +29,8 @@ public class Top8 implements Topology {
 	public static final int W = 6;
 	public static final int NW = 7;
 
-	private static final int[][] VEC = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 },
-			{ -1, 0 }, { -1, -1 } };
+	private static final int[][] VEC = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 },
+			{ -1, 1 }, { -1, 0 }, { -1, -1 } };
 
 	private Top8() {
 

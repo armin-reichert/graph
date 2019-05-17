@@ -13,14 +13,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.amr.graph.grid.api.CellSequence;
-
 /**
  * Sierpinski curve (as defined in Niklaus Wirth, "Algorithmen und Datenstrukturen").
  * 
  * @author Armin Reichert
  */
-public class SierpinskiLCurve implements CellSequence {
+public class SierpinskiLCurve implements Iterable<Integer> {
 
 	private final List<Integer> dirs = new ArrayList<>();
 

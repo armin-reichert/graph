@@ -22,9 +22,9 @@ public interface GridMetrics {
 	 * Returns the Chebyshev distance (maximum metric) between the given grid cells.
 	 * 
 	 * @param u
-	 *          grid cell
+	 *            grid cell
 	 * @param v
-	 *          grid cell
+	 *            grid cell
 	 * 
 	 * @return Chebyshev distance between cells
 	 */
@@ -37,9 +37,9 @@ public interface GridMetrics {
 	 * Returns the Manhattan distance (L1 norm) between the given grid cells.
 	 * 
 	 * @param u
-	 *          grid cell
+	 *            grid cell
 	 * @param v
-	 *          grid cell
+	 *            grid cell
 	 * 
 	 * @return Manhattan distance between cells
 	 */
@@ -52,9 +52,9 @@ public interface GridMetrics {
 	 * Returns the Euclidean distance between the given grid cells.
 	 * 
 	 * @param u
-	 *          grid cell
+	 *            grid cell
 	 * @param v
-	 *          grid cell
+	 *            grid cell
 	 * 
 	 * @return Euclidean distance between cells
 	 */

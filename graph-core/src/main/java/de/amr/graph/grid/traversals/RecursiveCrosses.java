@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.api.GridGraph2D;
 
 /**
@@ -14,7 +13,7 @@ import de.amr.graph.grid.api.GridGraph2D;
  * 
  * @author Armin Reichert
  */
-public class RecursiveCrosses implements CellSequence {
+public class RecursiveCrosses implements Iterable<Integer> {
 
 	private final GridGraph2D<?, ?> grid;
 	private final List<Integer> path = new ArrayList<>();

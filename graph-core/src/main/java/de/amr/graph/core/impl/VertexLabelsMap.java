@@ -50,7 +50,7 @@ public class VertexLabelsMap<V> implements VertexLabeling<V> {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0)).append("'):\n")
-				.append(labels).toString();
+		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0))
+				.append("'):\n").append(labels).toString();
 	}
 }

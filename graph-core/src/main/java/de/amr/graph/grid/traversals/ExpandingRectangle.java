@@ -2,7 +2,6 @@ package de.amr.graph.grid.traversals;
 
 import java.util.Iterator;
 
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.shapes.Rectangle;
 
 /**
@@ -11,7 +10,7 @@ import de.amr.graph.grid.shapes.Rectangle;
  * 
  * @author Armin Reichert
  */
-public class ExpandingRectangle implements CellSequence {
+public class ExpandingRectangle implements Iterable<Integer> {
 
 	private final Rectangle startRect;
 	private boolean expandHoriz;
@@ -62,7 +61,8 @@ public class ExpandingRectangle implements CellSequence {
 					int width = currentRect.getWidth() + (expandHoriz ? expansionRate : 0);
 					int height = currentRect.getHeight() + (expandVert ? expansionRate : 0);
 					expansion += expansionRate;
-					currentRect = new Rectangle(currentRect.grid, currentRect.getLeftUpperCorner(), width, height);
+					currentRect = new Rectangle(currentRect.grid, currentRect.getLeftUpperCorner(), width,
+							height);
 					iterator = currentRect.iterator();
 				}
 				return iterator.next();

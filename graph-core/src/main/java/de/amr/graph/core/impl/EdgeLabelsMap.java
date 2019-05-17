@@ -45,7 +45,7 @@ public class EdgeLabelsMap<E> implements EdgeLabeling<E> {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0, 0)).append("'):\n")
-				.append(labels).toString();
+		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0, 0))
+				.append("'):\n").append(labels).toString();
 	}
 }

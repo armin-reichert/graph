@@ -2,7 +2,6 @@ package de.amr.graph.grid.traversals;
 
 import java.util.Iterator;
 
-import de.amr.graph.grid.api.CellSequence;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.shapes.Square;
 
@@ -11,7 +10,7 @@ import de.amr.graph.grid.shapes.Square;
  * 
  * @author Armin Reichert
  */
-public class ExpandingSquare implements CellSequence {
+public class ExpandingSquare implements Iterable<Integer> {
 
 	private final GridGraph2D<?, ?> grid;
 	private final int topLeft;
