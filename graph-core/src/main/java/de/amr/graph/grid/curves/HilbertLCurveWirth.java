@@ -34,17 +34,11 @@ public class HilbertLCurveWirth extends Curve {
 
 	/*@formatter:off*/
 	
-	// Terminals
-	void n() { go(N); }
-	void e() { go(E); }
-	void s() { go(S); }
-	void w() { go(W); }
-
 	// Rules
-	void A(int i) {if (i > 0) {D(i - 1); w(); A(i - 1); s(); A(i - 1); e(); B(i - 1); }}
-	void B(int i) {if (i > 0) {C(i - 1); n(); B(i - 1); e(); B(i - 1); s(); A(i - 1); }}
-	void C(int i) {if (i > 0) {B(i - 1); e(); C(i - 1); n(); C(i - 1); w(); D(i - 1); }}
-	void D(int i) {if (i > 0) {A(i - 1); s(); D(i - 1); w(); D(i - 1); n(); C(i - 1); }}
+	void A(int i) {if (i > 0) {D(i-1); go(W); A(i-1); go(S); A(i-1); go(E); B(i-1); }}
+	void B(int i) {if (i > 0) {C(i-1); go(N); B(i-1); go(E); B(i-1); go(S); A(i-1); }}
+	void C(int i) {if (i > 0) {B(i-1); go(E); C(i-1); go(N); C(i-1); go(W); D(i-1); }}
+	void D(int i) {if (i > 0) {A(i-1); go(S); D(i-1); go(W); D(i-1); go(N); C(i-1); }}
 	
 	/*@formatter:on*/
 }
