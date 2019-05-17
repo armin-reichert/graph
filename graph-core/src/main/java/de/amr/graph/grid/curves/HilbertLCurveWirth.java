@@ -5,13 +5,9 @@ import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
- * Implementation of a Hilbert curve using the following L-system (adapted from the book
- * "Algorithmen und Datenstrukturen" by Niklaus Wirth, Teubner 1983):
+ * Implements a Hilbert curve using the following L-system (adapted from the book "Algorithmen und
+ * Datenstrukturen" by Niklaus Wirth, Teubner 1983):
  * <p>
  * <code>
  * A -> D w A s A e B <br>
@@ -30,17 +26,19 @@ import java.util.List;
  * 
  * @author Armin Reichert
  */
-public class HilbertLCurveWirth implements Iterable<Integer> {
+public class HilbertLCurveWirth extends Curve {
 
-	List<Integer> curve = new ArrayList<>();
+	public HilbertLCurveWirth(int depth) {
+		A(depth);
+	}
 
 	/*@formatter:off*/
 	
 	// Terminals
-	void n() { curve.add(N); }
-	void e() { curve.add(E); }
-	void s() { curve.add(S); }
-	void w() { curve.add(W); }
+	void n() { go(N); }
+	void e() { go(E); }
+	void s() { go(S); }
+	void w() { go(W); }
 
 	// Rules
 	void A(int i) {if (i > 0) {D(i - 1); w(); A(i - 1); s(); A(i - 1); e(); B(i - 1); }}
@@ -49,19 +47,4 @@ public class HilbertLCurveWirth implements Iterable<Integer> {
 	void D(int i) {if (i > 0) {A(i - 1); s(); D(i - 1); w(); D(i - 1); n(); C(i - 1); }}
 	
 	/*@formatter:on*/
-
-	@Override
-	public Iterator<Integer> iterator() {
-		return curve.iterator();
-	}
-
-	/**
-	 * Creates a Hilbert curve of depth <code>n</code>.
-	 * 
-	 * @param n
-	 *            recursion depth
-	 */
-	public HilbertLCurveWirth(int n) {
-		A(n);
-	}
 }

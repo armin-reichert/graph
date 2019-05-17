@@ -5,47 +5,36 @@ import static de.amr.graph.grid.impl.Top4.N;
 import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Computes a Peano-curve.
  * 
  * @author Armin Reichert
  */
-public class PeanoCurve implements Iterable<Integer> {
+public class PeanoCurve extends Curve {
 
-	private final List<Integer> dirs = new ArrayList<>();
-
-	@Override
-	public Iterator<Integer> iterator() {
-		return dirs.iterator();
+	public PeanoCurve(int depth) {
+		peano(depth, N, E, S, W);
 	}
 
-	public PeanoCurve(int i) {
-		peano(i, N, E, S, W);
-	}
-
-	private void peano(int i, int n, int e, int s, int w) {
-		if (i > 0) {
-			peano(i - 1, n, e, s, w);
-			dirs.add(n);
-			peano(i - 1, n, w, s, e);
-			dirs.add(n);
-			peano(i - 1, n, e, s, w);
-			dirs.add(e);
-			peano(i - 1, s, e, n, w);
-			dirs.add(s);
-			peano(i - 1, s, w, n, e);
-			dirs.add(s);
-			peano(i - 1, s, e, n, w);
-			dirs.add(e);
-			peano(i - 1, n, e, s, w);
-			dirs.add(n);
-			peano(i - 1, n, w, s, e);
-			dirs.add(n);
-			peano(i - 1, n, e, s, w);
+	private void peano(int depth, int n, int e, int s, int w) {
+		if (depth > 0) {
+			peano(depth - 1, n, e, s, w);
+			go(n);
+			peano(depth - 1, n, w, s, e);
+			go(n);
+			peano(depth - 1, n, e, s, w);
+			go(e);
+			peano(depth - 1, s, e, n, w);
+			go(s);
+			peano(depth - 1, s, w, n, e);
+			go(s);
+			peano(depth - 1, s, e, n, w);
+			go(e);
+			peano(depth - 1, n, e, s, w);
+			go(n);
+			peano(depth - 1, n, w, s, e);
+			go(n);
+			peano(depth - 1, n, e, s, w);
 		}
 	}
 }

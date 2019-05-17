@@ -9,90 +9,22 @@ import static de.amr.graph.grid.impl.Top8.SE;
 import static de.amr.graph.grid.impl.Top8.SW;
 import static de.amr.graph.grid.impl.Top8.W;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Sierpinski curve (as defined in Niklaus Wirth, "Algorithmen und Datenstrukturen").
  * 
  * @author Armin Reichert
  */
-public class SierpinskiLCurve implements Iterable<Integer> {
+public class SierpinskiLCurve extends Curve {
 
-	private final List<Integer> dirs = new ArrayList<>();
-
-	@Override
-	public Iterator<Integer> iterator() {
-		return dirs.iterator();
+	public SierpinskiLCurve(int depth) {
+		S(depth);
 	}
 
-	public SierpinskiLCurve(int i) {
-		S(i);
-	}
-
-	private void S(int i) {
-		if (i > 0) {
-			A(i - 1);
-			dirs.add(SE);
-			B(i - 1);
-			dirs.add(SW);
-			C(i - 1);
-			dirs.add(NW);
-			D(i - 1);
-			dirs.add(NE);
-		}
-	}
-
-	private void A(int i) {
-		if (i > 0) {
-			A(i - 1);
-			dirs.add(SE);
-			B(i - 1);
-			dirs.add(E);
-			dirs.add(E);
-			D(i - 1);
-			dirs.add(NE);
-			A(i - 1);
-		}
-	}
-
-	private void B(int i) {
-		if (i > 0) {
-			B(i - 1);
-			dirs.add(SW);
-			C(i - 1);
-			dirs.add(S);
-			dirs.add(S);
-			A(i - 1);
-			dirs.add(SE);
-			B(i - 1);
-		}
-	}
-
-	private void C(int i) {
-		if (i > 0) {
-			C(i - 1);
-			dirs.add(NW);
-			D(i - 1);
-			dirs.add(W);
-			dirs.add(W);
-			B(i - 1);
-			dirs.add(SW);
-			C(i - 1);
-		}
-	}
-
-	private void D(int i) {
-		if (i > 0) {
-			D(i - 1);
-			dirs.add(NE);
-			A(i - 1);
-			dirs.add(N);
-			dirs.add(N);
-			C(i - 1);
-			dirs.add(NW);
-			D(i - 1);
-		}
-	}
+	/*@formatter:off*/
+	void S(int i) { if (i > 0) { A(i-1); go(SE); B(i-1); go(SW); C(i-1); go(NW); D(i-1); go(NE); }}
+	void A(int i) { if (i > 0) { A(i-1); go(SE); B(i-1); go(E); go(E); D(i-1); go(NE); A(i-1); }}
+	void B(int i) { if (i > 0) { B(i-1); go(SW); C(i-1); go(S); go(S); A(i-1); go(SE); B(i-1); }}
+	void C(int i) { if (i > 0) { C(i-1); go(NW); D(i-1); go(W); go(W); B(i-1); go(SW); C(i-1); }}
+	void D(int i) { if (i > 0) { D(i-1); go(NE); A(i-1); go(N); go(N); C(i-1); go(NW); D(i-1); }}
+	/*@formatter:on*/
 }

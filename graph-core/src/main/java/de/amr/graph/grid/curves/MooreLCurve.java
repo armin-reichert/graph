@@ -1,9 +1,5 @@
 package de.amr.graph.grid.curves;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Computes a Moore curve from the following L-system:
  * <p>
@@ -31,37 +27,25 @@ import java.util.List;
  * @see http://cph.phys.spbu.ru/ACOPhys/materials/bader/sfc.pdf
  * @see https://en.wikipedia.org/wiki/Moore_curve
  */
-public class MooreLCurve implements Iterable<Integer> {
+public class MooreLCurve extends Curve {
+
+	public MooreLCurve(int depth) {
+		S(depth);
+	}
 
 	Compass4 head = new Compass4();
-	List<Integer> curve = new ArrayList<>();
 
 	/*@formatter:off*/
 
-	// non-terminals
+	// Terminals
 	void l() { head.turnLeft(); }
 	void r() { head.turnRight(); }
-	void f() { curve.add(head.ahead()); }
+	void f() { go(head.ahead()); }
 
-	// rules
-	void S(int i) {	if (i > 0) { L(i - 1); f(); L(i - 1); l(); f(); l(); L(i - 1); f(); L(i - 1); }}
-	void L(int i) { if (i > 0) { r(); R(i - 1); f(); l(); L(i - 1); f(); L(i - 1); l(); f(); R(i - 1); r(); }}
-	void R(int i) { if (i > 0) { l(); L(i - 1); f(); r(); R(i - 1); f(); R(i - 1); r(); f(); L(i - 1); l(); }}
+	// Rules
+	void S(int i) {	if (i > 0) { L(i-1); f(); L(i-1); l(); f(); l(); L(i-1); f(); L(i-1); }}
+	void L(int i) { if (i > 0) { r(); R(i-1); f(); l(); L(i-1); f(); L(i-1); l(); f(); R(i-1); r(); }}
+	void R(int i) { if (i > 0) { l(); L(i-1); f(); r(); R(i-1); f(); R(i-1); r(); f(); L(i-1); l(); }}
 	
 	/*@formatter:on*/
-
-	@Override
-	public Iterator<Integer> iterator() {
-		return curve.iterator();
-	}
-
-	/**
-	 * Creates a Moore curve of depth <code>n</code>.
-	 * 
-	 * @param n
-	 *            recursion depth
-	 */
-	public MooreLCurve(int n) {
-		S(n);
-	}
 }
