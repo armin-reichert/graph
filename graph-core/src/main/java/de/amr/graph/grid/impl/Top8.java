@@ -1,5 +1,6 @@
 package de.amr.graph.grid.impl;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import de.amr.graph.grid.api.Topology;
@@ -29,8 +30,8 @@ public class Top8 implements Topology {
 	public static final int W = 6;
 	public static final int NW = 7;
 
-	private static final int[][] VEC = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 },
-			{ -1, 1 }, { -1, 0 }, { -1, -1 } };
+	private static final int[][] VEC = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 },
+			{ -1, 0 }, { -1, -1 } };
 
 	private Top8() {
 
@@ -49,6 +50,11 @@ public class Top8 implements Topology {
 	@Override
 	public int inv(int dir) {
 		return (dir + 4) % 8;
+	}
+
+	@Override
+	public String name(int dir) {
+		return Arrays.asList("N", "NE", "E", "SE", "S", "SW", "W", "NW").get(dir);
 	}
 
 	@Override

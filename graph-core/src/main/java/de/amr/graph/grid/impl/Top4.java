@@ -1,5 +1,6 @@
 package de.amr.graph.grid.impl;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import de.amr.graph.grid.api.Topology;
@@ -34,10 +35,6 @@ public class Top4 implements Topology {
 
 	private static final int[][] VEC = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
 
-	public static String name(int dir) {
-		return String.valueOf("NESW".charAt(dir));
-	}
-
 	private Top4() {
 
 	}
@@ -50,6 +47,11 @@ public class Top4 implements Topology {
 	@Override
 	public int dirCount() {
 		return 4;
+	}
+
+	@Override
+	public String name(int dir) {
+		return Arrays.asList("N", "E", "S", "W").get(dir);
 	}
 
 	@Override

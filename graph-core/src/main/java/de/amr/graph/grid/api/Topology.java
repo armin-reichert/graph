@@ -20,6 +20,17 @@ public interface Topology {
 	int dirCount();
 
 	/**
+	 * Readabe name of direction.
+	 * 
+	 * @param dir
+	 *              direction vaue
+	 * @return readabe name
+	 */
+	default String name(int dir) {
+		return "direction-" + dir;
+	}
+
+	/**
 	 * TODO: this make no sense for odd number of directions
 	 * 
 	 * @param dir

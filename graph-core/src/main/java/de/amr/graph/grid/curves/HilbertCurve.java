@@ -6,9 +6,10 @@ import static de.amr.graph.grid.impl.Top4.S;
 import static de.amr.graph.grid.impl.Top4.W;
 
 /**
- * Computes a Hilbert curve on a grid.
+ * Computes a Hilbert curve using recursive procedure calls.
  * <p>
- * The curve starts at the upper right corner of a grid and ends at the lower right corner.
+ * The curve starts at the upper right corner of and ends at the lower right corner of its
+ * containing rectangle.
  *
  * @author Armin Reichert
  */

@@ -10,13 +10,13 @@ package de.amr.graph.grid.curves;
  * </code>
  * <p>
  * with nonterminals <code>{S, L, R}</code>, axiom <code>S</code> and terminals
- * <code>{f, +, -}</code>.
+ * <code>{f, l, r}</code>.
  * <p>
  * The terminals are interpreted as follows:
  * <ul>
  * <li><code>f</code> = go forward
- * <li><code>l</code> = turn 90&deg; left (counter-clockwise)
- * <li><code>r</code> = turn 90&deg; right (clockwise).
+ * <li><code>l</code> = turn left (90&deg; counter-clockwise)
+ * <li><code>r</code> = turn right (90&deg; clockwise).
  * </ul>
  * <p>
  * On a <code>(n x n)</code>-grid, the curve starts at <code>column = n / 2 - 1, row = n - 1</code>
