@@ -22,24 +22,14 @@ package de.amr.graph.grid.curves;
  * 
  * @author Armin Reichert
  */
-public class HilbertLCurve extends Curve {
+public class HilbertLCurve extends TurtleCurve {
 
 	public HilbertLCurve(int depth) {
 		A(depth);
 	}
 
-	Compass4 head = new Compass4();
-
 	/*@formatter:off*/
-	
-	// Terminals
-	void r() { head.turnRight(); }
-	void l() { head.turnLeft(); }
-	void f() { go(head.ahead()); }
-	
-	// Rules
 	void A(int i) { if (i > 0) { r(); B(i-1); f(); l(); A(i-1); f(); A(i-1); l(); f(); B(i-1); r(); }}
 	void B(int i) { if (i > 0) { l(); A(i-1); f(); r(); B(i-1); f(); B(i-1); r(); f(); A(i-1); l(); }}
-	
 	/*@formatter:on*/
 }

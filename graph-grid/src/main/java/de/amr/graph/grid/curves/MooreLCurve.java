@@ -27,25 +27,15 @@ package de.amr.graph.grid.curves;
  * @see http://cph.phys.spbu.ru/ACOPhys/materials/bader/sfc.pdf
  * @see https://en.wikipedia.org/wiki/Moore_curve
  */
-public class MooreLCurve extends Curve {
+public class MooreLCurve extends TurtleCurve {
 
 	public MooreLCurve(int depth) {
 		S(depth);
 	}
 
-	Compass4 head = new Compass4();
-
 	/*@formatter:off*/
-
-	// Terminals
-	void l() { head.turnLeft(); }
-	void r() { head.turnRight(); }
-	void f() { go(head.ahead()); }
-
-	// Rules
 	void S(int i) {	if (i > 0) { L(i-1); f(); L(i-1); l(); f(); l(); L(i-1); f(); L(i-1); }}
 	void L(int i) { if (i > 0) { r(); R(i-1); f(); l(); L(i-1); f(); L(i-1); l(); f(); R(i-1); r(); }}
 	void R(int i) { if (i > 0) { l(); L(i-1); f(); r(); R(i-1); f(); R(i-1); r(); f(); L(i-1); l(); }}
-	
 	/*@formatter:on*/
 }
