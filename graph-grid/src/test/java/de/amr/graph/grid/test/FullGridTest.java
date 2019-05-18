@@ -1,4 +1,4 @@
-package de.amr.graph.test;
+package de.amr.graph.grid.test;
 
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;

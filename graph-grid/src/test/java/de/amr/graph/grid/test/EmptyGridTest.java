@@ -1,4 +1,4 @@
-package de.amr.graph.test;
+package de.amr.graph.grid.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
