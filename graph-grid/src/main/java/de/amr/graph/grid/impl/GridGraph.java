@@ -3,6 +3,7 @@ package de.amr.graph.grid.impl;
 import static java.util.stream.IntStream.range;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
@@ -353,13 +354,9 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	}
 
 	@Override
-	public IntStream neighbors(int v, IntStream dirs) {
-		return dirs.map(dir -> neighbor(v, dir).orElse(NO_VERTEX)).filter(nb -> nb != NO_VERTEX);
-	}
-
-	@Override
-	public IntStream neighbors(int v) {
-		return neighbors(v, top.dirs());
+	public IntStream neighbors(int v, int... dirs) {
+		return (dirs.length == 0 ? top.dirs() : Arrays.stream(dirs))
+				.map(dir -> neighbor(v, dir).orElse(NO_VERTEX)).filter(nb -> nb != NO_VERTEX);
 	}
 
 	@Override
@@ -367,7 +364,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		checkCell(v);
 		checkDir(dir);
 		int neighbor = neighborCell(v, dir);
-		return neighbor != -1 ? OptionalInt.of(neighbor) : OptionalInt.empty();
+		return neighbor == NO_VERTEX ? OptionalInt.empty() : OptionalInt.of(neighbor);
 	}
 
 	private int neighborCell(int v, int dir) {

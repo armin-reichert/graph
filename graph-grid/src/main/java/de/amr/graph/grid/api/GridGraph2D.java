@@ -88,23 +88,11 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 * @param cell
 	 *               a grid cell
 	 * @param dirs
-	 *               a stream of directions
+	 *               a list of directions or if not specified, all directions of the grid's topology
 	 * 
 	 * @return stream of the neighbor cells in the given directions
 	 */
-	IntStream neighbors(int cell, IntStream dirs);
-
-	/**
-	 * Returns all neighbors of a cell. A neighbor is a cell that possibly can be connected to the
-	 * cell by an edge. The neighbors are defined by the grid's topology (4 neighbors, 8 neighbors
-	 * etc.).
-	 * 
-	 * @param cell
-	 *               a grid cell
-	 * 
-	 * @return stream of all neighbor cells
-	 */
-	IntStream neighbors(int cell);
+	IntStream neighbors(int cell, int... dirs);
 
 	/**
 	 * @param cell
