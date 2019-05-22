@@ -18,6 +18,16 @@ public interface GridMetrics {
 	 */
 	GridGraph2D<?, ?> grid();
 
+	/* private */
+	default int dx(int u, int v) {
+		return abs(grid().col(u) - grid().col(v));
+	}
+
+	/* private */
+	default int dy(int u, int v) {
+		return abs(grid().row(u) - grid().row(v));
+	}
+
 	/**
 	 * Returns the Chebyshev distance (maximum metric) between the given grid cells.
 	 * 
@@ -29,8 +39,7 @@ public interface GridMetrics {
 	 * @return Chebyshev distance between cells
 	 */
 	default int chebyshev(int u, int v) {
-		int dx = abs(grid().col(u) - grid().col(v)), dy = abs(grid().row(u) - grid().row(v));
-		return max(dx, dy);
+		return max(dx(u, v), dy(u, v));
 	}
 
 	/**
@@ -44,8 +53,7 @@ public interface GridMetrics {
 	 * @return Manhattan distance between cells
 	 */
 	default int manhattan(int u, int v) {
-		int dx = abs(grid().col(u) - grid().col(v)), dy = abs(grid().row(u) - grid().row(v));
-		return dx + dy;
+		return dx(u, v) + dy(u, v);
 	}
 
 	/**
@@ -59,7 +67,6 @@ public interface GridMetrics {
 	 * @return Euclidean distance between cells
 	 */
 	default double euclidean(int u, int v) {
-		int dx = abs(grid().col(u) - grid().col(v)), dy = abs(grid().row(u) - grid().row(v));
-		return hypot(dx, dy);
+		return hypot(dx(u, v), dy(u, v));
 	}
 }
