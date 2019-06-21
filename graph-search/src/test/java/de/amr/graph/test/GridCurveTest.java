@@ -8,8 +8,6 @@ import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 import static de.amr.graph.grid.api.GridPosition.TOP_RIGHT;
-import static de.amr.graph.grid.curves.CurveUtils.cells;
-import static de.amr.graph.grid.curves.CurveUtils.traverse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -106,28 +104,28 @@ public class GridCurveTest {
 	@Test
 	public void testHilbertCurve() {
 		assertAllCells(false);
-		traverse(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT), this::markEdge);
+		new HilbertCurve(K).traverse(grid, grid.cell(TOP_RIGHT), this::markEdge);
 		assertAllCells(true);
 	}
 
 	@Test
 	public void testHilbertLCurve() {
 		assertAllCells(false);
-		traverse(new HilbertLCurve(K), grid, grid.cell(BOTTOM_LEFT), this::markEdge);
+		new HilbertLCurve(K).traverse(grid, grid.cell(BOTTOM_LEFT), this::markEdge);
 		assertAllCells(true);
 	}
 
 	@Test
 	public void testHilbertLCurveWirth() {
 		assertAllCells(false);
-		traverse(new HilbertLCurveWirth(K), grid, grid.cell(TOP_RIGHT), this::markEdge);
+		new HilbertLCurveWirth(K).traverse(grid, grid.cell(TOP_RIGHT), this::markEdge);
 		assertAllCells(true);
 	}
 
 	@Test
 	public void testMooreLCurve() {
 		assertAllCells(false);
-		traverse(new MooreLCurve(K), grid, grid.cell(N / 2, N - 1), this::markEdge);
+		new MooreLCurve(K).traverse(grid, grid.cell(N / 2, N - 1), this::markEdge);
 		assertAllCells(true);
 	}
 
@@ -136,13 +134,13 @@ public class GridCurveTest {
 		grid = GridFactory.emptyGrid(243, 243, Top4.get(), false, null);
 		grid.setDefaultVertexLabel(v -> false);
 		assertAllCells(false);
-		traverse(new PeanoCurve(5), grid, grid.cell(BOTTOM_LEFT), this::markEdge);
+		new PeanoCurve(5).traverse(grid, grid.cell(BOTTOM_LEFT), this::markEdge);
 		assertAllCells(true);
 	}
 
 	@Test
 	public void testCurveStream() {
-		cells(new HilbertCurve(K), grid, grid.cell(TOP_RIGHT)).forEach(cell -> grid.set(cell, true));
+		new HilbertCurve(K).cells(grid, grid.cell(TOP_RIGHT)).forEach(cell -> grid.set(cell, true));
 		assertAllCells(true);
 	}
 }
