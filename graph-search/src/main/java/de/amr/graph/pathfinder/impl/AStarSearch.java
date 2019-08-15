@@ -23,8 +23,8 @@ import de.amr.graph.pathfinder.impl.queue.MinPQ_VertexQueue;
  * g(v) = getCost(v)
  * h(v) = fnEstimatedCost.apply(v, target)
  * f(v) = g(v) + h(v) = getScore(v)
- * v in open list:   getState(v) == VISITED
- * v in closed list: getState(v) == CLOSED
+ * v in open list:   getState(v) == UNVISITED
+ * v in closed list: getState(v) == COMPLETED
  * </pre>
  * 
  * @author Armin Reichert
