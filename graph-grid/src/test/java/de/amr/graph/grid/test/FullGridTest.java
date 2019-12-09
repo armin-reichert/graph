@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.GridFactory;
-import de.amr.graph.grid.impl.Top4;
-import de.amr.graph.grid.impl.Top8;
+import de.amr.graph.grid.impl.Grid4Topology;
+import de.amr.graph.grid.impl.Grid8Topology;
 
 public class FullGridTest {
 
@@ -29,8 +29,8 @@ public class FullGridTest {
 
 	@Before
 	public void setUp() {
-		full4 = GridFactory.fullGrid(COLS, ROWS, Top4.get(), null, null);
-		full8 = GridFactory.fullGrid(COLS, ROWS, Top8.get(), null, null);
+		full4 = GridFactory.fullGrid(COLS, ROWS, Grid4Topology.get(), null, null);
+		full8 = GridFactory.fullGrid(COLS, ROWS, Grid8Topology.get(), null, null);
 	}
 
 	@After
@@ -204,18 +204,18 @@ public class FullGridTest {
 				Integer cell = full4.cell(x, y);
 				if (full4.numCols() > 1) {
 					if (x == 0) {
-						assertTrue(full4.isConnected(cell, Top4.E));
+						assertTrue(full4.isConnected(cell, Grid4Topology.E));
 					}
 					if (x == full4.numCols() - 1) {
-						assertTrue(full4.isConnected(cell, Top4.W));
+						assertTrue(full4.isConnected(cell, Grid4Topology.W));
 					}
 				}
 				if (full4.numRows() > 1) {
 					if (y == 0) {
-						assertTrue(full4.isConnected(cell, Top4.S));
+						assertTrue(full4.isConnected(cell, Grid4Topology.S));
 					}
 					if (y == full4.numRows() - 1) {
-						assertTrue(full4.isConnected(cell, Top4.N));
+						assertTrue(full4.isConnected(cell, Grid4Topology.N));
 					}
 				}
 			}

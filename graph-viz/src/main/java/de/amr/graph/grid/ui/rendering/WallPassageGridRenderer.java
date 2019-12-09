@@ -9,7 +9,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
 import de.amr.graph.grid.api.GridGraph2D;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 /**
  * Renders a grid as "passages" or "cells with walls" depending on the selected passage thickness.
@@ -106,22 +106,22 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 		final int shortside = passageWidth;
 		g.setColor(passageColor);
 		switch (dir) {
-		case Top4.E:
+		case Grid4Topology.E:
 			g.translate(centerX - shortside / 2, centerY - shortside / 2);
 			g.fillRect(0, 0, longside, shortside);
 			g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
 			break;
-		case Top4.S:
+		case Grid4Topology.S:
 			g.translate(centerX - shortside / 2, centerY - shortside / 2);
 			g.fillRect(0, 0, shortside, longside);
 			g.translate(-centerX + shortside / 2, -centerY + shortside / 2);
 			break;
-		case Top4.W:
+		case Grid4Topology.W:
 			g.translate(centerX - getCellSize() / 2, centerY - shortside / 2);
 			g.fillRect(0, 0, longside, shortside);
 			g.translate(-centerX + getCellSize() / 2, -centerY + shortside / 2);
 			break;
-		case Top4.N:
+		case Grid4Topology.N:
 			g.translate(centerX - shortside / 2, centerY - getCellSize() / 2);
 			g.fillRect(0, 0, shortside, longside);
 			g.translate(-centerX + shortside / 2, -centerY + getCellSize() / 2);

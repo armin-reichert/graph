@@ -1,9 +1,9 @@
 package de.amr.graph.grid.curves;
 
-import static de.amr.graph.grid.impl.Top4.E;
-import static de.amr.graph.grid.impl.Top4.N;
-import static de.amr.graph.grid.impl.Top4.S;
-import static de.amr.graph.grid.impl.Top4.W;
+import static de.amr.graph.grid.impl.Grid4Topology.E;
+import static de.amr.graph.grid.impl.Grid4Topology.N;
+import static de.amr.graph.grid.impl.Grid4Topology.S;
+import static de.amr.graph.grid.impl.Grid4Topology.W;
 
 /**
  * Computes a Peano-curve.

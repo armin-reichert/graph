@@ -13,7 +13,7 @@ import de.amr.graph.core.api.Graph;
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.pathfinder.api.ObservableGraphSearch;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
@@ -31,7 +31,7 @@ public class GraphSearchTest {
 
 	@Before
 	public void createFixture() {
-		graph = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		graph = new GridGraph<>(3, 3, Grid4Topology.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
 		graph.addEdge(0, 1);
 		graph.addEdge(1, 2);
 		graph.addEdge(0, 3);
@@ -47,10 +47,10 @@ public class GraphSearchTest {
 		solution1 = edge(0, 1).concat(edge(1, 2)).concat(edge(2, 5)).concat(edge(5, 8));
 		solution2 = edge(0, 3).concat(edge(3, 6)).concat(edge(6, 7)).concat(edge(7, 8));
 
-		fullGrid = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		fullGrid = new GridGraph<>(3, 3, Grid4Topology.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
 		fullGrid.fill();
 
-		emptyGrid = new GridGraph<>(3, 3, Top4.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
+		emptyGrid = new GridGraph<>(3, 3, Grid4Topology.get(), v -> null, (u, v) -> null, UndirectedEdge::new);
 	}
 
 	@Test(expected = IllegalStateException.class)

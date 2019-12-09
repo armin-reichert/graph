@@ -28,7 +28,7 @@ import de.amr.graph.grid.curves.MooreLCurve;
 import de.amr.graph.grid.curves.PeanoCurve;
 import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.pathfinder.api.Path;
 import de.amr.graph.pathfinder.impl.BreadthFirstSearch;
 import de.amr.graph.pathfinder.impl.DepthFirstSearch;
@@ -49,7 +49,7 @@ public class GridCurveTest {
 
 	@Before
 	public void setUp() {
-		grid = GridFactory.<Boolean, Void> fullGrid(N, N, Top4.get(), false, null);
+		grid = GridFactory.<Boolean, Void> fullGrid(N, N, Grid4Topology.get(), false, null);
 	}
 
 	@After
@@ -131,7 +131,7 @@ public class GridCurveTest {
 
 	@Test
 	public void testPeanoCurve() {
-		grid = GridFactory.emptyGrid(243, 243, Top4.get(), false, null);
+		grid = GridFactory.emptyGrid(243, 243, Grid4Topology.get(), false, null);
 		grid.setDefaultVertexLabel(v -> false);
 		assertAllCells(false);
 		new PeanoCurve(5).traverse(grid, grid.cell(BOTTOM_LEFT), this::markEdge);

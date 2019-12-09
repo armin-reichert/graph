@@ -1,8 +1,8 @@
 package de.amr.graph.grid.curves;
 
-import static de.amr.graph.grid.impl.Top4.N;
+import static de.amr.graph.grid.impl.Grid4Topology.N;
 
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 /**
  * A turtle that can walk to 4 directions (N, E, S, W).
@@ -22,11 +22,11 @@ public class Turtle4 {
 	}
 
 	public void turnLeft() {
-		turn(Top4.get().left(orientation));
+		turn(Grid4Topology.get().left(orientation));
 	}
 
 	public void turnRight() {
-		turn(Top4.get().right(orientation));
+		turn(Grid4Topology.get().right(orientation));
 	}
 
 	public int ahead() {
@@ -34,14 +34,14 @@ public class Turtle4 {
 	}
 
 	public int behind() {
-		return Top4.get().inv(orientation);
+		return Grid4Topology.get().inv(orientation);
 	}
 
 	public int atLeft() {
-		return Top4.get().left(orientation);
+		return Grid4Topology.get().left(orientation);
 	}
 
 	public int atRight() {
-		return Top4.get().right(orientation);
+		return Grid4Topology.get().right(orientation);
 	}
 }

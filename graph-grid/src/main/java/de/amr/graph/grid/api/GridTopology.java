@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
  * 
  * @author Armin Reichert
  */
-public interface Topology {
+public interface GridTopology {
 
 	/**
 	 * @return stream of the directions of this topology
@@ -17,18 +17,16 @@ public interface Topology {
 	/**
 	 * @return the number of directions of this topology
 	 */
-	int dirCount();
+	byte dirCount();
 
 	/**
-	 * Readabe name of direction.
+	 * Readable name of direction.
 	 * 
 	 * @param dir
 	 *              direction vaue
-	 * @return readabe name
+	 * @return readable name
 	 */
-	default String name(int dir) {
-		return "direction-" + dir;
-	}
+	String name(int dir);
 
 	/**
 	 * TODO: this make no sense for odd number of directions
@@ -37,28 +35,28 @@ public interface Topology {
 	 *              direction
 	 * @return opposite of given direction
 	 */
-	int inv(int dir);
+	byte inv(int dir);
 
 	/**
 	 * @param dir
 	 *              direction
 	 * @return direction left (counter-clockwise) of given direction
 	 */
-	int left(int dir);
+	byte left(int dir);
 
 	/**
 	 * @param dir
 	 *              direction
 	 * @return direction right (clockwise) of given direction
 	 */
-	int right(int dir);
+	byte right(int dir);
 
 	/**
 	 * @param dir
 	 *              direction
 	 * @return x-difference when moving towards given direction
 	 */
-	int dx(int dir);
+	byte dx(int dir);
 
 	/**
 	 * 
@@ -66,5 +64,5 @@ public interface Topology {
 	 *              direction
 	 * @return y-difference when moving towards given direction
 	 */
-	int dy(int dir);
+	byte dy(int dir);
 }

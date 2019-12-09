@@ -1,14 +1,14 @@
 package de.amr.graph.grid.shapes;
 
-import static de.amr.graph.grid.impl.Top4.E;
-import static de.amr.graph.grid.impl.Top4.N;
-import static de.amr.graph.grid.impl.Top4.S;
-import static de.amr.graph.grid.impl.Top4.W;
+import static de.amr.graph.grid.impl.Grid4Topology.E;
+import static de.amr.graph.grid.impl.Grid4Topology.N;
+import static de.amr.graph.grid.impl.Grid4Topology.S;
+import static de.amr.graph.grid.impl.Grid4Topology.W;
 
 import java.util.Arrays;
 
 import de.amr.graph.grid.api.GridGraph2D;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 /**
  * Iterates grid cells clockwise as a square with given top left corner and size.
@@ -35,8 +35,8 @@ public class Square extends AbstractShape {
 		for (int dir : Arrays.asList(E, S, W, N)) {
 			for (int i = 0; i < size - 1; ++i) {
 				addCell(x, y);
-				x += Top4.get().dx(dir);
-				y += Top4.get().dy(dir);
+				x += Grid4Topology.get().dx(dir);
+				y += Grid4Topology.get().dy(dir);
 			}
 		}
 	}

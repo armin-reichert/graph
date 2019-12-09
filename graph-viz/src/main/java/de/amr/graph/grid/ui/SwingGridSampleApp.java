@@ -19,10 +19,10 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.grid.api.GridPosition;
-import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.api.GridTopology;
 import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.ObservableGridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.ui.animation.BFSAnimation;
 import de.amr.graph.grid.ui.animation.GridCanvasAnimation;
 import de.amr.graph.grid.ui.rendering.ConfigurableGridRenderer;
@@ -73,7 +73,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 		fullscreen = false;
 		style = Style.WALL_PASSAGE;
 		canvasSize = new Dimension(width, height);
-		grid = GridFactory.emptyObservableGrid(width / cellSize, height / cellSize, Top4.get(), UNVISITED, 0);
+		grid = GridFactory.emptyObservableGrid(width / cellSize, height / cellSize, Grid4Topology.get(), UNVISITED, 0);
 		createUI(cellSize);
 	}
 
@@ -82,7 +82,7 @@ public abstract class SwingGridSampleApp implements Runnable {
 		style = Style.WALL_PASSAGE;
 		canvasSize = getScreenSize();
 		grid = GridFactory.emptyObservableGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
-				Top4.get(), UNVISITED, 0);
+				Grid4Topology.get(), UNVISITED, 0);
 		grid.setDefaultVertexLabel(v -> UNVISITED);
 		createUI(cellSize);
 	}
@@ -221,14 +221,14 @@ public abstract class SwingGridSampleApp implements Runnable {
 		}
 	}
 
-	public void setGridTopology(Topology topology) {
+	public void setGridTopology(GridTopology topology) {
 		int numCols = grid.numCols(), numRows = grid.numRows();
-		setGrid(GridFactory.emptyObservableGrid(numCols, numRows, Top4.get(), UNVISITED, 0));
+		setGrid(GridFactory.emptyObservableGrid(numCols, numRows, Grid4Topology.get(), UNVISITED, 0));
 	}
 
 	public void setCellSize(int cellSize) {
 		setGrid(GridFactory.emptyObservableGrid(canvasSize.width / cellSize, canvasSize.height / cellSize,
-				Top4.get(), UNVISITED, 0));
+				Grid4Topology.get(), UNVISITED, 0));
 		canvas.setCellSize(cellSize, false);
 		canvas.setGrid(grid);
 		window.setTitle(getTitleText());

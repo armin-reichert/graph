@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 public class EmptyGridTest {
 
@@ -18,8 +18,8 @@ public class EmptyGridTest {
 
 	@Before
 	public void setUp() {
-		nullGrid = GridFactory.emptyGrid(0, 0, Top4.get(), null, null);
-		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Top4.get(), null, null);
+		nullGrid = GridFactory.emptyGrid(0, 0, Grid4Topology.get(), null, null);
+		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Grid4Topology.get(), null, null);
 	}
 
 	@Test

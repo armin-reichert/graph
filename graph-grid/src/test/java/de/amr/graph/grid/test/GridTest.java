@@ -4,10 +4,10 @@ import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
-import static de.amr.graph.grid.impl.Top4.E;
-import static de.amr.graph.grid.impl.Top4.N;
-import static de.amr.graph.grid.impl.Top4.S;
-import static de.amr.graph.grid.impl.Top4.W;
+import static de.amr.graph.grid.impl.Grid4Topology.E;
+import static de.amr.graph.grid.impl.Grid4Topology.N;
+import static de.amr.graph.grid.impl.Grid4Topology.S;
+import static de.amr.graph.grid.impl.Grid4Topology.W;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -20,7 +20,7 @@ import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.ObservableGridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.util.GraphUtils;
 
 /**
@@ -37,7 +37,7 @@ public class GridTest {
 
 	@Before
 	public void setUp() {
-		grid = new ObservableGridGraph<>(WIDTH, HEIGHT, Top4.get(), v -> UNVISITED, (u, v) -> 1,
+		grid = new ObservableGridGraph<>(WIDTH, HEIGHT, Grid4Topology.get(), v -> UNVISITED, (u, v) -> 1,
 				UndirectedEdge::new);
 	}
 

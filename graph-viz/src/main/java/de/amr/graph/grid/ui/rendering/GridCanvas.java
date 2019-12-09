@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 /**
  * A Swing component for displaying a grid. Maintains a stack of grid renderers.
@@ -24,7 +24,7 @@ import de.amr.graph.grid.impl.Top4;
  */
 public class GridCanvas extends JComponent {
 
-	private static final GridGraph2D<?, ?> DEFAULT_GRID = new GridGraph<>(5, 5, Top4.get(), v -> null,
+	private static final GridGraph2D<?, ?> DEFAULT_GRID = new GridGraph<>(5, 5, Grid4Topology.get(), v -> null,
 			(u, v) -> null, UndirectedEdge::new);
 
 	// data

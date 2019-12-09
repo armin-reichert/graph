@@ -11,7 +11,7 @@ import de.amr.graph.event.EdgeEvent;
 import de.amr.graph.event.GraphObserver;
 import de.amr.graph.event.VertexEvent;
 import de.amr.graph.grid.api.ObservableGridGraph2D;
-import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.api.GridTopology;
 
 /**
  * A grid graph which can be observed.
@@ -29,7 +29,7 @@ public class ObservableGridGraph<V, E> extends GridGraph<V, E>
 	private final Set<GraphObserver<V, E>> observers;
 	private boolean eventsEnabled;
 
-	public ObservableGridGraph(int numCols, int numRows, Topology top,
+	public ObservableGridGraph(int numCols, int numRows, GridTopology top,
 			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
 			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		super(numCols, numRows, top, fnDefaultVertexLabel, fnDefaultEdgeLabel, fnEdgeFactory);

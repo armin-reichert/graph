@@ -30,7 +30,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	/**
 	 * @return the topology of this grid
 	 */
-	Topology getTopology();
+	GridTopology getTopology();
 
 	/**
 	 * @param col

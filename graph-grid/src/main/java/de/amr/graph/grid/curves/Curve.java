@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import de.amr.graph.grid.api.GridGraph2D;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 
 /**
  * Curve base class.
@@ -33,7 +33,7 @@ public abstract class Curve implements Iterable<Integer> {
 
 	@Override
 	public String toString() {
-		return moves.stream().map(Top4.get()::name).collect(Collectors.joining(","));
+		return moves.stream().map(Grid4Topology.get()::name).collect(Collectors.joining(","));
 	}
 
 	/**

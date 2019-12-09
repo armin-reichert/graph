@@ -8,7 +8,7 @@ import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Top4;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.shapes.Square;
 
 /**
@@ -24,7 +24,7 @@ public class Spiral implements Iterable<Integer> {
 	public Spiral(GridGraph2D<?, ?> grid, Integer start) {
 		int size = Math.max(grid.numCols(), grid.numRows());
 		int offsetY = (size - grid.numRows()) / 2;
-		GridGraph2D<?, ?> squareGrid = new GridGraph<>(size, size, Top4.get(), null, (u, v) -> null,
+		GridGraph2D<?, ?> squareGrid = new GridGraph<>(size, size, Grid4Topology.get(), null, (u, v) -> null,
 				UndirectedEdge::new);
 		int leftUpperCorner = squareGrid.cell(GridPosition.CENTER);
 		for (int i = 0, n = size / 2 + 1; i < n; ++i) {

@@ -1,13 +1,13 @@
 package de.amr.graph.grid.curves;
 
-import static de.amr.graph.grid.impl.Top8.E;
-import static de.amr.graph.grid.impl.Top8.N;
-import static de.amr.graph.grid.impl.Top8.NE;
-import static de.amr.graph.grid.impl.Top8.NW;
-import static de.amr.graph.grid.impl.Top8.S;
-import static de.amr.graph.grid.impl.Top8.SE;
-import static de.amr.graph.grid.impl.Top8.SW;
-import static de.amr.graph.grid.impl.Top8.W;
+import static de.amr.graph.grid.impl.Grid8Topology.E;
+import static de.amr.graph.grid.impl.Grid8Topology.N;
+import static de.amr.graph.grid.impl.Grid8Topology.NE;
+import static de.amr.graph.grid.impl.Grid8Topology.NW;
+import static de.amr.graph.grid.impl.Grid8Topology.S;
+import static de.amr.graph.grid.impl.Grid8Topology.SE;
+import static de.amr.graph.grid.impl.Grid8Topology.SW;
+import static de.amr.graph.grid.impl.Grid8Topology.W;
 
 /**
  * Sierpinski curve (as defined in Niklaus Wirth, "Algorithmen und Datenstrukturen").

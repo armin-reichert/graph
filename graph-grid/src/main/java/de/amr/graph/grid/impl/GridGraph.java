@@ -20,7 +20,7 @@ import de.amr.graph.core.impl.EdgeLabelsMap;
 import de.amr.graph.core.impl.VertexLabelsMap;
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.api.GridPosition;
-import de.amr.graph.grid.api.Topology;
+import de.amr.graph.grid.api.GridTopology;
 
 /**
  * An implementation of the {@link GridGraph2D} interface.
@@ -39,7 +39,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	private final BiFunction<Integer, Integer, Edge> fnEdgeFactory;
 	private final VertexLabeling<V> vertexLabeling;
 	private final EdgeLabeling<E> edgeLabeling;
-	private final Topology top;
+	private final GridTopology top;
 	private final BitSet wires;
 
 	// helper methods
@@ -85,7 +85,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * @param fnEdgeFactory
 	 *                               function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, Topology top,
+	public GridGraph(int numCols, int numRows, GridTopology top,
 			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
 			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
@@ -139,15 +139,15 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public Stream<Edge> edges() {
 		List<Edge> edgeList = new ArrayList<>();
-		if (top == Top4.get()) { // optimized code for 4-direction-topology
+		if (top == Grid4Topology.get()) { // optimized code for 4-direction-topology
 			for (int row = 0; row < numRows; ++row) {
 				for (int col = 0; col < numCols; ++col) {
 					int v = index(col, row);
-					if (wires.get(bit(v, Top4.E))) {
-						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Top4.E)));
+					if (wires.get(bit(v, Grid4Topology.E))) {
+						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Grid4Topology.E)));
 					}
-					if (wires.get(bit(v, Top4.S))) {
-						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Top4.S)));
+					if (wires.get(bit(v, Grid4Topology.S))) {
+						edgeList.add(fnEdgeFactory.apply(v, neighborCell(v, Grid4Topology.S)));
 					}
 				}
 			}
@@ -176,10 +176,10 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public boolean isFull() {
 		int c = numCols(), r = numRows();
-		if (getTopology() == Top4.get()) {
+		if (getTopology() == Grid4Topology.get()) {
 			return numEdges() == 2 * c * r - c - r;
 		}
-		if (getTopology() == Top8.get()) {
+		if (getTopology() == Grid8Topology.get()) {
 			return numEdges() == 4 * c * r - 3 * c - 3 * r + 2;
 		}
 		throw new IllegalStateException("No topology");
@@ -270,7 +270,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	// Implement {@link BareGridGraph2D} interface
 
 	@Override
-	public Topology getTopology() {
+	public GridTopology getTopology() {
 		return top;
 	}
 
