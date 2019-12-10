@@ -39,11 +39,16 @@ public final class Grid4Topology implements GridTopology {
 	}
 
 	private void rangeCheck(int dir) {
-		if (dir < N || dir > W) {
+		if (!isValid(dir)) {
 			throw new IllegalArgumentException("Direction out-of-range: " + dir);
 		}
 	}
 
+	@Override
+	public boolean isValid(int dir) {
+		return dir >= N && dir <= W;
+	}
+	
 	@Override
 	public IntStream dirs() {
 		return IntStream.of(N, E, S, W);

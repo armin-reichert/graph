@@ -47,7 +47,7 @@ public final class Grid8Topology implements GridTopology {
 	}
 
 	private void rangeCheck(int dir) {
-		if (dir < N || dir > NW) {
+		if (!isValid(dir)) {
 			throw new IllegalArgumentException("Direction out-of-range: " + dir);
 		}
 	}
@@ -55,6 +55,11 @@ public final class Grid8Topology implements GridTopology {
 	@Override
 	public IntStream dirs() {
 		return IntStream.of(N, NE, E, SE, S, SW, W, NW);
+	}
+
+	@Override
+	public boolean isValid(int dir) {
+		return dir >= N && dir <= NW;
 	}
 
 	@Override

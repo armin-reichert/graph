@@ -15,6 +15,12 @@ public interface GridTopology {
 	IntStream dirs();
 
 	/**
+	 * @param dir direction
+	 * @return <code>true</code> if the specified value is a valid direction
+	 */
+	boolean isValid(int dir);
+
+	/**
 	 * @return the number of directions of this topology
 	 */
 	byte dirCount();
