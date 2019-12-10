@@ -11,13 +11,13 @@ import de.amr.graph.grid.impl.Grid4Topology;
  */
 public class Turtle4 {
 
-	private int orientation;
+	private byte orientation;
 
 	public Turtle4() {
 		orientation = N;
 	}
 
-	public void turn(int dir) {
+	public void turn(byte dir) {
 		orientation = dir;
 	}
 
@@ -29,7 +29,7 @@ public class Turtle4 {
 		turn(Grid4Topology.get().right(orientation));
 	}
 
-	public int ahead() {
+	public byte ahead() {
 		return orientation;
 	}
 

@@ -32,7 +32,7 @@ public interface GridRenderingModel {
 	 *               a direction
 	 * @return the color of the passage / edge towards the given direction
 	 */
-	Color getPassageColor(int cell, int dir);
+	Color getPassageColor(int cell, byte dir);
 
 	/**
 	 * @param cell

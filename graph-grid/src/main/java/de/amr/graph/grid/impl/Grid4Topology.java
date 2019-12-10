@@ -1,7 +1,7 @@
 package de.amr.graph.grid.impl;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import de.amr.graph.grid.api.GridTopology;
 
@@ -50,8 +50,8 @@ public final class Grid4Topology implements GridTopology {
 	}
 	
 	@Override
-	public IntStream dirs() {
-		return IntStream.of(N, E, S, W);
+	public Stream<Byte> dirs() {
+		return Stream.of(N, E, S, W);
 	}
 
 	@Override

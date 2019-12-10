@@ -3,11 +3,9 @@ package de.amr.graph.grid.impl;
 import static java.util.stream.IntStream.range;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -85,9 +83,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * @param fnEdgeFactory
 	 *                               function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, GridTopology top,
-			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
-			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
+	public GridGraph(int numCols, int numRows, GridTopology top, Function<Integer, V> fnDefaultVertexLabel,
+			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
 			throw new IllegalArgumentException("Illegal number of columns: " + numCols);
 		}
@@ -157,9 +154,9 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 			vertices().forEach(cell -> {
 				top.dirs()
 					.filter(dir -> isConnected(cell, dir))
-					.mapToObj(dir -> neighbor(cell, dir))
-					.filter(OptionalInt::isPresent)
-					.map(OptionalInt::getAsInt)
+					.map(dir -> neighbor(cell, dir))
+					.filter(Optional::isPresent)
+					.map(Optional::get)
 					.filter(neighbor -> cell < neighbor)
 					.forEach(neighbor -> edgeList.add(fnEdgeFactory.apply(cell, neighbor)));
 			});
@@ -209,8 +206,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 					String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
 		}
 		if (adjacent(u, v)) {
-			throw new IllegalStateException(
-					String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
+			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
 		}
 		direction(u, v).ifPresent(dir -> wire(u, v, dir, true));
 	}
@@ -236,9 +232,9 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	}
 
 	@Override
-	public IntStream adj(int v) {
+	public Stream<Integer> adj(int v) {
 		checkCell(v);
-		return top.dirs().filter(dir -> isConnected(v, dir)).map(dir -> neighbor(v, dir).getAsInt());
+		return top.dirs().filter(dir -> isConnected(v, dir)).map(dir -> neighborCell(v, dir));
 	}
 
 	@Override
@@ -354,17 +350,16 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	}
 
 	@Override
-	public IntStream neighbors(int v, int... dirs) {
-		return (dirs.length == 0 ? top.dirs() : Arrays.stream(dirs))
-				.map(dir -> neighbor(v, dir).orElse(NO_VERTEX)).filter(nb -> nb != NO_VERTEX);
+	public Stream<Integer> neighbors(int v) {
+		return top.dirs().map(dir -> neighborCell(v, dir));
 	}
 
 	@Override
-	public OptionalInt neighbor(int v, int dir) {
+	public Optional<Integer> neighbor(int v, byte dir) {
 		checkCell(v);
 		checkDir(dir);
 		int neighbor = neighborCell(v, dir);
-		return neighbor == NO_VERTEX ? OptionalInt.empty() : OptionalInt.of(neighbor);
+		return neighbor == NO_VERTEX ? Optional.empty() : Optional.of(neighbor);
 	}
 
 	private int neighborCell(int v, int dir) {
@@ -374,14 +369,14 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	}
 
 	@Override
-	public boolean isConnected(int v, int dir) {
+	public boolean isConnected(int v, byte dir) {
 		checkCell(v);
 		checkDir(dir);
 		return wires.get(bit(v, dir));
 	}
 
 	@Override
-	public OptionalInt direction(int u, int v) {
+	public Optional<Byte> direction(int u, int v) {
 		checkCell(u);
 		checkCell(v);
 		return top.dirs().filter(dir -> neighbor(u, dir).orElse(NO_VERTEX) == v).findFirst();

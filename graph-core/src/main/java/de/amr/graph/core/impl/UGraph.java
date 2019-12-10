@@ -171,7 +171,7 @@ public class UGraph<V, E> implements Graph<V, E> {
 	}
 
 	@Override
-	public IntStream adj(int v) {
+	public Stream<Integer> adj(int v) {
 		assertVertexExists(v);
 		List<Integer> result = new ArrayList<>();
 		for (Edge e : adjEdges.get(v)) {
@@ -182,7 +182,7 @@ public class UGraph<V, E> implements Graph<V, E> {
 				result.add(e.either());
 			}
 		}
-		return result.stream().mapToInt(Integer::intValue);
+		return result.stream();
 	}
 
 	@Override

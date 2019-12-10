@@ -26,7 +26,7 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	/**
 	 * Function {@code (cell, direction) -> color} providing the passage color toward a given direction.
 	 */
-	public BiFunction<Integer, Integer, Color> fnPassageColor;
+	public BiFunction<Integer, Byte, Color> fnPassageColor;
 
 	/** Function providing the background color for a cell. */
 	public Function<Integer, Color> fnCellBgColor;
@@ -79,7 +79,7 @@ public abstract class ConfigurableGridRenderer implements GridRenderer, GridRend
 	}
 
 	@Override
-	public final Color getPassageColor(int cell, int dir) {
+	public final Color getPassageColor(int cell, byte dir) {
 		return fnPassageColor.apply(cell, dir);
 	}
 

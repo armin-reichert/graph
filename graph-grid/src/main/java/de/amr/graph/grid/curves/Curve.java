@@ -14,20 +14,20 @@ import de.amr.graph.grid.impl.Grid4Topology;
  * Curve base class.
  * 
  * <p>
- * A curve is defined by a list of moves (N, E, S, W).
+ * A curve is defined by a list of move directions (N, E, S, W).
  * 
  * @author Armin Reichert
  */
-public abstract class Curve implements Iterable<Integer> {
+public abstract class Curve implements Iterable<Byte> {
 
-	private final List<Integer> moves = new ArrayList<>();
+	private final List<Byte> moves = new ArrayList<>();
 
-	protected void go(int dir) {
+	protected void go(byte dir) {
 		moves.add(dir);
 	}
 
 	@Override
-	public Iterator<Integer> iterator() {
+	public Iterator<Byte> iterator() {
 		return moves.iterator();
 	}
 
@@ -50,8 +50,8 @@ public abstract class Curve implements Iterable<Integer> {
 	 */
 	public void traverse(GridGraph2D<?, ?> grid, int start, BiConsumer<Integer, Integer> action) {
 		int current = start;
-		for (int dir : moves) {
-			int next = grid.neighbor(current, dir).getAsInt();
+		for (byte dir : moves) {
+			int next = grid.neighbor(current, dir).get();
 			action.accept(current, next);
 			current = next;
 		}
@@ -72,7 +72,7 @@ public abstract class Curve implements Iterable<Integer> {
 		/*@formatter:off*/
 		return moves.stream().collect(
 			() -> new ArrayList<>(Arrays.asList(start)), 
-			(cells, dir) -> cells.add(grid.neighbor(cells.get(cells.size() - 1), dir).getAsInt()),
+			(cells, dir) -> cells.add(grid.neighbor(cells.get(cells.size() - 1), dir).get()),
 			ArrayList<Integer>::addAll
 		);
 		/*@formatter:on*/

@@ -92,7 +92,7 @@ public interface Graph<V, E> extends VertexLabeling<V>, EdgeLabeling<E> {
 	 *            a vertex
 	 * @return all "adjacent" vertices (connected by some edge) to the given vertex
 	 */
-	IntStream adj(int v);
+	Stream<Integer> adj(int v);
 
 	/**
 	 * Tells if the given vertices are connected by some edge.

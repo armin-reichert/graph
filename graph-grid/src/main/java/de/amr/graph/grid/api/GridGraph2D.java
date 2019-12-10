@@ -1,7 +1,7 @@
 package de.amr.graph.grid.api;
 
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import de.amr.graph.core.api.Graph;
 
@@ -87,12 +87,10 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 * 
 	 * @param cell
 	 *               a grid cell
-	 * @param dirs
-	 *               a list of directions or if not specified, all directions of the grid's topology
 	 * 
 	 * @return stream of the neighbor cells in the given directions
 	 */
-	IntStream neighbors(int cell, int... dirs);
+	Stream<Integer> neighbors(int cell);
 
 	/**
 	 * @param cell
@@ -101,7 +99,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 *               a direction
 	 * @return the (optional) neighbor in the given direction
 	 */
-	OptionalInt neighbor(int cell, int dir);
+	Optional<Integer> neighbor(int cell, byte dir);
 
 	/**
 	 * Tells if the given cells are "neighbors".
@@ -121,10 +119,10 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 * @param dir
 	 *               a direction
 	 * 
-	 * @return {@code true} if the cell is connected to the neighbor in the given direction
-	 *         ("passage", no "wall")
+	 * @return {@code true} if the cell is connected to the neighbor in the given direction ("passage",
+	 *         no "wall")
 	 */
-	boolean isConnected(int cell, int dir);
+	boolean isConnected(int cell, byte dir);
 
 	/**
 	 * @param either
@@ -134,7 +132,7 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 * 
 	 * @return (optional) direction from either to other (if those cells are neighbors)
 	 */
-	OptionalInt direction(int either, int other);
+	Optional<Byte> direction(int either, int other);
 
 	/**
 	 * Makes this grid a full grid by adding all possible edges.

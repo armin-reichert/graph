@@ -190,7 +190,7 @@ public class BFSAnimation implements GraphSearchObserver {
 		r.fnCellSize = () -> base.getCellSize();
 		r.fnGridBgColor = () -> base.getGridBgColor();
 		r.fnPassageColor = (cell, dir) -> {
-			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
+			int neighbor = canvas.getGrid().neighbor(cell, dir).get();
 			return inPath.get(cell) && inPath.get(neighbor) ? pathColor : base.getCellBgColor(cell);
 		};
 		r.fnPassageWidth = (u, v) -> base.getPassageWidth(u, v) > 5 ? base.getPassageWidth(u, v) / 2

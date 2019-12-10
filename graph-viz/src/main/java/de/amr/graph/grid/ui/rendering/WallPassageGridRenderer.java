@@ -52,12 +52,9 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 			g.setColor(getTextColor(cell));
 			g.setFont(font);
 			Rectangle textBox = g.getFontMetrics().getStringBounds(text, g).getBounds();
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			g.drawString(text, (getCellSize() - textBox.width) / 2,
-					(getCellSize() + textBox.height / 2) / 2);
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g.drawString(text, (getCellSize() - textBox.width) / 2, (getCellSize() + textBox.height / 2) / 2);
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 	}
 
@@ -84,24 +81,21 @@ public class WallPassageGridRenderer extends ConfigurableGridRenderer {
 	}
 
 	@Override
-	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other,
-			boolean visible) {
-		final int dir = grid.direction(either, other).getAsInt();
-		final int inv = grid.getTopology().inv(dir);
-		drawHalfPassage(g, grid, either, dir,
-				visible ? getPassageColor(either, dir) : getGridBgColor());
+	public void drawPassage(Graphics2D g, GridGraph2D<?, ?> grid, int either, int other, boolean visible) {
+		final byte dir = grid.direction(either, other).get();
+		final byte inv = grid.getTopology().inv(dir);
+		drawHalfPassage(g, grid, either, dir, visible ? getPassageColor(either, dir) : getGridBgColor());
 		drawHalfPassage(g, grid, other, inv, visible ? getPassageColor(other, inv) : getGridBgColor());
 		getCellRenderer(either).drawCell(g, grid, either);
 		getCellRenderer(other).drawCell(g, grid, other);
 	}
 
-	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, int dir,
-			Color passageColor) {
+	private void drawHalfPassage(Graphics2D g, GridGraph2D<?, ?> grid, int cell, byte dir, Color passageColor) {
 		final int cellX = grid.col(cell) * getCellSize();
 		final int cellY = grid.row(cell) * getCellSize();
 		final int centerX = cellX + getCellSize() / 2;
 		final int centerY = cellY + getCellSize() / 2;
-		final int passageWidth = getPassageWidth(cell, grid.neighbor(cell, dir).getAsInt());
+		final int passageWidth = getPassageWidth(cell, grid.neighbor(cell, dir).get());
 		final int longside = (getCellSize() + passageWidth) / 2;
 		final int shortside = passageWidth;
 		g.setColor(passageColor);

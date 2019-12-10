@@ -4,9 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JFrame;
+import javax.swing.border.LineBorder;
 
 import de.amr.graph.grid.ui.rendering.GridCanvas;
-import javax.swing.border.LineBorder;
 
 public class GridCanvasTest extends JFrame {
 

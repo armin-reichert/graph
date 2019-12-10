@@ -18,9 +18,9 @@ import org.junit.Test;
 
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.ObservableGridGraph;
-import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.util.GraphUtils;
 
 /**
@@ -164,19 +164,19 @@ public class GridTest {
 			for (int y = 0; y < grid.numRows(); ++y) {
 				Integer cell = grid.cell(x, y);
 				if (y > 0) {
-					int n = grid.neighbor(cell, N).getAsInt();
+					int n = grid.neighbor(cell, N).get();
 					assertEquals(n, grid.cell(x, y - 1));
 				}
 				if (x < grid.numCols() - 1) {
-					int e = grid.neighbor(cell, E).getAsInt();
+					int e = grid.neighbor(cell, E).get();
 					assertEquals(e, grid.cell(x + 1, y));
 				}
 				if (y < grid.numRows() - 1) {
-					int s = grid.neighbor(cell, S).getAsInt();
+					int s = grid.neighbor(cell, S).get();
 					assertEquals(s, grid.cell(x, y + 1));
 				}
 				if (x > 0) {
-					int w = grid.neighbor(cell, W).getAsInt();
+					int w = grid.neighbor(cell, W).get();
 					assertEquals(w, grid.cell(x - 1, y));
 				}
 			}

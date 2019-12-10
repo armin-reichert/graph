@@ -69,7 +69,7 @@ public class PearlsGridRenderer extends ConfigurableGridRenderer {
 		int x2 = grid.col(other) * cellSize + pearlSize / 2;
 		int y2 = grid.row(other) * cellSize + pearlSize / 2;
 		int offset = (cellSize - pearlSize) / 2;
-		g.setColor(getPassageColor(either, grid.direction(either, other).getAsInt()));
+		g.setColor(getPassageColor(either, grid.direction(either, other).get()));
 		g.translate(offset, offset);
 		g.setStroke(new BasicStroke(getPassageWidth(either, other)));
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

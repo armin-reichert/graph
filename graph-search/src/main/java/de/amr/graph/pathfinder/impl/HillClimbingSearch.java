@@ -37,7 +37,7 @@ public class HillClimbingSearch extends DepthFirstSearch {
 	protected void expand(int v) {
 		/*@formatter:off*/
 		graph.adj(v)
-			.filter(child -> getState(child) == UNVISITED).boxed()
+			.filter(child -> getState(child) == UNVISITED)
 			.sorted(vertexPushOrder)
 			.forEach(child -> {
 				setState(child, VISITED);

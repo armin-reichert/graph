@@ -1,6 +1,6 @@
 package de.amr.graph.grid.api;
 
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * The topology of a grid.
@@ -12,10 +12,11 @@ public interface GridTopology {
 	/**
 	 * @return stream of the directions of this topology
 	 */
-	IntStream dirs();
+	Stream<Byte> dirs();
 
 	/**
-	 * @param dir direction
+	 * @param dir
+	 *              direction
 	 * @return <code>true</code> if the specified value is a valid direction
 	 */
 	boolean isValid(int dir);

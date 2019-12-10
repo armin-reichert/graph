@@ -103,7 +103,7 @@ public class DFSAnimation implements GraphSearchObserver {
 			return Color.WHITE;
 		};
 		r.fnPassageColor = (cell, dir) -> {
-			int neighbor = canvas.getGrid().neighbor(cell, dir).getAsInt();
+			int neighbor = canvas.getGrid().neighbor(cell, dir).get();
 			if (inPath.get(cell) && inPath.get(neighbor)) {
 				return pathColor;
 			}

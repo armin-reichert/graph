@@ -13,9 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.amr.graph.grid.api.GridGraph2D;
-import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.Grid8Topology;
+import de.amr.graph.grid.impl.GridFactory;
 
 public class FullGridTest {
 

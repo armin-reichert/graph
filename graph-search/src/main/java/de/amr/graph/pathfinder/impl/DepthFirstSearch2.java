@@ -4,8 +4,8 @@ import static de.amr.graph.core.api.TraversalState.COMPLETED;
 import static de.amr.graph.core.api.TraversalState.UNVISITED;
 import static de.amr.graph.core.api.TraversalState.VISITED;
 
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import de.amr.graph.core.api.Graph;
 import de.amr.graph.pathfinder.api.Path;
@@ -32,9 +32,9 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 				found = true;
 				break;
 			}
-			OptionalInt neighborIfAny = unvisitedChildren(current).findAny();
+			Optional<Integer> neighborIfAny = unvisitedChildren(current).findAny();
 			if (neighborIfAny.isPresent()) {
-				int neighbor = neighborIfAny.getAsInt();
+				int neighbor = neighborIfAny.get();
 				setState(neighbor, VISITED);
 				setParent(neighbor, current);
 				if (unvisitedChildren(neighbor).findAny().isPresent()) {
@@ -61,7 +61,7 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 		return found ? buildPath(target) : Path.NULL;
 	}
 
-	private IntStream unvisitedChildren(int v) {
+	private Stream<Integer> unvisitedChildren(int v) {
 		return graph.adj(v).filter(child -> getState(child) == UNVISITED);
 	}
 }

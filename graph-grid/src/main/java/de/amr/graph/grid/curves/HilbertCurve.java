@@ -19,11 +19,11 @@ public class HilbertCurve extends Curve {
 		hilbert(depth, N, E, S, W);
 	}
 
-	public HilbertCurve(int depth, int n, int e, int s, int w) {
+	public HilbertCurve(int depth, byte n, byte e, byte s, byte w) {
 		hilbert(depth, n, e, s, w);
 	}
 
-	private void hilbert(int depth, int n, int e, int s, int w) {
+	private void hilbert(int depth, byte n, byte e, byte s, byte w) {
 		if (depth > 0) {
 			hilbert(depth - 1, e, n, w, s);
 			go(w);

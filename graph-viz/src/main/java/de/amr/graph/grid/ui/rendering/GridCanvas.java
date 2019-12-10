@@ -14,8 +14,8 @@ import javax.swing.JComponent;
 
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.api.GridGraph2D;
-import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.Grid4Topology;
+import de.amr.graph.grid.impl.GridGraph;
 
 /**
  * A Swing component for displaying a grid. Maintains a stack of grid renderers.

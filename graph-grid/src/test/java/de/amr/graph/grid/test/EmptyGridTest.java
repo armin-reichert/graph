@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.GridGraph;
-import de.amr.graph.grid.impl.Grid4Topology;
 
 public class EmptyGridTest {
 

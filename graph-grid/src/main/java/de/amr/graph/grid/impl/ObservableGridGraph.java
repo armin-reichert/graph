@@ -10,8 +10,8 @@ import de.amr.graph.core.api.ObservableGraph;
 import de.amr.graph.event.EdgeEvent;
 import de.amr.graph.event.GraphObserver;
 import de.amr.graph.event.VertexEvent;
-import de.amr.graph.grid.api.ObservableGridGraph2D;
 import de.amr.graph.grid.api.GridTopology;
+import de.amr.graph.grid.api.ObservableGridGraph2D;
 
 /**
  * A grid graph which can be observed.

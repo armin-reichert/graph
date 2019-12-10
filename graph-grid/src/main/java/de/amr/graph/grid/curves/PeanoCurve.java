@@ -16,7 +16,7 @@ public class PeanoCurve extends Curve {
 		peano(depth, N, E, S, W);
 	}
 
-	private void peano(int depth, int n, int e, int s, int w) {
+	private void peano(int depth, byte n, byte e, byte s, byte w) {
 		if (depth > 0) {
 			peano(depth - 1, n, e, s, w);
 			go(n);

@@ -7,7 +7,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -91,7 +91,7 @@ public interface StreamUtils {
 	 *                 some stream
 	 * @return a random (optional) element from the stream
 	 */
-	public static OptionalInt randomElement(IntStream source) {
+	public static <T> Optional<T> randomElement(Stream<T> source) {
 		return permute(source).findFirst();
 	}
 
