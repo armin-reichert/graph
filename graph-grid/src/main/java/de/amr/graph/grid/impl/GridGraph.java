@@ -351,7 +351,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	@Override
 	public Stream<Integer> neighbors(int v) {
-		return top.dirs().map(dir -> neighborCell(v, dir));
+		return top.dirs().map(dir -> neighborCell(v, dir)).filter(cell -> cell != NO_VERTEX);
 	}
 
 	@Override
