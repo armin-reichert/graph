@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import de.amr.datastruct.StreamUtils;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -130,8 +129,8 @@ public class Path implements Iterable<Integer> {
 		return vertices.iterator();
 	}
 
-	public IntStream vertexStream() {
-		return StreamUtils.toIntStream(vertices);
+	public Stream<Integer> vertexStream() {
+		return vertices.stream();
 	}
 
 	/**
@@ -156,7 +155,7 @@ public class Path implements Iterable<Integer> {
 		if (p.isUnit()) {
 			return this; // p * 1 = p
 		}
-		List<Integer> concat = new ArrayList<Integer>(vertices);
+		List<Integer> concat = new ArrayList<>(vertices);
 		concat.remove(concat.size() - 1);
 		concat.addAll(p.vertices);
 		return new Path(concat);
