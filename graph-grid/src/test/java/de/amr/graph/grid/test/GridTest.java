@@ -230,8 +230,8 @@ public class GridTest {
 	@Test
 	public void testEdgeLabel() {
 		grid.addEdge(0, 1, 5);
-		assertEquals(new Integer(5), grid.getEdgeLabel(0, 1));
+		assertEquals((Integer) 5, grid.getEdgeLabel(0, 1));
 		grid.setEdgeLabel(0, 1, 6);
-		assertEquals(new Integer(6), grid.getEdgeLabel(0, 1));
+		assertEquals((Integer) 6, grid.getEdgeLabel(0, 1));
 	}
 }
