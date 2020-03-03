@@ -25,10 +25,8 @@ import de.amr.graph.grid.api.GridTopology;
  * 
  * @author Armin Reichert
  * 
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
+ * @param <V> vertex label type
+ * @param <E> edge label type
  */
 public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
@@ -70,18 +68,12 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	/**
 	 * Creates a grid with the given properties.
 	 * 
-	 * @param numCols
-	 *                               the number of columns
-	 * @param numRows
-	 *                               the number of rows
-	 * @param top
-	 *                               the topology of this grid
-	 * @param fnDefaultVertexLabel
-	 *                               default vertex label
-	 * @param fnDefaultEdgeLabel
-	 *                               default edge label
-	 * @param fnEdgeFactory
-	 *                               function for creating edges of the correct type
+	 * @param numCols              the number of columns
+	 * @param numRows              the number of rows
+	 * @param top                  the topology of this grid
+	 * @param fnDefaultVertexLabel default vertex label
+	 * @param fnDefaultEdgeLabel   default edge label
+	 * @param fnEdgeFactory        function for creating edges of the correct type
 	 */
 	public GridGraph(int numCols, int numRows, GridTopology top, Function<Integer, V> fnDefaultVertexLabel,
 			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
@@ -148,8 +140,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			/*@formatter:off*/
 			vertices().forEach(cell -> {
 				top.dirs()
@@ -202,8 +193,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		checkCell(u);
 		checkCell(v);
 		if (!areNeighbors(u, v)) {
-			throw new IllegalStateException(
-					String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
+			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, cells are no grid neighbors.", u, v));
 		}
 		if (adjacent(u, v)) {
 			throw new IllegalStateException(String.format("Cannot add edge {%d, %d}, edge already exists.", u, v));
@@ -220,8 +210,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	@Override
 	public void removeEdge(int u, int v) {
 		if (!adjacent(u, v)) {
-			throw new IllegalStateException(
-					String.format("Cannot remove edge {%d, %d}, edge does not exist.", u, v));
+			throw new IllegalStateException(String.format("Cannot remove edge {%d, %d}, edge does not exist.", u, v));
 		}
 		direction(u, v).ifPresent(dir -> wire(u, v, dir, false));
 	}
@@ -384,9 +373,6 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(super.toString());
-		sb.append("(").append(numCols).append(" cols, ").append(numRows).append(" rows, ")
-				.append(numCols * numRows).append(" cells, ").append(numEdges()).append(" edges").append(")");
-		return sb.toString();
+		return String.format("%s (%d cols, %d rows, %d cells, %d edges, %s)", getClass().getName(), numCols, numRows, numCols*numRows, numEdges(), top);
 	}
 }
