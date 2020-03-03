@@ -177,6 +177,11 @@ public class BFSAnimation implements GraphSearchObserver {
 		r.fnText = cell -> distanceVisible ? format("%.0f", explorer.getCost(cell)) : "";
 		r.fnTextFont = cell -> new Font("Arial Narrow", Font.PLAIN, r.getPassageWidth(0, 0) / 2);
 		r.fnTextColor = cell -> Color.BLACK;
+		if (base instanceof PearlsGridRenderer) {
+			PearlsGridRenderer br = (PearlsGridRenderer) base;
+			PearlsGridRenderer pr = (PearlsGridRenderer) r;
+			pr.fnRelativePearlSize = br.fnRelativePearlSize; 
+		}
 		return r;
 	}
 
@@ -198,6 +203,11 @@ public class BFSAnimation implements GraphSearchObserver {
 		r.fnText = cell -> distanceVisible ? format("%.0f", fnDistance.applyAsDouble(cell)) : "";
 		r.fnTextFont = cell -> new Font("Arial Narrow", Font.PLAIN, r.getPassageWidth(0, 0) * 80 / 100);
 		r.fnTextColor = cell -> Color.WHITE;
+		if (base instanceof PearlsGridRenderer) {
+			PearlsGridRenderer br = (PearlsGridRenderer) base;
+			PearlsGridRenderer pr = (PearlsGridRenderer) r;
+			pr.fnRelativePearlSize = br.fnRelativePearlSize; 
+		}
 		return r;
 	}
 

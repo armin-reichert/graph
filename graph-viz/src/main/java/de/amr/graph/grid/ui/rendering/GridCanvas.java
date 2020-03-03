@@ -253,7 +253,8 @@ public class GridCanvas extends JComponent {
 	}
 
 	public void drawGrid() {
-		getRenderer().drawGrid(getDrawGraphics(), grid);
+		GridRenderer gr = getRenderer();
+		gr.drawGrid(getDrawGraphics(), grid);
 		repaint();
 	}
 }
