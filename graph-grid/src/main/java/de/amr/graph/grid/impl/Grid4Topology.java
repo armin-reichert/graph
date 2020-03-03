@@ -37,6 +37,11 @@ public final class Grid4Topology implements GridTopology {
 
 	private Grid4Topology() {
 	}
+	
+	@Override
+	public String toString() {
+		return "4 Neighbor Topology";
+	}
 
 	private void rangeCheck(int dir) {
 		if (!isValid(dir)) {

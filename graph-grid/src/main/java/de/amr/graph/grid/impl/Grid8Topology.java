@@ -21,6 +21,11 @@ public final class Grid8Topology implements GridTopology {
 		return SINGLE;
 	}
 
+	@Override
+	public String toString() {
+		return "8 Neighbor Topology";
+	}
+
 	public static final byte N = 0;
 	public static final byte NE = 1;
 	public static final byte E = 2;
