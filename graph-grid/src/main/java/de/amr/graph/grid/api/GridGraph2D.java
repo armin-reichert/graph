@@ -138,6 +138,11 @@ public interface GridGraph2D<V, E> extends Graph<V, E>, GridMetrics {
 	 * Makes this grid a full grid by adding all possible edges.
 	 */
 	void fill();
+	
+	/**
+	 * Makes this grid a full orthogonal grid.
+	 */
+	void fillOrthogonal();
 
 	/**
 	 * Tells if this grid is empty.

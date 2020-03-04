@@ -55,6 +55,11 @@ public final class Grid4Topology implements GridTopology {
 	}
 	
 	@Override
+	public boolean isOrthogonal(int dir) {
+		return true;
+	}
+	
+	@Override
 	public Stream<Byte> dirs() {
 		return Stream.of(N, E, S, W);
 	}

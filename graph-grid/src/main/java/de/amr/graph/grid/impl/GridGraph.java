@@ -322,6 +322,19 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		}));
 		//@formatter:off
 	}
+	
+	@Override
+	public void fillOrthogonal() {
+		wires.clear();
+		//@formatter:off
+		vertices().forEach(cell -> top.dirs().filter(dir -> top.isOrthogonal(dir)).forEach(dir -> {
+			int neighbor = neighborCell(cell, dir);
+			if (neighbor != NO_VERTEX) {
+				wire(cell, neighbor, dir, true);
+			}
+		}));
+		//@formatter:off
+	}
 
 	@Override
 	public boolean isValidCol(int col) {

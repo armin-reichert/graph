@@ -68,6 +68,11 @@ public final class Grid8Topology implements GridTopology {
 	}
 
 	@Override
+	public boolean isOrthogonal(int dir) {
+		return dir == N || dir == E || dir == S || dir == W;
+	}
+
+	@Override
 	public byte dirCount() {
 		return 8;
 	}
