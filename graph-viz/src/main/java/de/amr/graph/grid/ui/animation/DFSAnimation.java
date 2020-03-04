@@ -93,8 +93,7 @@ public class DFSAnimation implements GraphSearchObserver {
 		ConfigurableGridRenderer r = base instanceof PearlsGridRenderer ? new PearlsGridRenderer()
 				: new WallPassageGridRenderer();
 		r.fnCellSize = base.getModel()::getCellSize;
-		r.fnPassageWidth = (u, v) -> base.getModel().getPassageWidth(u, v) > 5
-				? base.getModel().getPassageWidth(u, v) / 2
+		r.fnPassageWidth = (u, v) -> base.getModel().getPassageWidth(u, v) > 5 ? base.getModel().getPassageWidth(u, v) / 2
 				: base.getModel().getPassageWidth(u, v);
 		r.fnCellBgColor = cell -> {
 			if (inPath.get(cell)) {
@@ -109,6 +108,11 @@ public class DFSAnimation implements GraphSearchObserver {
 			}
 			return Color.WHITE;
 		};
+		if (base instanceof PearlsGridRenderer) {
+			PearlsGridRenderer br = (PearlsGridRenderer) base;
+			PearlsGridRenderer pr = (PearlsGridRenderer) r;
+			pr.fnRelativePearlSize = br.fnRelativePearlSize;
+		}
 		return r;
 	}
 
