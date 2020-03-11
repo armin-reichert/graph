@@ -162,7 +162,15 @@ public class BFSAnimation implements GraphSearchObserver {
 			throw new IllegalStateException("Cannot derive path renderer from current grid renderer");
 		}
 		// draw path
-		path.forEach(canvas::drawGridCell);
+		int prev = -1;
+		for (int cell : path) {
+			canvas.drawGridCell(cell);
+			if (prev != -1) {
+				canvas.drawGridPassage(prev, cell, true);
+			}
+			prev = cell;
+		}
+		
 		canvas.popRenderer();
 	}
 
