@@ -61,6 +61,4 @@ public class BestFirstSearch extends AbstractGraphSearch<MinPQ_VertexQueue> {
 }
 ```
 
-The graph library and path finding is also used in my [Pac-Man game](https://github.com/armin-reichert/pacman) implementation:
-
-![Pac-Man](https://github.com/armin-reichert/pacman/blob/master/doc/pacman-pathfinding.png)
+The graph library and path finding is also used in my [Pac-Man game](https://github.com/armin-reichert/pacman) implementation.
