@@ -17,7 +17,7 @@ import de.amr.graph.pathfinder.api.Path;
  * 
  * @author Armin Reichert
  */
-public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends AbstractGraphSearch<?>>
+public class BidiGraphSearch<F extends AbstractGraphSearch<?, ?>, B extends AbstractGraphSearch<?, ?>>
 		implements ObservableGraphSearch {
 
 	private final F forwardSearch;
@@ -51,8 +51,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 			backwardsSearch.setState(source, TraversalState.COMPLETED);
 			backwardsSearch.setCost(source, 0);
 			meetingPoint = source;
-		}
-		else {
+		} else {
 			forwardSearch.start(source, target);
 			backwardsSearch.start(target, source);
 			meetingPoint = Graph.NO_VERTEX;
@@ -70,12 +69,10 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 		searchingForward = !searchingForward;
 		if (searchingForward && forwardSearch.canExplore() && forwardSearch.exploreVertex()) {
 			return true;
-		}
-		else if (!searchingForward && backwardsSearch.canExplore() && backwardsSearch.exploreVertex()) {
+		} else if (!searchingForward && backwardsSearch.canExplore() && backwardsSearch.exploreVertex()) {
 			return true;
 		}
-		return checkMeetingPoint(forwardSearch.getCurrentVertex())
-				|| checkMeetingPoint(backwardsSearch.getCurrentVertex());
+		return checkMeetingPoint(forwardSearch.getCurrentVertex()) || checkMeetingPoint(backwardsSearch.getCurrentVertex());
 	}
 
 	private boolean checkMeetingPoint(int candidate) {
@@ -116,8 +113,7 @@ public class BidiGraphSearch<F extends AbstractGraphSearch<?>, B extends Abstrac
 
 	@Override
 	public double getCost(int v) {
-		return forwardSearch.getCost(v) != Path.INFINITE_COST ? forwardSearch.getCost(v)
-				: backwardsSearch.getCost(v);
+		return forwardSearch.getCost(v) != Path.INFINITE_COST ? forwardSearch.getCost(v) : backwardsSearch.getCost(v);
 	}
 
 	@Override

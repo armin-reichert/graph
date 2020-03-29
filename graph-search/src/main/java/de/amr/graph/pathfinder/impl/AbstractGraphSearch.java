@@ -30,15 +30,21 @@ import de.amr.graph.pathfinder.api.VertexQueue;
  * 
  * @author Armin Reichert
  */
-public abstract class AbstractGraphSearch<Q extends VertexQueue> implements ObservableGraphSearch {
+public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends BasicSearchInfo>
+		implements ObservableGraphSearch {
 
 	protected final Graph<?, ?> graph;
-	protected final Map<Integer, SearchInfo> searchInfo;
+	protected final Map<Integer, INFO> searchInfo;
 	protected final Set<GraphSearchObserver> observers;
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected double maxCost;
 	protected Q frontier;
 	protected int current, source, target;
+
+	@SuppressWarnings("unchecked")
+	protected INFO makeInfo() {
+		return (INFO) new BasicSearchInfo();
+	}
 
 	protected AbstractGraphSearch(Graph<?, ?> graph) {
 		this(graph, (u, v) -> 1);
@@ -131,10 +137,10 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		return frontier.peek();
 	}
 
-	private SearchInfo getOrCreateInfo(int v) {
-		SearchInfo info = searchInfo.get(v);
+	protected INFO getOrCreateInfo(int v) {
+		INFO info = searchInfo.get(v);
 		if (info == null) {
-			info = new SearchInfo();
+			info = makeInfo();
 			info.parent = Graph.NO_VERTEX;
 			info.state = TraversalState.UNVISITED;
 			info.cost = Path.INFINITE_COST;
@@ -155,7 +161,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	 * @param newState new vertex state
 	 */
 	protected void setState(int v, TraversalState newState) {
-		SearchInfo info = getOrCreateInfo(v);
+		BasicSearchInfo info = getOrCreateInfo(v);
 		TraversalState oldState = info.state;
 		info.state = newState;
 		fireVertexStateChanged(v, oldState, newState);
@@ -177,7 +183,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		if (child == parent) {
 			throw new IllegalStateException("Cannot set parent to itself");
 		}
-		SearchInfo childInfo = getOrCreateInfo(child);
+		BasicSearchInfo childInfo = getOrCreateInfo(child);
 		childInfo.parent = parent;
 		if (parent != Graph.NO_VERTEX) {
 			childInfo.cost = getCost(parent) + fnEdgeCost.applyAsDouble(parent, child);

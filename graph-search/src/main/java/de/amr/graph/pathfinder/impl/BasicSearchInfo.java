@@ -7,12 +7,12 @@ import de.amr.graph.core.api.TraversalState;
  * 
  * @author Armin Reichert
  */
-public class SearchInfo {
+public class BasicSearchInfo {
 
 	public int parent;
 	public TraversalState state;
 	public double cost;
-	
+
 	@Override
 	public String toString() {
 		return String.format("(parent:%d,state:%s,cost:%.2g)", parent, state, cost);

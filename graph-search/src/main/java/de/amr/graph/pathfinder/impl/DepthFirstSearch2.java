@@ -16,7 +16,7 @@ import de.amr.graph.pathfinder.impl.queue.LIFO_VertexQueue;
  * 
  * @author Armin Reichert
  */
-public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
+public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue, BasicSearchInfo> {
 
 	public DepthFirstSearch2(Graph<?, ?> graph) {
 		super(graph, new LIFO_VertexQueue());
@@ -42,8 +42,7 @@ public class DepthFirstSearch2 extends AbstractGraphSearch<LIFO_VertexQueue> {
 					fireVertexAddedToFrontier(neighbor);
 				}
 				current = neighbor;
-			}
-			else {
+			} else {
 				setState(current, COMPLETED);
 				if (!frontier.isEmpty()) {
 					current = frontier.poll();
