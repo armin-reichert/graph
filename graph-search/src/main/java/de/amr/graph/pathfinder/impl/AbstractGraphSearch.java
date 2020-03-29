@@ -33,7 +33,7 @@ import de.amr.graph.pathfinder.api.VertexQueue;
 public abstract class AbstractGraphSearch<Q extends VertexQueue> implements ObservableGraphSearch {
 
 	protected final Graph<?, ?> graph;
-	protected final Map<Integer, SearchInfo> nodeInfo;
+	protected final Map<Integer, SearchInfo> searchInfo;
 	protected final Set<GraphSearchObserver> observers;
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected double maxCost;
@@ -54,14 +54,14 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 
 	protected AbstractGraphSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost, Q frontier) {
 		this.graph = Objects.requireNonNull(graph);
-		this.nodeInfo = new HashMap<>();
+		this.searchInfo = new HashMap<>();
 		this.observers = new HashSet<>(5);
 		this.fnEdgeCost = fnEdgeCost;
 		this.frontier = frontier;
 	}
 
 	protected void clear() {
-		nodeInfo.clear();
+		searchInfo.clear();
 		frontier.clear();
 		maxCost = 0;
 		current = source = target = Graph.NO_VERTEX;
@@ -131,21 +131,21 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		return frontier.peek();
 	}
 
-	private SearchInfo getOrCreateNodeInfo(int node) {
-		SearchInfo info = nodeInfo.get(node);
+	private SearchInfo getOrCreateInfo(int v) {
+		SearchInfo info = searchInfo.get(v);
 		if (info == null) {
 			info = new SearchInfo();
 			info.parent = Graph.NO_VERTEX;
-			info.traversalState = TraversalState.UNVISITED;
+			info.state = TraversalState.UNVISITED;
 			info.cost = Path.INFINITE_COST;
-			nodeInfo.put(node, info);
+			searchInfo.put(v, info);
 		}
 		return info;
 	}
 
 	@Override
 	public TraversalState getState(int v) {
-		return nodeInfo.containsKey(v) ? nodeInfo.get(v).traversalState : UNVISITED;
+		return searchInfo.containsKey(v) ? searchInfo.get(v).state : UNVISITED;
 	}
 
 	/**
@@ -155,15 +155,15 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 	 * @param newState new vertex state
 	 */
 	protected void setState(int v, TraversalState newState) {
-		SearchInfo info = getOrCreateNodeInfo(v);
-		TraversalState oldState = info.traversalState;
-		info.traversalState = newState;
+		SearchInfo info = getOrCreateInfo(v);
+		TraversalState oldState = info.state;
+		info.state = newState;
 		fireVertexStateChanged(v, oldState, newState);
 	}
 
 	@Override
 	public int getParent(int v) {
-		return nodeInfo.containsKey(v) ? nodeInfo.get(v).parent : Graph.NO_VERTEX;
+		return searchInfo.containsKey(v) ? searchInfo.get(v).parent : Graph.NO_VERTEX;
 	}
 
 	/**
@@ -177,11 +177,11 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 		if (child == parent) {
 			throw new IllegalStateException("Cannot set parent to itself");
 		}
-		SearchInfo childInfo = getOrCreateNodeInfo(child);
+		SearchInfo childInfo = getOrCreateInfo(child);
 		childInfo.parent = parent;
 		if (parent != Graph.NO_VERTEX) {
 			childInfo.cost = getCost(parent) + fnEdgeCost.applyAsDouble(parent, child);
-			maxCost = Math.max(maxCost, getCost(child));
+			maxCost = Math.max(maxCost, childInfo.cost);
 		} else {
 			childInfo.cost = 0;
 			maxCost = 0;
@@ -193,12 +193,12 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue> implements Obse
 
 	@Override
 	public double getCost(int v) {
-		return nodeInfo.containsKey(v) ? nodeInfo.get(v).cost : Path.INFINITE_COST;
+		return searchInfo.containsKey(v) ? searchInfo.get(v).cost : Path.INFINITE_COST;
 	}
 
 	@Override
 	public void setCost(int v, double value) {
-		getOrCreateNodeInfo(v).cost = value;
+		getOrCreateInfo(v).cost = value;
 	}
 
 	@Override

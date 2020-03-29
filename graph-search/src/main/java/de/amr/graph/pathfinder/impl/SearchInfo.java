@@ -10,11 +10,11 @@ import de.amr.graph.core.api.TraversalState;
 public class SearchInfo {
 
 	public int parent;
-	public TraversalState traversalState;
+	public TraversalState state;
 	public double cost;
 	
 	@Override
 	public String toString() {
-		return String.format("(parent:%d,state:%s,cost:%.2g)", parent, traversalState, cost);
+		return String.format("(parent:%d,state:%s,cost:%.2g)", parent, state, cost);
 	}
 }
