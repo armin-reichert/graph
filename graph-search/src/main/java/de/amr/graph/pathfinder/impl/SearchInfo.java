@@ -12,4 +12,9 @@ public class SearchInfo {
 	public int parent;
 	public TraversalState traversalState;
 	public double cost;
+	
+	@Override
+	public String toString() {
+		return String.format("(parent:%d,state:%s,cost:%.2g)", parent, traversalState, cost);
+	}
 }
