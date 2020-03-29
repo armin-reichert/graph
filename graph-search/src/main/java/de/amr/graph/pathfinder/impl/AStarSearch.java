@@ -71,11 +71,6 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue, AStarSea
 	}
 
 	@Override
-	protected void clear() {
-		super.clear();
-	}
-
-	@Override
 	public void start(int source, int target) {
 		super.start(source, target);
 		setScore(source, getEstimatedCost(source));
@@ -130,7 +125,6 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue, AStarSea
 	 * @param score score for this vertex
 	 */
 	public void setScore(int v, double score) {
-		AStarSearchInfo info = getOrCreateInfo(v);
-		info.score = score;
+		getOrCreateInfo(v).score = score;
 	}
 }
