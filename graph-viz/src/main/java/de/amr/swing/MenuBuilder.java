@@ -23,7 +23,7 @@ import javax.swing.JRadioButtonMenuItem;
  */
 public class MenuBuilder {
 
-	public static MenuBuilder newBuilder() {
+	public static MenuBuilder beginMenu() {
 		return new MenuBuilder();
 	}
 
@@ -72,7 +72,7 @@ public class MenuBuilder {
 			return this;
 		}
 
-		public MenuBuilder build() {
+		public MenuBuilder endButton() {
 			Objects.requireNonNull(action);
 			JMenuItem item = new JMenuItem(action);
 			if (text != null) {
@@ -106,7 +106,7 @@ public class MenuBuilder {
 			return this;
 		}
 
-		public MenuBuilder build() {
+		public MenuBuilder endCheckBox() {
 			JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem();
 			if (onToggle != null) {
 				checkBox.addItemListener(change -> onToggle.accept(change.getStateChange() == ItemEvent.SELECTED));
@@ -145,7 +145,7 @@ public class MenuBuilder {
 				return this;
 			}
 
-			public RadioButtonGroupBuilder<T> build() {
+			public RadioButtonGroupBuilder<T> endRadioButton() {
 				Objects.requireNonNull(selectionValue, "selection value is required");
 				Objects.requireNonNull(selection, "selection function is required");
 				JRadioButtonMenuItem radioButton = new JRadioButtonMenuItem();
@@ -180,11 +180,11 @@ public class MenuBuilder {
 			return this;
 		}
 
-		public RadioButtonBuilder button() {
+		public RadioButtonBuilder radioButton() {
 			return new RadioButtonBuilder();
 		}
 
-		public MenuBuilder build() {
+		public MenuBuilder endRadioButtonGroup() {
 			return MenuBuilder.this;
 		}
 	}
@@ -197,7 +197,7 @@ public class MenuBuilder {
 		menu = new JMenu();
 	}
 
-	public JMenu build() {
+	public JMenu endMenu() {
 		return menu;
 	}
 
