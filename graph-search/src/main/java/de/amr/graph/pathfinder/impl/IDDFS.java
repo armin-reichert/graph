@@ -29,7 +29,7 @@ public class IDDFS extends AbstractGraphSearch<LIFO_VertexQueue, BasicSearchInfo
 		for (int depth = 0; depth < graph.numVertices(); ++depth) {
 			dls = new DepthLimitedDFS(graph, depth);
 			observersCopy.forEach(dls::addObserver);
-			searchInfo.clear();
+			vertexInfo.clear();
 			Path path = dls.findPath(source, target);
 			observersCopy.forEach(dls::removeObserver);
 			if (path.numVertices() != 0) {

@@ -28,13 +28,16 @@ import de.amr.graph.pathfinder.api.VertexQueue;
  * supports registration of observers for vertex and edge traversals and for
  * changes of the search queue (frontier).
  * 
+ * @param <Q>           type of search queue (FIFO, LIFO, priority queue)
+ * @param <VERTEX_INFO> type of search info stored for each vertex
+ * 
  * @author Armin Reichert
  */
-public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends BasicSearchInfo>
+public abstract class AbstractGraphSearch<Q extends VertexQueue, VERTEX_INFO extends BasicSearchInfo>
 		implements ObservableGraphSearch {
 
 	protected final Graph<?, ?> graph;
-	protected final Map<Integer, INFO> searchInfo;
+	protected final Map<Integer, VERTEX_INFO> vertexInfo;
 	protected final Set<GraphSearchObserver> observers;
 	protected final ToDoubleBiFunction<Integer, Integer> fnEdgeCost;
 	protected double maxCost;
@@ -42,8 +45,8 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 	protected int current, source, target;
 
 	@SuppressWarnings("unchecked")
-	protected INFO makeInfo() {
-		return (INFO) new BasicSearchInfo();
+	protected VERTEX_INFO createVertexInfo(int v) {
+		return (VERTEX_INFO) new BasicSearchInfo();
 	}
 
 	protected AbstractGraphSearch(Graph<?, ?> graph) {
@@ -60,14 +63,14 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 
 	protected AbstractGraphSearch(Graph<?, ?> graph, ToDoubleBiFunction<Integer, Integer> fnEdgeCost, Q frontier) {
 		this.graph = Objects.requireNonNull(graph);
-		this.searchInfo = new HashMap<>();
+		this.vertexInfo = new HashMap<>();
 		this.observers = new HashSet<>(5);
 		this.fnEdgeCost = fnEdgeCost;
 		this.frontier = frontier;
 	}
 
 	protected void clear() {
-		searchInfo.clear();
+		vertexInfo.clear();
 		frontier.clear();
 		maxCost = 0;
 		current = source = target = Graph.NO_VERTEX;
@@ -137,21 +140,21 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 		return frontier.peek();
 	}
 
-	protected INFO getOrCreateInfo(int v) {
-		INFO info = searchInfo.get(v);
+	protected VERTEX_INFO getOrCreateVertexInfo(int v) {
+		VERTEX_INFO info = vertexInfo.get(v);
 		if (info == null) {
-			info = makeInfo();
+			info = createVertexInfo(v);
 			info.parent = Graph.NO_VERTEX;
 			info.state = TraversalState.UNVISITED;
 			info.cost = Path.INFINITE_COST;
-			searchInfo.put(v, info);
+			vertexInfo.put(v, info);
 		}
 		return info;
 	}
 
 	@Override
 	public TraversalState getState(int v) {
-		return searchInfo.containsKey(v) ? searchInfo.get(v).state : UNVISITED;
+		return vertexInfo.containsKey(v) ? vertexInfo.get(v).state : UNVISITED;
 	}
 
 	/**
@@ -161,7 +164,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 	 * @param newState new vertex state
 	 */
 	protected void setState(int v, TraversalState newState) {
-		BasicSearchInfo info = getOrCreateInfo(v);
+		BasicSearchInfo info = getOrCreateVertexInfo(v);
 		TraversalState oldState = info.state;
 		info.state = newState;
 		fireVertexStateChanged(v, oldState, newState);
@@ -169,7 +172,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 
 	@Override
 	public int getParent(int v) {
-		return searchInfo.containsKey(v) ? searchInfo.get(v).parent : Graph.NO_VERTEX;
+		return vertexInfo.containsKey(v) ? vertexInfo.get(v).parent : Graph.NO_VERTEX;
 	}
 
 	/**
@@ -183,7 +186,7 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 		if (child == parent) {
 			throw new IllegalStateException("Cannot set parent to itself");
 		}
-		BasicSearchInfo childInfo = getOrCreateInfo(child);
+		BasicSearchInfo childInfo = getOrCreateVertexInfo(child);
 		childInfo.parent = parent;
 		if (parent != Graph.NO_VERTEX) {
 			childInfo.cost = getCost(parent) + fnEdgeCost.applyAsDouble(parent, child);
@@ -199,12 +202,12 @@ public abstract class AbstractGraphSearch<Q extends VertexQueue, INFO extends Ba
 
 	@Override
 	public double getCost(int v) {
-		return searchInfo.containsKey(v) ? searchInfo.get(v).cost : Path.INFINITE_COST;
+		return vertexInfo.containsKey(v) ? vertexInfo.get(v).cost : Path.INFINITE_COST;
 	}
 
 	@Override
 	public void setCost(int v, double value) {
-		getOrCreateInfo(v).cost = value;
+		getOrCreateVertexInfo(v).cost = value;
 	}
 
 	@Override

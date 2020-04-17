@@ -47,7 +47,7 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue, AStarSea
 	}
 
 	@Override
-	protected AStarSearchInfo makeInfo() {
+	protected AStarSearchInfo createVertexInfo(int v) {
 		return new AStarSearchInfo();
 	}
 
@@ -115,7 +115,7 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue, AStarSea
 	 * @return the score ("f"-value) of the vertex
 	 */
 	public double getScore(int v) {
-		return searchInfo.containsKey(v) ? searchInfo.get(v).score : Path.INFINITE_COST;
+		return vertexInfo.containsKey(v) ? vertexInfo.get(v).score : Path.INFINITE_COST;
 	}
 
 	/**
@@ -125,6 +125,6 @@ public class AStarSearch extends AbstractGraphSearch<MinPQ_VertexQueue, AStarSea
 	 * @param score score for this vertex
 	 */
 	public void setScore(int v, double score) {
-		getOrCreateInfo(v).score = score;
+		getOrCreateVertexInfo(v).score = score;
 	}
 }
