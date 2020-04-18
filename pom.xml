@@ -25,7 +25,6 @@
 	</build>
 	<modules>
 		<module>graph-core</module>
-		<module>graph-viz</module>
 		<module>graph-grid</module>
 	</modules>
 	<dependencyManagement>
