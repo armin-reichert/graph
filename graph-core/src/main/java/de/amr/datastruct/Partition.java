@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 /**
  * Data structure for set-partitions.
  * <p>
- * In this implementation, sets are created on-demand. Calling the {code {@link #find(Object)}
- * method on an element not yet in the partition will create a separate set for this element.
+ * In this implementation, sets are created on-demand. Calling the {code
+ * {@link #find(Object)} method on an element not yet in the partition will
+ * create a separate set for this element.
  * 
  * @author Armin Reichert
  * 
- * @param <E>
- *          type of the elements in this partition
+ * @param <E> type of the elements in this partition
  */
 public class Partition<E> implements Iterable<Partition<E>.Set> {
 
@@ -97,11 +97,10 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 	}
 
 	/**
-	 * Creates a new set containing only the given element. If the element is already contained in a
-	 * set, an exception is thrown.
+	 * Creates a new set containing only the given element. If the element is
+	 * already contained in a set, an exception is thrown.
 	 * 
-	 * @param el
-	 *             an element
+	 * @param el an element
 	 * @return a new set
 	 */
 	public Set makeSet(E el) {
@@ -115,12 +114,12 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 	}
 
 	/**
-	 * Returns the set (equivalence class) for the given element. Maybe creates a new set.
+	 * Returns the set (equivalence class) for the given element. Maybe creates a
+	 * new set.
 	 * 
-	 * @param el
-	 *             element from the partitioned set
-	 * @return set (equivalence class) containing the given element (created on demand if not yet
-	 *         existing)
+	 * @param el element from the partitioned set
+	 * @return set (equivalence class) containing the given element (created on
+	 *         demand if not yet existing)
 	 */
 	public Set find(E el) {
 		Set set = sets.get(el);
@@ -141,29 +140,29 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 	}
 
 	/**
-	 * Merges two sets into one. Uses weighted-union which guarantees logarithmic time for
-	 * find-operations.
+	 * Merges two sets into one. Uses weighted-union which guarantees logarithmic
+	 * time for find-operations.
 	 * 
-	 * @param x
-	 *            first element
-	 * @param y
-	 *            second element
+	 * @param x first element
+	 * @param y second element
+	 * @return<code>true</code> if <code>x, y</code> were contained in different
+	 * sets
 	 */
-	public void union(E x, E y) {
+	public boolean union(E x, E y) {
 		Set cx = find(x), cy = find(y);
 		if (cx == cy) {
-			return;
+			return false;
 		}
 		if (cx.size() <= cy.size()) {
 			cx.parent = cy;
 			cy.elements.addAll(cx.elements);
 			cx.elements = Collections.emptyList();
-		}
-		else {
+		} else {
 			cy.parent = cx;
 			cx.elements.addAll(cy.elements);
 			cy.elements = Collections.emptyList();
 		}
 		--setCount;
+		return true;
 	}
 }
