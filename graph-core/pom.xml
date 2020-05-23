@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>de.amr.graph</groupId>
 		<artifactId>graph-all</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<dependencies>
