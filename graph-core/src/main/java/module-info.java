@@ -5,5 +5,6 @@ module de.amr.graph.core {
 	exports de.amr.graph.core.impl;
 	exports de.amr.graph.event;
 	exports de.amr.graph.util;
+	exports de.amr.util;
 
 }
