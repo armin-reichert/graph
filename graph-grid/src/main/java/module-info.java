@@ -1,8 +1,7 @@
 module de.amr.graph.grid {
 
 	requires transitive de.amr.graph.core;
-	requires transitive de.amr.graph.pathfinder;
-	
+
 	exports de.amr.graph.grid.api;
 	exports de.amr.graph.grid.curves;
 	exports de.amr.graph.grid.impl;
