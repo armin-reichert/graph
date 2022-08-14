@@ -32,7 +32,7 @@ public class UGraphTest {
 	public void testAddVertex() {
 		g.addVertex(42);
 		assertEquals(1, g.numVertices());
-		assertTrue(g.vertices().count() == 1);
+		assertEquals(1, g.vertices().count());
 		assertTrue(g.vertices().filter(v -> v == 42).findAny().isPresent());
 	}
 

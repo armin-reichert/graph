@@ -28,7 +28,7 @@ public class MultigraphTest {
 		g.addVertex(42);
 		assertEquals(1, g.vertexCount());
 		assertTrue(g.vertexStream().findFirst().isPresent());
-		assertTrue(g.vertexStream().findFirst().getAsInt() == 42);
+		assertEquals(42, g.vertexStream().findFirst().getAsInt());
 	}
 
 	@Test
