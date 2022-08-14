@@ -42,8 +42,8 @@ public class EmptyGridTest {
 
 	@Test
 	public void testGridEdgeStream() {
-		assertTrue(nullGrid.edges().count() == 0);
-		assertTrue(emptyGrid3x3.edges().count() == 0);
+		assertEquals(0, nullGrid.edges().count());
+		assertEquals(0, emptyGrid3x3.edges().count());
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
@@ -60,7 +60,7 @@ public class EmptyGridTest {
 	public void testGridVertexDegree() {
 		nullGrid.degree(0);
 	}
-	
+
 	@Test
 	public void testIsFullOrEmpty() {
 		assertTrue(emptyGrid3x3.isEmpty());

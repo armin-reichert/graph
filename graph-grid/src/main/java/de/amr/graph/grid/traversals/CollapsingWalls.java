@@ -5,8 +5,8 @@ import java.util.Iterator;
 import de.amr.graph.grid.api.GridGraph2D;
 
 /**
- * A sequence of cells traversing the grid like "walls" which are growing horizontally from the
- * sides towards the center.
+ * A sequence of cells traversing the grid like "walls" which are growing horizontally from the sides towards the
+ * center.
  * 
  * @author Armin Reichert
  */
@@ -23,7 +23,8 @@ public class CollapsingWalls implements Iterable<Integer> {
 
 		return new Iterator<Integer>() {
 
-			private int nextLeft, nextRight;
+			private int nextLeft;
+			private int nextRight;
 			private boolean left;
 			private int visited;
 
@@ -46,21 +47,18 @@ public class CollapsingWalls implements Iterable<Integer> {
 					int x = grid.col(nextLeft), y = grid.row(nextLeft);
 					if (y < grid.numRows() - 1) {
 						nextLeft = grid.cell(x, y + 1);
-					}
-					else {
+					} else {
 						nextLeft = grid.cell(x + 1, 0);
 					}
 					left = false;
 					++visited;
 					return cell;
-				}
-				else {
+				} else {
 					int cell = nextRight;
 					int x = grid.col(nextRight), y = grid.row(nextRight);
 					if (y > 0) {
 						nextRight = grid.cell(x, y - 1);
-					}
-					else {
+					} else {
 						nextRight = grid.cell(x - 1, grid.numRows() - 1);
 					}
 					left = true;

@@ -18,8 +18,10 @@ public class Circle extends AbstractShape {
 		this.center = center;
 		this.radius = radius;
 
-		int x = grid.col(center), y = grid.row(center);
-		int dx = -1, dy = -(radius + 1);
+		int x = grid.col(center);
+		int y = grid.row(center);
+		int dx = -1;
+		int dy = -(radius + 1);
 
 		for (int i = 0; i <= radius; ++i) {
 			// right downwards

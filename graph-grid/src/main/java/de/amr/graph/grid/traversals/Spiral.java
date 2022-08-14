@@ -12,8 +12,8 @@ import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.shapes.Square;
 
 /**
- * A sequence of cells starting at the center of the grid and expanding like a spiral until all grid
- * cells are traversed.
+ * A sequence of cells starting at the center of the grid and expanding like a spiral until all grid cells are
+ * traversed.
  * 
  * @author Armin Reichert
  */
@@ -21,7 +21,7 @@ public class Spiral implements Iterable<Integer> {
 
 	private final List<Integer> cells = new ArrayList<>();
 
-	public Spiral(GridGraph2D<?, ?> grid, Integer start) {
+	public Spiral(GridGraph2D<?, ?> grid) {
 		int size = Math.max(grid.numCols(), grid.numRows());
 		int offsetY = (size - grid.numRows()) / 2;
 		GridGraph2D<?, ?> squareGrid = new GridGraph<>(size, size, Grid4Topology.get(), null, (u, v) -> null,
@@ -37,8 +37,7 @@ public class Spiral implements Iterable<Integer> {
 				}
 			}
 			if (i < n - 1) {
-				leftUpperCorner = squareGrid.cell(squareGrid.col(leftUpperCorner) - 1,
-						squareGrid.row(leftUpperCorner) - 1);
+				leftUpperCorner = squareGrid.cell(squareGrid.col(leftUpperCorner) - 1, squareGrid.row(leftUpperCorner) - 1);
 			}
 		}
 	}
