@@ -69,9 +69,8 @@ public class UGraphTest {
 
 		Map<Edge, Integer> edgeMap = new HashMap<>();
 		edgeMap.put(e1, 42);
-		assertTrue(edgeMap.get(e) == 42);
-		assertTrue(edgeMap.get(e1) == 42);
-		assertTrue(edgeMap.get(e2) == 42);
+		assertEquals(42, edgeMap.get(e).intValue());
+		assertEquals(42, edgeMap.get(e1).intValue());
+		assertEquals(42, edgeMap.get(e2).intValue());
 	}
-
 }

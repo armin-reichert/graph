@@ -1,6 +1,9 @@
 package de.amr.graph.grid.test;
 
 import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.grid.api.GridMetrics.chebyshev;
+import static de.amr.graph.grid.api.GridMetrics.euclidean;
+import static de.amr.graph.grid.api.GridMetrics.manhattan;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.CENTER;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
@@ -47,12 +50,12 @@ public class GridTest {
 
 	@Test
 	public void testGridInitialization() {
-		assertEquals(grid.numEdges(), 0);
-		assertEquals(grid.numVertices(), WIDTH * HEIGHT);
-		assertEquals(grid.numCols(), WIDTH);
-		assertEquals(grid.numRows(), HEIGHT);
-		assertEquals(grid.numVertices(), grid.vertices().count());
-		assertEquals(grid.numEdges(), grid.edges().count());
+		assertEquals(0, grid.numEdges());
+		assertEquals(WIDTH * HEIGHT, grid.numVertices());
+		assertEquals(WIDTH, grid.numCols());
+		assertEquals(HEIGHT, grid.numRows());
+		assertEquals(grid.vertices().count(), grid.numVertices());
+		assertEquals(grid.edges().count(), grid.numEdges());
 	}
 
 	@Test
@@ -108,9 +111,9 @@ public class GridTest {
 
 	@Test
 	public void testFillAllEdges() {
-		assertEquals(grid.numEdges(), 0);
+		assertEquals(0, grid.numEdges());
 		grid.fill();
-		assertEquals(grid.numEdges(), 2 * WIDTH * HEIGHT - (WIDTH + HEIGHT));
+		assertEquals(2 * WIDTH * HEIGHT - (WIDTH + HEIGHT), grid.numEdges());
 	}
 
 	@Test
@@ -125,11 +128,11 @@ public class GridTest {
 
 	@Test
 	public void testRemoveAllEdges() {
-		assertEquals(grid.numEdges(), 0);
+		assertEquals(0, grid.numEdges());
 		grid.fill();
-		assertEquals(grid.numEdges(), 2 * WIDTH * HEIGHT - (WIDTH + HEIGHT));
+		assertEquals(2 * WIDTH * HEIGHT - (WIDTH + HEIGHT), grid.numEdges());
 		grid.removeEdges();
-		assertEquals(grid.numEdges(), 0);
+		assertEquals(0, grid.numEdges());
 	}
 
 	@Test
@@ -204,8 +207,8 @@ public class GridTest {
 		int r = grid.numRows(), c = grid.numCols();
 		int u = grid.cell(TOP_LEFT);
 		int v = grid.cell(BOTTOM_RIGHT);
-		assertEquals((r - 1) + (c - 1), grid.manhattan(u, v));
-		assertEquals(0, grid.manhattan(u, u));
+		assertEquals((r - 1) + (c - 1), manhattan(grid, u, v));
+		assertEquals(0, manhattan(grid, u, u));
 	}
 
 	@Test
@@ -214,8 +217,8 @@ public class GridTest {
 		int u = grid.cell(TOP_LEFT);
 		int v = grid.cell(BOTTOM_RIGHT);
 		double expected = Math.sqrt((r - 1) * (r - 1) + (c - 1) * (c - 1));
-		assertEquals(expected, grid.euclidean(u, v), Math.ulp(expected));
-		assertEquals(0, grid.euclidean(u, u), 0);
+		assertEquals(expected, euclidean(grid, u, v), Math.ulp(expected));
+		assertEquals(0, euclidean(grid, u, u), 0);
 	}
 
 	@Test
@@ -223,8 +226,8 @@ public class GridTest {
 		int r = grid.numRows(), c = grid.numCols();
 		int u = grid.cell(TOP_LEFT);
 		int v = grid.cell(BOTTOM_RIGHT);
-		assertEquals(Math.max(r - 1, c - 1), grid.chebyshev(u, v));
-		assertEquals(0, grid.chebyshev(u, u));
+		assertEquals(Math.max(r - 1, c - 1), chebyshev(grid, u, v));
+		assertEquals(0, chebyshev(grid, u, u));
 	}
 
 	@Test

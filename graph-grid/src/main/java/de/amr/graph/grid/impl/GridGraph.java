@@ -245,13 +245,6 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 		return degree;
 	}
 
-	// Implement GridMetric interface (mixin)
-
-	@Override
-	public GridGraph2D<?, ?> grid() {
-		return this;
-	}
-
 	// Implement {@link BareGridGraph2D} interface
 
 	@Override
