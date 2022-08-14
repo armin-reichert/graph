@@ -37,7 +37,7 @@ public final class Grid4Topology implements GridTopology {
 
 	private Grid4Topology() {
 	}
-	
+
 	@Override
 	public String toString() {
 		return "4 Neighbor Topology";
@@ -53,12 +53,12 @@ public final class Grid4Topology implements GridTopology {
 	public boolean isValid(int dir) {
 		return dir >= N && dir <= W;
 	}
-	
+
 	@Override
 	public boolean isOrthogonal(int dir) {
 		return true;
 	}
-	
+
 	@Override
 	public Stream<Byte> dirs() {
 		return Stream.of(N, E, S, W);
@@ -103,5 +103,5 @@ public final class Grid4Topology implements GridTopology {
 	public byte dy(int dir) {
 		rangeCheck(dir);
 		return VECTORS[dir][1];
-	};
+	}
 }
