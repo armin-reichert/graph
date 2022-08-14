@@ -5,22 +5,10 @@ package de.amr.graph.core.api;
  * 
  * @author Armin Reichert
  *
- * @param <W>
- *          edge weight type
+ * @param <W> edge weight type
  */
-public class WeightedEdge<W extends Comparable<W>> extends UndirectedEdge
-		implements Comparable<WeightedEdge<W>> {
-
-	private final W weight;
-
-	public WeightedEdge(int u, int v, W weight) {
-		super(u, v);
-		this.weight = weight;
-	}
-
-	public W getWeight() {
-		return weight;
-	}
+public record WeightedEdge<W extends Comparable<W>> (int either, int other, W weight)
+		implements Edge, Comparable<WeightedEdge<W>> {
 
 	@Override
 	public int compareTo(WeightedEdge<W> other) {

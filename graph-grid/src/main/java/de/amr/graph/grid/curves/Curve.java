@@ -39,33 +39,29 @@ public abstract class Curve implements Iterable<Byte> {
 	/**
 	 * Traverses the given curve and executes the given action for each visited cell.
 	 * 
-	 * @param curve
-	 *                 a curve
-	 * @param grid
-	 *                 the traversed grid
-	 * @param start
-	 *                 the start cell
-	 * @param action
-	 *                 the action executed for each cell
+	 * @param curve  a curve
+	 * @param grid   the traversed grid
+	 * @param start  the start cell
+	 * @param action the action executed for each cell
 	 */
 	public void traverse(GridGraph2D<?, ?> grid, int start, BiConsumer<Integer, Integer> action) {
 		int current = start;
 		for (byte dir : moves) {
-			int next = grid.neighbor(current, dir).get();
-			action.accept(current, next);
-			current = next;
+			var neighbor = grid.neighbor(current, dir);
+			if (neighbor.isPresent()) {
+				int next = neighbor.get();
+				action.accept(current, next);
+				current = next;
+			}
 		}
 	}
 
 	/**
 	 * Returns the list of cells traversed by a curve on a grid when starting at a given cell.
 	 * 
-	 * @param curve
-	 *                a curve
-	 * @param grid
-	 *                the traversed grid
-	 * @param start
-	 *                the start cell
+	 * @param curve a curve
+	 * @param grid  the traversed grid
+	 * @param start the start cell
 	 * @return list of cells traversed by {@code curve} on {@code grid} when starting at {@code start}
 	 */
 	public List<Integer> cells(GridGraph2D<?, ?> grid, int start) {
@@ -81,17 +77,13 @@ public abstract class Curve implements Iterable<Byte> {
 	/**
 	 * Returns a textual representation of the grid cells traversed by the given curve.
 	 * 
-	 * @param curve
-	 *                a curve
-	 * @param grid
-	 *                the traversed grid
-	 * @param start
-	 *                the start cell
+	 * @param curve a curve
+	 * @param grid  the traversed grid
+	 * @param start the start cell
 	 * @return textual representation of the grid cells traversed by the given curve
 	 */
 	public String cellsAsString(GridGraph2D<?, ?> grid, int start) {
 		return cells(grid, start).stream().map(cell -> String.format("(%d,%d)", grid.col(cell), grid.row(cell)))
 				.collect(Collectors.joining());
 	}
-
 }
