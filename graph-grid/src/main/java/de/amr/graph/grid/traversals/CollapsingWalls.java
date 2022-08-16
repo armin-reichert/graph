@@ -44,7 +44,8 @@ public class CollapsingWalls implements Iterable<Integer> {
 			public Integer next() {
 				if (left) {
 					int cell = nextLeft;
-					int x = grid.col(nextLeft), y = grid.row(nextLeft);
+					int x = grid.col(nextLeft);
+					int y = grid.row(nextLeft);
 					if (y < grid.numRows() - 1) {
 						nextLeft = grid.cell(x, y + 1);
 					} else {
@@ -55,7 +56,8 @@ public class CollapsingWalls implements Iterable<Integer> {
 					return cell;
 				} else {
 					int cell = nextRight;
-					int x = grid.col(nextRight), y = grid.row(nextRight);
+					int x = grid.col(nextRight);
+					int y = grid.row(nextRight);
 					if (y > 0) {
 						nextRight = grid.cell(x, y - 1);
 					} else {

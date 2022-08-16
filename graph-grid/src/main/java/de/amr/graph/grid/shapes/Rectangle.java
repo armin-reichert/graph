@@ -7,8 +7,7 @@ import de.amr.graph.grid.api.GridGraph2D;
  * 
  * @author Armin Reichert
  *
- * @param <Integer>
- *          grid cell type
+ * @param <Integer> grid cell type
  */
 public class Rectangle extends AbstractShape {
 
@@ -23,8 +22,10 @@ public class Rectangle extends AbstractShape {
 		this.width = width;
 		this.height = height;
 
-		int cornerX = grid.col(leftUpperCorner), cornerY = grid.row(leftUpperCorner);
-		int x = cornerX - 1, y = cornerY;
+		int cornerX = grid.col(leftUpperCorner);
+		int cornerY = grid.row(leftUpperCorner);
+		int x = cornerX - 1;
+		int y = cornerY;
 		for (int i = 0; i < width; ++i) {
 			++x;
 			addCell(x, y);

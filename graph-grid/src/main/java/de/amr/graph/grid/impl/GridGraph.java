@@ -163,7 +163,8 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 
 	@Override
 	public boolean isFull() {
-		int c = numCols(), r = numRows();
+		int c = numCols();
+		int r = numRows();
 		if (getTopology() == Grid4Topology.get()) {
 			return numEdges() == 2 * c * r - c - r;
 		}

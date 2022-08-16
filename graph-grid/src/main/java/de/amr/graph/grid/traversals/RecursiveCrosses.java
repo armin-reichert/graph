@@ -32,9 +32,12 @@ public class RecursiveCrosses implements Iterable<Integer> {
 		if (width == 0 || height == 0) {
 			return;
 		}
-		int w2 = width / 2, h2 = height / 2;
-		int offsetX = width % 2, offsetY = height % 2;
-		int centerCol = startCol + w2, centerRow = startRow + h2;
+		int w2 = width / 2;
+		int h2 = height / 2;
+		int offsetX = width % 2;
+		int offsetY = height % 2;
+		int centerCol = startCol + w2;
+		int centerRow = startRow + h2;
 
 		// Vertical axis
 		range(startRow, startRow + height).forEach(row -> {

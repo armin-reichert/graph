@@ -111,5 +111,5 @@ public final class Grid8Topology implements GridTopology {
 	public byte dy(int dir) {
 		rangeCheck(dir);
 		return VECTORS[dir][1];
-	};
+	}
 }

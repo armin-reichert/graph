@@ -27,7 +27,8 @@ public class Square extends AbstractShape {
 		if (size == 0) {
 			return;
 		}
-		int x = grid.col(topLeft), y = grid.row(topLeft);
+		int x = grid.col(topLeft);
+		int y = grid.row(topLeft);
 		if (size == 1) {
 			addCell(x, y);
 			return;
