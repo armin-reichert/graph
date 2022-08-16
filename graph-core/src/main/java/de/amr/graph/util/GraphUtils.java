@@ -17,7 +17,7 @@ import de.amr.graph.core.impl.DefaultMultigraph;
  * 
  * @author Armin Reichert
  */
-public class GraphUtils {
+public interface GraphUtils {
 
 	/**
 	 * Prints the graph content to the given stream.
@@ -75,8 +75,7 @@ public class GraphUtils {
 	/**
 	 * @param base base of power
 	 * @param n    number
-	 * @return next integer which is greater or equals to n and a power of the given
-	 *         base
+	 * @return next integer which is greater or equals to n and a power of the given base
 	 */
 	public static int nextPow(int base, int n) {
 		int pow = 1;
