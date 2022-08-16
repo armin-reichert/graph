@@ -29,13 +29,13 @@ import static de.amr.graph.grid.impl.Grid4Topology.W;
 public class HilbertLCurveWirth extends Curve {
 
 	public HilbertLCurveWirth(int depth) {
-		A(depth);
+		a(depth);
 	}
 
 	/*@formatter:off*/
-	void A(int i) { if (i > 0) { D(i-1); go(W); A(i-1); go(S); A(i-1); go(E); B(i-1); }}
-	void B(int i) { if (i > 0) { C(i-1); go(N); B(i-1); go(E); B(i-1); go(S); A(i-1); }}
-	void C(int i) { if (i > 0) { B(i-1); go(E); C(i-1); go(N); C(i-1); go(W); D(i-1); }}
-	void D(int i) { if (i > 0) { A(i-1); go(S); D(i-1); go(W); D(i-1); go(N); C(i-1); }}
+	void a(int i) { if (i > 0) { d(i-1); go(W); a(i-1); go(S); a(i-1); go(E); b(i-1); }}
+	void b(int i) { if (i > 0) { c(i-1); go(N); b(i-1); go(E); b(i-1); go(S); a(i-1); }}
+	void c(int i) { if (i > 0) { b(i-1); go(E); c(i-1); go(N); c(i-1); go(W); d(i-1); }}
+	void d(int i) { if (i > 0) { a(i-1); go(S); d(i-1); go(W); d(i-1); go(N); c(i-1); }}
 	/*@formatter:on*/
 }

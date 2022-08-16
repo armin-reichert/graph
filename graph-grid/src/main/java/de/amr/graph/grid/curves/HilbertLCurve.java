@@ -25,11 +25,11 @@ package de.amr.graph.grid.curves;
 public class HilbertLCurve extends TurtleCurve {
 
 	public HilbertLCurve(int depth) {
-		A(depth);
+		a(depth);
 	}
 
 	/*@formatter:off*/
-	void A(int i) { if (i > 0) { r(); B(i-1); f(); l(); A(i-1); f(); A(i-1); l(); f(); B(i-1); r(); }}
-	void B(int i) { if (i > 0) { l(); A(i-1); f(); r(); B(i-1); f(); B(i-1); r(); f(); A(i-1); l(); }}
+	void a(int i) { if (i > 0) { r(); b(i-1); f(); l(); a(i-1); f(); a(i-1); l(); f(); b(i-1); r(); }}
+	void b(int i) { if (i > 0) { l(); a(i-1); f(); r(); b(i-1); f(); b(i-1); r(); f(); a(i-1); l(); }}
 	/*@formatter:on*/
 }

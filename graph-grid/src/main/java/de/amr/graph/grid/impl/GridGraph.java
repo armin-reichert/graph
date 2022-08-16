@@ -320,7 +320,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	public void fillOrthogonal() {
 		wires.clear();
 		//@formatter:off
-		vertices().forEach(cell -> top.dirs().filter(dir -> top.isOrthogonal(dir)).forEach(dir -> {
+		vertices().forEach(cell -> top.dirs().filter(top::isOrthogonal).forEach(dir -> {
 			int neighbor = neighborCell(cell, dir);
 			if (neighbor != NO_VERTEX) {
 				wire(cell, neighbor, dir, true);

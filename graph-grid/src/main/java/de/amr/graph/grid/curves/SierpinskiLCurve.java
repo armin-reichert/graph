@@ -17,14 +17,14 @@ import static de.amr.graph.grid.impl.Grid8Topology.W;
 public class SierpinskiLCurve extends Curve {
 
 	public SierpinskiLCurve(int depth) {
-		S(depth);
+		s(depth);
 	}
 
 	/*@formatter:off*/
-	void S(int i) { if (i > 0) { A(i-1); go(SE); B(i-1); go(SW); C(i-1); go(NW); D(i-1); go(NE); }}
-	void A(int i) { if (i > 0) { A(i-1); go(SE); B(i-1); go(E); go(E); D(i-1); go(NE); A(i-1); }}
-	void B(int i) { if (i > 0) { B(i-1); go(SW); C(i-1); go(S); go(S); A(i-1); go(SE); B(i-1); }}
-	void C(int i) { if (i > 0) { C(i-1); go(NW); D(i-1); go(W); go(W); B(i-1); go(SW); C(i-1); }}
-	void D(int i) { if (i > 0) { D(i-1); go(NE); A(i-1); go(N); go(N); C(i-1); go(NW); D(i-1); }}
+	void s(int i) { if (i > 0) { a(i-1); go(SE); b(i-1); go(SW); c(i-1); go(NW); d(i-1); go(NE); }}
+	void a(int i) { if (i > 0) { a(i-1); go(SE); b(i-1); go(E); go(E); d(i-1); go(NE); a(i-1); }}
+	void b(int i) { if (i > 0) { b(i-1); go(SW); c(i-1); go(S); go(S); a(i-1); go(SE); b(i-1); }}
+	void c(int i) { if (i > 0) { c(i-1); go(NW); d(i-1); go(W); go(W); b(i-1); go(SW); c(i-1); }}
+	void d(int i) { if (i > 0) { d(i-1); go(NE); a(i-1); go(N); go(N); c(i-1); go(NW); d(i-1); }}
 	/*@formatter:on*/
 }
