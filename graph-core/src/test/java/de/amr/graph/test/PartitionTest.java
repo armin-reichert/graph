@@ -28,7 +28,7 @@ public class PartitionTest {
 		assertEquals(3, p1.size());
 		p1.union(1, 2);
 		assertEquals(2, p1.size());
-		Partition<Integer>.Set c1 = p1.find(1);
+		Partition<Integer>.PSet c1 = p1.find(1);
 		assertEquals(2, c1.size());
 		assertEquals(new HashSet<>(Arrays.asList(1, 2)), c1.elements().collect(toSet()));
 	}

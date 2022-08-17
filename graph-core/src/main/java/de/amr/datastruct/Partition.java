@@ -11,36 +11,33 @@ import java.util.stream.Stream;
 /**
  * Data structure for set-partitions.
  * <p>
- * In this implementation, sets are created on-demand. Calling the {code
- * {@link #find(Object)} method on an element not yet in the partition will
- * create a separate set for this element.
+ * In this implementation, sets are created on-demand. Calling the {code {@link #find(Object)} method on an element not
+ * yet in the partition will create a separate set for this element.
  * 
  * @author Armin Reichert
  * 
  * @param <E> type of the elements in this partition
  */
-public class Partition<E> implements Iterable<Partition<E>.Set> {
+public class Partition<E> implements Iterable<Partition<E>.PSet> {
 
-	/**
-	 * A set in a partition.
-	 *
-	 */
-	public class Set implements Iterable<E> {
+	public class PSet implements Iterable<E> {
 
-		private Set parent;
+		private static final int INITIAL_CAPACITY = 5;
+
+		private PSet parent;
 		private List<E> elements;
 
-		private Set(E e) {
+		private PSet(E e) {
 			parent = this;
-			elements = new ArrayList<>();
+			elements = new ArrayList<>(INITIAL_CAPACITY);
 			elements.add(e);
 		}
 
 		/**
 		 * @return
 		 */
-		private Set root() {
-			Set set = this;
+		private PSet root() {
+			PSet set = this;
 			while (set.parent != set) {
 				set = set.parent;
 			}
@@ -67,11 +64,11 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 		}
 	}
 
-	private final Map<E, Set> sets;
+	private final Map<E, PSet> setsByElement;
 	private int setCount;
 
 	public Partition() {
-		sets = new HashMap<>();
+		setsByElement = new HashMap<>();
 		setCount = 0;
 	}
 
@@ -80,13 +77,13 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 	 * 
 	 * @return a stream of all sets of this partition
 	 */
-	public Stream<Set> sets() {
-		return sets.values().stream();
+	public Stream<PSet> sets() {
+		return setsByElement.values().stream();
 	}
 
 	@Override
-	public Iterator<Set> iterator() {
-		return sets.values().iterator();
+	public Iterator<PSet> iterator() {
+		return setsByElement.values().iterator();
 	}
 
 	/**
@@ -97,70 +94,67 @@ public class Partition<E> implements Iterable<Partition<E>.Set> {
 	}
 
 	/**
-	 * Creates a new set containing only the given element. If the element is
-	 * already contained in a set, an exception is thrown.
+	 * Creates a new set containing only the given element. If the element is already contained in another set, an
+	 * exception is thrown.
 	 * 
-	 * @param el an element
-	 * @return a new set
+	 * @param e an element
+	 * @return new set containing e
 	 */
-	public Set makeSet(E el) {
-		if (sets.containsKey(el)) {
-			throw new IllegalArgumentException("Set for element e already exists, e= " + el);
+	public PSet makeSet(E e) {
+		if (setsByElement.containsKey(e)) {
+			throw new IllegalArgumentException("Set already exists for element e=" + e);
 		}
-		Set set = new Set(el);
-		sets.put(el, set);
+		PSet set = new PSet(e);
+		setsByElement.put(e, set);
 		++setCount;
 		return set;
 	}
 
 	/**
-	 * Returns the set (equivalence class) for the given element. Maybe creates a
-	 * new set.
+	 * Returns the set (equivalence class) for the given element. Maybe creates a new set.
 	 * 
-	 * @param el element from the partitioned set
-	 * @return set (equivalence class) containing the given element (created on
-	 *         demand if not yet existing)
+	 * @param e some element from the partitioned set
+	 * @return set (equivalence class) containing the given element (created on demand if not yet existing)
 	 */
-	public Set find(E el) {
-		Set set = sets.get(el);
+	public PSet find(E e) {
+		PSet set = setsByElement.get(e);
 		if (set == null) {
-			return makeSet(el);
+			set = makeSet(e);
 		}
 		// find path to the root
-		List<Set> path = new ArrayList<>();
-		Set root = set;
+		List<PSet> path = new ArrayList<>();
+		PSet root = set;
 		for (; root != root.parent; root = root.parent) {
 			path.add(root);
 		}
 		// compress the path and return
-		for (Set ancestor : path) {
+		for (PSet ancestor : path) {
 			ancestor.parent = root;
 		}
 		return root;
 	}
 
 	/**
-	 * Merges two sets into one. Uses weighted-union which guarantees logarithmic
-	 * time for find-operations.
+	 * Merges two sets into one. Uses weighted-union which guarantees logarithmic time for find-operations.
 	 * 
 	 * @param x first element
 	 * @param y second element
-	 * @return<code>true</code> if <code>x, y</code> were contained in different
-	 * sets
+	 * @return<code>true</code> if <code>x, y</code> were contained in different sets
 	 */
 	public boolean union(E x, E y) {
-		Set cx = find(x), cy = find(y);
-		if (cx == cy) {
+		PSet sx = find(x);
+		PSet sy = find(y);
+		if (sx == sy) {
 			return false;
 		}
-		if (cx.size() <= cy.size()) {
-			cx.parent = cy;
-			cy.elements.addAll(cx.elements);
-			cx.elements = Collections.emptyList();
+		if (sx.size() <= sy.size()) {
+			sx.parent = sy;
+			sy.elements.addAll(sx.elements);
+			sx.elements = Collections.emptyList();
 		} else {
-			cy.parent = cx;
-			cx.elements.addAll(cy.elements);
-			cy.elements = Collections.emptyList();
+			sy.parent = sx;
+			sx.elements.addAll(sy.elements);
+			sy.elements = Collections.emptyList();
 		}
 		--setCount;
 		return true;
