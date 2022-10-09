@@ -28,12 +28,11 @@ public interface GraphUtils {
 	public static void print(Graph<?, ?> g, PrintStream out) {
 		out.println(format("Graph: %d vertices, %d edges", g.numVertices(), g.numEdges()));
 		out.println("Vertices:");
-		out.println(g.vertices().mapToObj(v -> {
-			return String.format("%s(%s)", v, g.get(v));
-		}).collect(Collectors.joining(",")));
+		out.println(g.vertices().mapToObj(v -> String.format("%s(%s)", v, g.get(v))).collect(Collectors.joining(",")));
 		out.println("Edges:");
 		g.edges().forEach(edge -> {
-			int u = edge.either(), v = edge.other();
+			int u = edge.either();
+			int v = edge.other();
 			out.println(format("{%d, %d}(%s)", u, v, g.getEdgeLabel(u, v)));
 		});
 	}
