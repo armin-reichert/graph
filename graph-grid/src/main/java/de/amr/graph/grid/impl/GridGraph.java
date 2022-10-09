@@ -7,7 +7,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -75,7 +75,7 @@ public class GridGraph<V, E> implements GridGraph2D<V, E> {
 	 * @param fnDefaultEdgeLabel   default edge label
 	 * @param fnEdgeFactory        function for creating edges of the correct type
 	 */
-	public GridGraph(int numCols, int numRows, GridTopology top, Function<Integer, V> fnDefaultVertexLabel,
+	public GridGraph(int numCols, int numRows, GridTopology top, IntFunction<V> fnDefaultVertexLabel,
 			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		if (numCols < 0) {
 			throw new IllegalArgumentException("Illegal number of columns: " + numCols);

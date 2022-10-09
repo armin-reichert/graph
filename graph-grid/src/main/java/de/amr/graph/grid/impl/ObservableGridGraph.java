@@ -3,7 +3,7 @@ package de.amr.graph.grid.impl;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import de.amr.graph.core.api.Edge;
 import de.amr.graph.core.api.ObservableGraph;
@@ -18,20 +18,16 @@ import de.amr.graph.grid.api.ObservableGridGraph2D;
  * 
  * @author Armin Reichert
  * 
- * @param <V>
- *          vertex label type
- * @param <E>
- *          edge label type
+ * @param <V> vertex label type
+ * @param <E> edge label type
  */
-public class ObservableGridGraph<V, E> extends GridGraph<V, E>
-		implements ObservableGridGraph2D<V, E> {
+public class ObservableGridGraph<V, E> extends GridGraph<V, E> implements ObservableGridGraph2D<V, E> {
 
 	private final Set<GraphObserver<V, E>> observers;
 	private boolean eventsEnabled;
 
-	public ObservableGridGraph(int numCols, int numRows, GridTopology top,
-			Function<Integer, V> fnDefaultVertexLabel, BiFunction<Integer, Integer, E> fnDefaultEdgeLabel,
-			BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
+	public ObservableGridGraph(int numCols, int numRows, GridTopology top, IntFunction<V> fnDefaultVertexLabel,
+			BiFunction<Integer, Integer, E> fnDefaultEdgeLabel, BiFunction<Integer, Integer, Edge> fnEdgeFactory) {
 		super(numCols, numRows, top, fnDefaultVertexLabel, fnDefaultEdgeLabel, fnEdgeFactory);
 		observers = new HashSet<>();
 		eventsEnabled = true;
@@ -44,7 +40,7 @@ public class ObservableGridGraph<V, E> extends GridGraph<V, E>
 	}
 
 	@Override
-	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
+	public void setDefaultVertexLabel(IntFunction<V> fnDefaultLabel) {
 		super.setDefaultVertexLabel(fnDefaultLabel);
 		fireGraphChange(this);
 	}

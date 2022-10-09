@@ -2,7 +2,7 @@ package de.amr.graph.core.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import de.amr.graph.core.api.VertexLabeling;
 
@@ -11,15 +11,14 @@ import de.amr.graph.core.api.VertexLabeling;
  * 
  * @author Armin Reichert
  *
- * @param <V>
- *          vertex label type
+ * @param <V> vertex label type
  */
 public class VertexLabelsMap<V> implements VertexLabeling<V> {
 
 	private final Map<Integer, V> labels = new HashMap<>();
-	private Function<Integer, V> fnDefaultLabel;
+	private IntFunction<V> fnDefaultLabel;
 
-	public VertexLabelsMap(Function<Integer, V> defaultLabel) {
+	public VertexLabelsMap(IntFunction<V> defaultLabel) {
 		this.fnDefaultLabel = defaultLabel;
 	}
 
@@ -44,13 +43,13 @@ public class VertexLabelsMap<V> implements VertexLabeling<V> {
 	}
 
 	@Override
-	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
+	public void setDefaultVertexLabel(IntFunction<V> fnDefaultLabel) {
 		this.fnDefaultLabel = fnDefaultLabel;
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0))
-				.append("'):\n").append(labels).toString();
+		return new StringBuilder().append("Labels (default='").append(fnDefaultLabel.apply(0)).append("'):\n")
+				.append(labels).toString();
 	}
 }

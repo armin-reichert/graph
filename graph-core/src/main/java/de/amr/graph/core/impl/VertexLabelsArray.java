@@ -1,6 +1,6 @@
 package de.amr.graph.core.impl;
 
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import de.amr.graph.core.api.VertexLabeling;
 
@@ -9,13 +9,12 @@ import de.amr.graph.core.api.VertexLabeling;
  * 
  * @author Armin Reichert
  *
- * @param <V>
- *          vertex label type
+ * @param <V> vertex label type
  */
 public class VertexLabelsArray<V> implements VertexLabeling<V> {
 
 	private Object[] labels;
-	private Function<Integer, V> fnDefaultLabel;
+	private IntFunction<V> fnDefaultLabel;
 
 	public VertexLabelsArray(int size) {
 		labels = new Object[size];
@@ -43,7 +42,7 @@ public class VertexLabelsArray<V> implements VertexLabeling<V> {
 	}
 
 	@Override
-	public void setDefaultVertexLabel(Function<Integer, V> fnDefaultLabel) {
+	public void setDefaultVertexLabel(IntFunction<V> fnDefaultLabel) {
 		this.fnDefaultLabel = fnDefaultLabel;
 	}
 }
