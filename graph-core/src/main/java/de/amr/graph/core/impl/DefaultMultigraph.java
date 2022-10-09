@@ -20,9 +20,6 @@ public class DefaultMultigraph implements Multigraph {
 	private final Set<Integer> vertexSet = new HashSet<>();
 	private final List<Edge> edgeList = new ArrayList<>();
 
-	public DefaultMultigraph() {
-	}
-
 	@Override
 	public void addVertex(int vertex) {
 		vertexSet.add(vertex);

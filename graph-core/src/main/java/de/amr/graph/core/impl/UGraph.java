@@ -24,10 +24,8 @@ import de.amr.graph.core.api.VertexLabeling;
  * 
  * @author Armin Reichert
  * 
- * @param <V>
- *          vertex type
- * @param <E>
- *          edge type
+ * @param <V> vertex type
+ * @param <E> edge type
  */
 public class UGraph<V, E> implements Graph<V, E> {
 
@@ -36,9 +34,6 @@ public class UGraph<V, E> implements Graph<V, E> {
 	protected final Set<Integer> vertexSet = new HashSet<>();
 	protected final Map<Integer, Set<Edge>> adjEdges = new HashMap<>();
 	protected int numEdges; // number of undirected edges
-
-	public UGraph() {
-	}
 
 	@Override
 	public VertexLabeling<V> getVertexLabeling() {
@@ -177,8 +172,7 @@ public class UGraph<V, E> implements Graph<V, E> {
 		for (Edge e : adjEdges.get(v)) {
 			if (e.either() == v) {
 				result.add(e.other());
-			}
-			else {
+			} else {
 				result.add(e.either());
 			}
 		}
