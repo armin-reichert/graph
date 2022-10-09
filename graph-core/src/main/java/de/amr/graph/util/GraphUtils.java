@@ -86,39 +86,30 @@ public interface GraphUtils {
 	}
 
 	public static Multigraph dualGraphOfGrid(int cols, int rows) {
-		Multigraph dual = new DefaultMultigraph();
-		int dualRows = rows - 1, dualCols = cols - 1;
-		dual.addVertex(-1); // outer vertex
-		for (int row = 0; row < dualRows; ++row) {
-			for (int col = 0; col < dualCols; ++col) {
-				dual.addVertex(row * dualCols + col);
+		var dualGraph = new DefaultMultigraph();
+		int numRows = rows - 1;
+		int numCols = cols - 1;
+		int outerVertex = -1;
+		dualGraph.addVertex(outerVertex);
+		for (int row = 0; row < numRows; ++row) {
+			for (int col = 0; col < numCols; ++col) {
+				dualGraph.addVertex(row * numCols + col);
 			}
 		}
-		for (int row = 0; row < dualRows; ++row) {
-			for (int col = 0; col < dualCols; ++col) {
-				int v = row * dualCols + col;
-				if (row == 0) {
-					dual.addEdge(new UndirectedEdge(v, -1));
+		for (int row = 0; row < numRows; ++row) {
+			for (int col = 0; col < numCols; ++col) {
+				int v = row * numCols + col;
+				if (row == 0 || row == numRows - 1 || col == 0 || col == numCols - 1) {
+					dualGraph.addEdge(new UndirectedEdge(v, outerVertex));
 				}
-				if (row == dualRows - 1) {
-					dual.addEdge(new UndirectedEdge(v, -1));
+				if (row + 1 < numRows) {
+					dualGraph.addEdge(new UndirectedEdge(row * numCols + col, (row + 1) * numCols + col));
 				}
-				if (col == 0) {
-					dual.addEdge(new UndirectedEdge(v, -1));
-				}
-				if (col == dualCols - 1) {
-					dual.addEdge(new UndirectedEdge(v, -1));
-				}
-				if (row + 1 < dualRows) {
-					// connect with vertex one row below
-					dual.addEdge(new UndirectedEdge(row * dualCols + col, (row + 1) * dualCols + col));
-				}
-				if (col + 1 < dualCols) {
-					// connect with vertex one row below
-					dual.addEdge(new UndirectedEdge(row * dualCols + col, row * dualCols + col + 1));
+				if (col + 1 < numCols) {
+					dualGraph.addEdge(new UndirectedEdge(row * numCols + col, row * numCols + col + 1));
 				}
 			}
 		}
-		return dual;
+		return dualGraph;
 	}
 }
