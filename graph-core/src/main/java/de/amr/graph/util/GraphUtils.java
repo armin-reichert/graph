@@ -98,7 +98,10 @@ public interface GraphUtils {
 		for (int row = 0; row < numRows; ++row) {
 			for (int col = 0; col < numCols; ++col) {
 				int v = row * numCols + col;
-				if (row == 0 || row == numRows - 1 || col == 0 || col == numCols - 1) {
+				if (row == 0 || row == numRows - 1) {
+					dualGraph.addEdge(new UndirectedEdge(v, outerVertex));
+				}
+				if (col == 0 || col == numCols - 1) {
 					dualGraph.addEdge(new UndirectedEdge(v, outerVertex));
 				}
 				if (row + 1 < numRows) {
