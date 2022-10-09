@@ -49,7 +49,8 @@ public interface GraphUtils {
 		Partition<Integer> p = new Partition<>();
 		Iterable<Edge> edges = g.edges()::iterator;
 		for (Edge edge : edges) {
-			int u = edge.either(), v = edge.other();
+			int u = edge.either();
+			int v = edge.other();
 			if (p.find(u) == p.find(v)) {
 				return true;
 			}

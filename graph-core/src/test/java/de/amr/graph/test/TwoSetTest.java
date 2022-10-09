@@ -26,6 +26,7 @@ public class TwoSetTest {
 		Map<TwoSet<Integer>, String> map = new HashMap<>();
 		TwoSet<Integer> one = TwoSet.of(1, 2);
 		TwoSet<Integer> two = TwoSet.of(2, 1);
+		assertEquals(one, two);
 		map.put(one, "A");
 		assertEquals(map.get(one), map.get(two));
 	}

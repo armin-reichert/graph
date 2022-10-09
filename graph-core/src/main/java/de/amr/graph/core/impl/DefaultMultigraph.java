@@ -27,7 +27,8 @@ public class DefaultMultigraph implements Multigraph {
 
 	@Override
 	public void addEdge(Edge edge) {
-		int u = edge.either(), v = edge.other();
+		int u = edge.either();
+		int v = edge.other();
 		assertVertexExists(u);
 		assertVertexExists(v);
 		edgeList.add(edge);
@@ -38,7 +39,8 @@ public class DefaultMultigraph implements Multigraph {
 		assertVertexExists(v);
 		assertVertexExists(w);
 		return edgeList.stream().filter(edge -> {
-			int either = edge.either(), other = edge.other();
+			int either = edge.either();
+			int other = edge.other();
 			return v == either && w == other || v == other && w == either;
 		});
 	}
@@ -84,7 +86,8 @@ public class DefaultMultigraph implements Multigraph {
 	public int degree(int w) {
 		assertVertexExists(w);
 		return (int) edgeList.stream().filter(edge -> {
-			int u = edge.either(), v = edge.other();
+			int u = edge.either();
+			int v = edge.other();
 			return u == w || v == w;
 		}).count();
 	}
@@ -93,10 +96,12 @@ public class DefaultMultigraph implements Multigraph {
 	public IntStream adjVertices(int w) {
 		assertVertexExists(w);
 		return edgeList.stream().filter(edge -> {
-			int u = edge.either(), v = edge.other();
+			int u = edge.either();
+			int v = edge.other();
 			return u == w || v == w;
 		}).map(edge -> {
-			int u = edge.either(), v = edge.other();
+			int u = edge.either();
+			int v = edge.other();
 			return u == w ? v : u;
 		}).mapToInt(Integer::intValue);
 	}
