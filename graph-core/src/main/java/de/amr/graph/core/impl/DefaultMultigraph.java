@@ -45,7 +45,7 @@ public class DefaultMultigraph implements Multigraph {
 
 	@Override
 	public void removeEdge(int u, int v) {
-		edges(u, v).findFirst().ifPresent(e -> edgeList.remove(e));
+		edges(u, v).findFirst().ifPresent(edgeList::remove);
 	}
 
 	@Override
