@@ -105,8 +105,8 @@ public class GridTest {
 		assertTrue(grid.areNeighbors(v, v - 1));
 		assertTrue(grid.areNeighbors(v, v - grid.numCols()));
 		assertTrue(grid.areNeighbors(v, v + grid.numCols()));
-		assertTrue(!grid.areNeighbors(v, v - 2));
-		assertTrue(!grid.areNeighbors(v, v + 2));
+		assertFalse(grid.areNeighbors(v, v - 2));
+		assertFalse(grid.areNeighbors(v, v + 2));
 	}
 
 	@Test
@@ -233,8 +233,8 @@ public class GridTest {
 	@Test
 	public void testEdgeLabel() {
 		grid.addEdge(0, 1, 5);
-		assertEquals((Integer) 5, grid.getEdgeLabel(0, 1));
+		assertEquals(5, (int) grid.getEdgeLabel(0, 1));
 		grid.setEdgeLabel(0, 1, 6);
-		assertEquals((Integer) 6, grid.getEdgeLabel(0, 1));
+		assertEquals(6, (int) grid.getEdgeLabel(0, 1));
 	}
 }
