@@ -17,6 +17,7 @@
 	<modules>
 		<module>graph-core</module>
 		<module>graph-grid</module>
+		<module>graph-search</module>
 	</modules>
 
 
