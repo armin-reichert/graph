@@ -68,7 +68,7 @@ public abstract class AbstractGraphSearch implements ObservableGraphSearch {
 		current = frontier.poll();
 		setState(current, COMPLETED);
 
-		Logger.trace("%s: Explore vertex %d. %s", getClass().getSimpleName(), current, getOrCreateVertexInfo(current));
+		Logger.trace("{}: Explore vertex {}. {}", getClass().getSimpleName(), current, getOrCreateVertexInfo(current));
 		fireVertexRemovedFromFrontier(current);
 		if (current == target) {
 			return true;
@@ -86,7 +86,7 @@ public abstract class AbstractGraphSearch implements ObservableGraphSearch {
 		setState(source, VISITED);
 		setParent(source, Graph.NO_VERTEX);
 		setCost(source, 0);
-		Logger.trace("%s: Start search at vertex %d. %s", getClass().getSimpleName(), current,
+		Logger.trace("{}: Start search at vertex {}. {}", getClass().getSimpleName(), current,
 				getOrCreateVertexInfo(current));
 		fireVertexAddedToFrontier(source);
 	}
@@ -97,7 +97,7 @@ public abstract class AbstractGraphSearch implements ObservableGraphSearch {
 	 * @param v vertex to be expanded
 	 */
 	protected void expand(int v) {
-		Logger.trace("%s: Expand vertex %d. %s", getClass().getSimpleName(), v, getOrCreateVertexInfo(v));
+		Logger.trace("{}: Expand vertex {}. {}", getClass().getSimpleName(), v, getOrCreateVertexInfo(v));
 		graph.adj(v).filter(child -> getState(child) == UNVISITED).forEach(child -> {
 			setState(child, VISITED);
 			setParent(child, v);
