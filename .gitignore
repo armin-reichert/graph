@@ -28,3 +28,6 @@ hs_err_pid*
 /bin/
 /target/
 /.idea/
+/.gradle/
+/graph-grid/.gradle/
+/graph-grid/build/
