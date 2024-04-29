@@ -31,3 +31,5 @@ hs_err_pid*
 /graph-all.iml
 /graph-core/graph-core.iml
 /graph-grid/graph-grid.iml
+/.gradle/
+/graph-grid/build/
