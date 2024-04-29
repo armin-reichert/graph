@@ -28,3 +28,6 @@ hs_err_pid*
 /bin/
 /target/
 /.idea/
+/graph-all.iml
+/graph-core/graph-core.iml
+/graph-grid/graph-grid.iml
