@@ -20,7 +20,6 @@
 		<module>graph-search</module>
 	</modules>
 
-
 	<build>
 		<plugins>
 			<plugin>
