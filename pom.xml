@@ -18,6 +18,7 @@
 		<module>graph-core</module>
 		<module>graph-grid</module>
 		<module>graph-search</module>
+		<module>graph-viz</module>
 	</modules>
 
 	<build>
