@@ -3,6 +3,7 @@ module de.amr.graph.viz {
     requires de.amr.graph.core;
     requires de.amr.graph.grid;
     requires de.amr.graph.pathfinder;
+    requires java.desktop;
 
     exports de.amr.graph.grid.ui;
     exports de.amr.graph.grid.ui.animation;
