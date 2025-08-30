@@ -10,6 +10,7 @@ subprojects {
 
     // 1. Apply plugins
     apply(plugin: "java")
+    apply(plugin: "maven-publish")
     pluginManager.apply(libs.plugins.osdetector.get().getPluginId())
 
     // 2. Declare repositories
