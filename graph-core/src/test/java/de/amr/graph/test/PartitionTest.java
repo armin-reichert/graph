@@ -1,15 +1,14 @@
 package de.amr.graph.test;
 
 import static java.util.stream.Collectors.toSet;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Test;
-
 import de.amr.datastruct.Partition;
+import org.junit.jupiter.api.Test;
 
 public class PartitionTest {
 

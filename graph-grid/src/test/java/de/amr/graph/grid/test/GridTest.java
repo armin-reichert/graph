@@ -1,30 +1,20 @@
 package de.amr.graph.grid.test;
 
-import static de.amr.graph.core.api.TraversalState.UNVISITED;
-import static de.amr.graph.grid.api.GridMetrics.chebyshev;
-import static de.amr.graph.grid.api.GridMetrics.euclidean;
-import static de.amr.graph.grid.api.GridMetrics.manhattan;
-import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
-import static de.amr.graph.grid.api.GridPosition.CENTER;
-import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
-import static de.amr.graph.grid.impl.Grid4Topology.E;
-import static de.amr.graph.grid.impl.Grid4Topology.N;
-import static de.amr.graph.grid.impl.Grid4Topology.S;
-import static de.amr.graph.grid.impl.Grid4Topology.W;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import de.amr.graph.core.api.TraversalState;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.GridGraph;
 import de.amr.graph.grid.impl.ObservableGridGraph;
 import de.amr.graph.util.GraphUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static de.amr.graph.core.api.TraversalState.UNVISITED;
+import static de.amr.graph.grid.api.GridMetrics.*;
+import static de.amr.graph.grid.api.GridPosition.*;
+import static de.amr.graph.grid.impl.Grid4Topology.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test case for {@link GridGraph}
@@ -38,13 +28,13 @@ public class GridTest {
 
 	private ObservableGridGraph<TraversalState, Integer> grid;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		grid = new ObservableGridGraph<>(WIDTH, HEIGHT, Grid4Topology.get(), v -> UNVISITED, (u, v) -> 1,
 				UndirectedEdge::new);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 
@@ -63,14 +53,19 @@ public class GridTest {
 		assertEquals(grid.vertices().filter(cell -> grid.get(cell) == UNVISITED).count(), grid.numVertices());
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testAddVertexThrowsException() {
-		grid.addVertex(0);
+	@Test
+	public void testAddVertexThrowsException()
+    {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            grid.addVertex(0);
+        });
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void testRemoveVertexThrowsException() {
-		grid.removeVertex(0);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            grid.removeVertex(0);
+        });
 	}
 
 	@Test
@@ -81,20 +76,24 @@ public class GridTest {
 	@Test
 	public void testAddEdge() {
 		int numEdges = grid.numEdges();
-		assert (!grid.edge(0, 1).isPresent());
+		assert (grid.edge(0, 1).isEmpty());
 		grid.addEdge(0, 1);
 		assertEquals(numEdges + 1, grid.numEdges());
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void addEdgeTwiceThrowsException() {
-		grid.addEdge(0, 1);
-		grid.addEdge(0, 1);
+        assertThrows(IllegalStateException.class, () -> {
+            grid.addEdge(0, 1);
+            grid.addEdge(0, 1);
+        });
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void addEdgeToNonNeighborThrowsException() {
-		grid.addEdge(0, 2);
+		assertThrows(IllegalStateException.class, () -> {
+            grid.addEdge(0, 2);
+        });
 	}
 
 	@Test
@@ -154,7 +153,7 @@ public class GridTest {
 	public void testCellCoordinates() {
 		for (int x = 0; x < grid.numCols(); ++x) {
 			for (int y = 0; y < grid.numRows(); ++y) {
-				Integer cell = grid.cell(x, y);
+				int cell = grid.cell(x, y);
 				assertEquals(grid.col(cell), x);
 				assertEquals(grid.row(cell), y);
 			}
@@ -165,7 +164,7 @@ public class GridTest {
 	public void testGetNeighbor() {
 		for (int x = 0; x < grid.numCols(); ++x) {
 			for (int y = 0; y < grid.numRows(); ++y) {
-				Integer cell = grid.cell(x, y);
+				int cell = grid.cell(x, y);
 				if (y > 0) {
 					int n = grid.neighbor(cell, N).get();
 					assertEquals(n, grid.cell(x, y - 1));
@@ -189,10 +188,10 @@ public class GridTest {
 	@Test
 	public void testCycleCheckerSquare() {
 		// create graph without cycle:
-		Integer a = grid.cell(0, 0);
-		Integer b = grid.cell(1, 0);
-		Integer c = grid.cell(1, 1);
-		Integer d = grid.cell(0, 1);
+		int a = grid.cell(0, 0);
+		int b = grid.cell(1, 0);
+		int c = grid.cell(1, 1);
+		int d = grid.cell(0, 1);
 		grid.addEdge(a, b);
 		grid.addEdge(b, c);
 		grid.addEdge(c, d);

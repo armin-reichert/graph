@@ -210,7 +210,7 @@ public class BFSAnimation implements GraphSearchObserver {
 	private Color cellColorByDistance(int cell, ToDoubleFunction<Integer> fnDistance, double maxDistance) {
 		float hue = 0.16f;
 		if (maxDistance > 0) {
-			hue += 0.7f * fnDistance.applyAsDouble(cell) / maxDistance;
+			hue += (float) (0.7f * fnDistance.applyAsDouble(cell) / maxDistance);
 		}
 		return Color.getHSBColor(hue, 0.5f, 1f);
 	}

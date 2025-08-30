@@ -1,2 +1,19 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    plugins {
+        id("java").apply(false)
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'graph'
-include 'graph-core', 'graph-grid', 'graph-search'
+
+include("graph-core", "graph-grid", "graph-search", "graph-viz")

@@ -4,18 +4,15 @@ import static de.amr.graph.grid.api.GridPosition.BOTTOM_LEFT;
 import static de.amr.graph.grid.api.GridPosition.BOTTOM_RIGHT;
 import static de.amr.graph.grid.api.GridPosition.TOP_LEFT;
 import static de.amr.graph.grid.api.GridPosition.TOP_RIGHT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import de.amr.graph.grid.api.GridGraph2D;
 import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.Grid8Topology;
 import de.amr.graph.grid.impl.GridFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FullGridTest {
 
@@ -27,13 +24,13 @@ public class FullGridTest {
 	private GridGraph2D<Void, Void> full4;
 	private GridGraph2D<Void, Void> full8;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		full4 = GridFactory.fullGrid(COLS, ROWS, Grid4Topology.get(), null, null);
 		full8 = GridFactory.fullGrid(COLS, ROWS, Grid8Topology.get(), null, null);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 
@@ -188,7 +185,7 @@ public class FullGridTest {
 		assertEquals(2, full4.degree(full4.cell(BOTTOM_RIGHT)));
 		for (int x = 0; x < full4.numCols(); ++x) {
 			for (int y = 0; y < full4.numRows(); ++y) {
-				Integer cell = full4.cell(x, y);
+				int cell = full4.cell(x, y);
 				assertTrue(full4.degree(cell) >= 2 && full4.degree(cell) <= 4);
 				if (x == 0 || x == COLS - 1 || y == 0 || y == ROWS - 1) {
 					assertTrue(full4.degree(cell) <= 3);
@@ -201,7 +198,7 @@ public class FullGridTest {
 	public void testConnectedTowards() {
 		for (int x = 0; x < full4.numCols(); ++x) {
 			for (int y = 0; y < full4.numRows(); ++y) {
-				Integer cell = full4.cell(x, y);
+				int cell = full4.cell(x, y);
 				if (full4.numCols() > 1) {
 					if (x == 0) {
 						assertTrue(full4.isConnected(cell, Grid4Topology.E));

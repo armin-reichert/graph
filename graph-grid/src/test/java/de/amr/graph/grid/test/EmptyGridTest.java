@@ -1,22 +1,19 @@
 package de.amr.graph.grid.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.amr.graph.grid.impl.Grid4Topology;
 import de.amr.graph.grid.impl.GridFactory;
 import de.amr.graph.grid.impl.GridGraph;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EmptyGridTest {
 
 	private GridGraph<Void, Void> nullGrid;
 	private GridGraph<Void, Void> emptyGrid3x3;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		nullGrid = GridFactory.emptyGrid(0, 0, Grid4Topology.get(), null, null);
 		emptyGrid3x3 = GridFactory.emptyGrid(3, 3, Grid4Topology.get(), null, null);
@@ -35,9 +32,9 @@ public class EmptyGridTest {
 		assertEquals(3, emptyGrid3x3.numRows());
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void testGridAccessException() {
-		nullGrid.cell(0, 0);
+        assertThrows(IndexOutOfBoundsException.class, () -> nullGrid.cell(0, 0));
 	}
 
 	@Test
@@ -46,19 +43,19 @@ public class EmptyGridTest {
 		assertEquals(0, emptyGrid3x3.edges().count());
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void testGridEdgeAccess() {
-		nullGrid.edge(0, 1);
+		assertThrows(IndexOutOfBoundsException.class, () -> nullGrid.edge(0, 1));
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void testGridEdgeAdd() {
-		nullGrid.addEdge(0, 1);
+        assertThrows(IndexOutOfBoundsException.class, () -> nullGrid.addEdge(0, 1));
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void testGridVertexDegree() {
-		nullGrid.degree(0);
+        assertThrows(IndexOutOfBoundsException.class, () -> nullGrid.degree(0));
 	}
 
 	@Test

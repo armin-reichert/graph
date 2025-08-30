@@ -1,0 +1,10 @@
+dependencies {
+    implementation(
+            project(":graph-core"),
+            project(":graph-grid"),
+            project(":graph-search"),
+            libs.bundles.tinylog
+    )
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+}

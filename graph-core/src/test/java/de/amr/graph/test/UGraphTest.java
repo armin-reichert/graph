@@ -1,23 +1,22 @@
 package de.amr.graph.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import de.amr.graph.core.api.Edge;
 import de.amr.graph.core.api.UndirectedEdge;
 import de.amr.graph.core.impl.UGraph;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UGraphTest {
 
 	private UGraph<Void, Void> g;
 
-	@Before
+    @BeforeEach
 	public void setUp() {
 		g = new UGraph<>();
 	}
@@ -36,9 +35,9 @@ public class UGraphTest {
 		assertTrue(g.vertices().filter(v -> v == 42).findAny().isPresent());
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testRemoveVertexFromEmptyGraph() {
-		g.removeVertex(42);
+        assertThrows(IllegalStateException.class, () -> g.removeVertex(42));
 	}
 
 	@Test
@@ -48,9 +47,11 @@ public class UGraphTest {
 		assertEquals(0, g.numVertices());
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test //(expected = IllegalStateException.class)
 	public void removeNonexistingVertex() {
-		g.removeVertex(42);
+		assertThrows(IllegalStateException.class, () -> {
+            g.removeVertex(42);
+        });
 	}
 
 	@Test
